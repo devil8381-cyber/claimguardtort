@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Claimant {
+  id        String          @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  claims    Claim[]
+  messages  ContactMessage[]
+}
+
+model Claim {
+  id          String         @id @default(cuid())
+  trackingId  String         @unique
+  status      String         @default("Pending")
+  claimType   String?
+  description String?
+  filedDate   DateTime?
+  lastUpdated DateTime       @default(now())
+  notes       String?
+  nextSteps   String?
+  claimantId  String
+  claimant    Claimant       @relation(fields: [claimantId], references: [id])
+  history     ClaimHistory[]
+}
+
+model ClaimHistory {
+  id      String   @id @default(cuid())
+  status  String
+  notes   String?
+  date    DateTime @default(now())
+  claimId String
+  claim   Claim    @relation(fields: [claimId], references: [id])
+}
+
+model ContactMessage {
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  claimId   String?
+  message   String
+  read      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  claimantId String?
+  claimant   Claimant? @relation(fields: [claimantId], references: [id])
+}
