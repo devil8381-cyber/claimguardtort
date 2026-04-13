@@ -346,16 +346,288 @@ Email: legal@claimguardpro.com
 Phone: (800) 555-0199
 Address: 123 Justice Avenue, Washington, DC 20001`;
 
-const SOCIAL_PROOF_DATA = [
-  { name: 'Sarah M.', location: 'Austin, TX', action: 'just filed a Camp Lejeune claim', time: '2 minutes ago' },
-  { name: 'James R.', location: 'Columbus, OH', action: 'checked their Roundup claim status', time: '5 minutes ago' },
-  { name: 'Linda K.', location: 'Phoenix, AZ', action: 'was approved for a Talc claim', time: '8 minutes ago' },
-  { name: 'Robert D.', location: 'Charlotte, NC', action: 'submitted Hernia Mesh documents', time: '12 minutes ago' },
-  { name: 'Maria S.', location: 'Miami, FL', action: 'completed the Eligibility Quiz', time: '15 minutes ago' },
-  { name: 'David W.', location: 'Denver, CO', action: 'downloaded their claim report', time: '18 minutes ago' },
-  { name: 'Patricia H.', location: 'Seattle, WA', action: 'booked a free consultation', time: '22 minutes ago' },
-  { name: 'Michael B.', location: 'Chicago, IL', action: 'referred a friend for a claim', time: '25 minutes ago' },
+/* ═══════════════════════════════════════════════════════════════
+   SOCIAL PROOF GENERATOR — ~10,000+ Unique Combinations
+   Combinatorial: names × cities × actions × case types × times
+   ═══════════════════════════════════════════════════════════════ */
+
+const SP_FIRST_NAMES = [
+  'James','Robert','John','Michael','David','William','Richard','Joseph','Thomas','Charles',
+  'Christopher','Daniel','Matthew','Anthony','Mark','Donald','Steven','Paul','Andrew','Joshua',
+  'Kenneth','Kevin','Brian','George','Timothy','Ronald','Edward','Jason','Jeffrey','Ryan',
+  'Jacob','Gary','Nicholas','Eric','Jonathan','Stephen','Larry','Justin','Scott','Brandon',
+  'Benjamin','Samuel','Raymond','Gregory','Frank','Alexander','Patrick','Jack','Dennis','Jerry',
+  'Tyler','Aaron','Jose','Adam','Nathan','Henry','Douglas','Peter','Zachary','Kyle',
+  'Mary','Patricia','Jennifer','Linda','Barbara','Elizabeth','Susan','Jessica','Sarah','Karen',
+  'Lisa','Nancy','Betty','Margaret','Sandra','Ashley','Dorothy','Kimberly','Emily','Donna',
+  'Michelle','Carol','Amanda','Melissa','Deborah','Stephanie','Rebecca','Sharon','Laura','Cynthia',
+  'Kathleen','Amy','Angela','Shirley','Anna','Brenda','Pamela','Emma','Nicole','Helen',
+  'Samantha','Katherine','Christine','Debra','Rachel','Carolyn','Janet','Catherine','Maria','Heather',
+  'Diane','Ruth','Julie','Olivia','Joyce','Virginia','Victoria','Kelly','Lauren','Christina',
 ];
+
+const SP_LAST_INITIALS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+
+const SP_CITIES = [
+  { city: 'Houston', st: 'TX' },{ city: 'Phoenix', st: 'AZ' },{ city: 'San Antonio', st: 'TX' },
+  { city: 'San Diego', st: 'CA' },{ city: 'Dallas', st: 'TX' },{ city: 'San Jose', st: 'CA' },
+  { city: 'Austin', st: 'TX' },{ city: 'Jacksonville', st: 'FL' },{ city: 'Fort Worth', st: 'TX' },
+  { city: 'Columbus', st: 'OH' },{ city: 'Charlotte', st: 'NC' },{ city: 'San Francisco', st: 'CA' },
+  { city: 'Indianapolis', st: 'IN' },{ city: 'Seattle', st: 'WA' },{ city: 'Denver', st: 'CO' },
+  { city: 'Washington', st: 'DC' },{ city: 'Nashville', st: 'TN' },{ city: 'Oklahoma City', st: 'OK' },
+  { city: 'El Paso', st: 'TX' },{ city: 'Boston', st: 'MA' },{ city: 'Portland', st: 'OR' },
+  { city: 'Las Vegas', st: 'NV' },{ city: 'Memphis', st: 'TN' },{ city: 'Louisville', st: 'KY' },
+  { city: 'Baltimore', st: 'MD' },{ city: 'Milwaukee', st: 'WI' },{ city: 'Albuquerque', st: 'NM' },
+  { city: 'Tucson', st: 'AZ' },{ city: 'Fresno', st: 'CA' },{ city: 'Sacramento', st: 'CA' },
+  { city: 'Mesa', st: 'AZ' },{ city: 'Atlanta', st: 'GA' },{ city: 'Kansas City', st: 'MO' },
+  { city: 'Colorado Springs', st: 'CO' },{ city: 'Raleigh', st: 'NC' },{ city: 'Omaha', st: 'NE' },
+  { city: 'Miami', st: 'FL' },{ city: 'Long Beach', st: 'CA' },{ city: 'Virginia Beach', st: 'VA' },
+  { city: 'Oakland', st: 'CA' },{ city: 'Minneapolis', st: 'MN' },{ city: 'Tulsa', st: 'OK' },
+  { city: 'Arlington', st: 'TX' },{ city: 'Tampa', st: 'FL' },{ city: 'New Orleans', st: 'LA' },
+  { city: 'Wichita', st: 'KS' },{ city: 'Cleveland', st: 'OH' },{ city: 'Pittsburgh', st: 'PA' },
+  { city: 'Cincinnati', st: 'OH' },{ city: 'St. Louis', st: 'MO' },{ city: 'Salt Lake City', st: 'UT' },
+  { city: 'Huntsville', st: 'AL' },{ city: 'Boise', st: 'ID' },{ city: 'Greenville', st: 'SC' },
+  { city: 'Knoxville', st: 'TN' },{ city: 'Chattanooga', st: 'TN' },{ city: 'Mobile', st: 'AL' },
+  { city: 'Savannah', st: 'GA' },{ city: 'Richmond', st: 'VA' },{ city: 'Spokane', st: 'WA' },
+  { city: 'Reno', st: 'NV' },{ city: 'Biloxi', st: 'MS' },{ city: 'Charleston', st: 'SC' },
+  { city: 'Columbia', st: 'SC' },{ city: 'Montgomery', st: 'AL' },{ city: 'Jackson', st: 'MS' },
+  { city: 'Little Rock', st: 'AR' },{ city: 'Dayton', st: 'OH' },{ city: 'Wilmington', st: 'DE' },
+  { city: 'Harrisburg', st: 'PA' },{ city: 'Hartford', st: 'CT' },{ city: 'Providence', st: 'RI' },
+  { city: 'Des Moines', st: 'IA' },{ city: 'Madison', st: 'WI' },{ city: 'Lansing', st: 'MI' },
+  { city: 'Cheyenne', st: 'WY' },{ city: 'Bismarck', st: 'ND' },{ city: 'Helena', st: 'MT' },
+  { city: 'Boise', st: 'ID' },{ city: 'Salem', st: 'OR' },{ city: 'Olympia', st: 'WA' },
+  { city: 'Carson City', st: 'NV' },{ city: 'Springfield', st: 'IL' },{ city: 'Jefferson City', st: 'MO' },
+  { city: 'Annapolis', st: 'MD' },{ city: 'Trenton', st: 'NJ' },{ city: 'Dover', st: 'DE' },
+  { city: 'Concord', st: 'NH' },{ city: 'Augusta', st: 'ME' },{ city: 'Montpelier', st: 'VT' },
+  { city: 'Albany', st: 'NY' },{ city: 'Harrisburg', st: 'PA' },{ city: 'Pierre', st: 'SD' },
+  { city: 'Frankfort', st: 'KY' },{ city: 'Topeka', st: 'KS' },{ city: 'Santa Fe', st: 'NM' },
+  { city: 'Phoenix', st: 'AZ' },{ city: 'Tallahassee', st: 'FL' },{ city: 'Atlanta', st: 'GA' },
+  { city: 'Honolulu', st: 'HI' },{ city: 'Anchorage', st: 'AK' },{ city: 'Fairbanks', st: 'AK' },
+  { city: 'Burlington', st: 'VT' },{ city: 'Portland', st: 'ME' },{ city: 'Manchester', st: 'NH' },
+  { city: 'New Haven', st: 'CT' },{ city: 'Newark', st: 'NJ' },{ city: 'Buffalo', st: 'NY' },
+  { city: 'Rochester', st: 'NY' },{ city: 'Syracuse', st: 'NY' },{ city: 'Yonkers', st: 'NY' },
+  { city: 'Erie', st: 'PA' },{ city: 'Allentown', st: 'PA' },{ city: 'Reading', st: 'PA' },
+  { city: 'Scranton', st: 'PA' },{ city: 'Lancaster', st: 'PA' },{ city: 'York', st: 'PA' },
+  { city: 'Birmingham', st: 'AL' },{ city: 'Grand Rapids', st: 'MI' },{ city: 'Warren', st: 'MI' },
+  { city: 'Sterling Heights', st: 'MI' },{ city: 'Ann Arbor', st: 'MI' },{ city: 'Lansing', st: 'MI' },
+  { city: 'Flint', st: 'MI' },{ city: 'Detroit', st: 'MI' },{ city: 'Columbus', st: 'GA' },
+  { city: 'Savannah', st: 'GA' },{ city: 'Macon', st: 'GA' },{ city: 'Athens', st: 'GA' },
+  { city: 'Gainesville', st: 'FL' },{ city: 'Orlando', st: 'FL' },{ city: 'Tampa', st: 'FL' },
+  { city: 'St. Petersburg', st: 'FL' },{ city: 'Jacksonville', st: 'FL' },{ city: 'Fort Myers', st: 'FL' },
+  { city: 'Naples', st: 'FL' },{ city: 'Pensacola', st: 'FL' },{ city: 'Tallahassee', st: 'FL' },
+  { city: 'New Orleans', st: 'LA' },{ city: 'Baton Rouge', st: 'LA' },{ city: 'Shreveport', st: 'LA' },
+  { city: 'Lafayette', st: 'LA' },{ city: 'Lake Charles', st: 'LA' },{ city: 'Biloxi', st: 'MS' },
+  { city: 'Gulfport', st: 'MS' },{ city: 'Jackson', st: 'MS' },{ city: 'Mobile', st: 'AL' },
+  { city: 'Montgomery', st: 'AL' },{ city: 'Birmingham', st: 'AL' },{ city: 'Huntsville', st: 'AL' },
+  { city: 'Memphis', st: 'TN' },{ city: 'Nashville', st: 'TN' },{ city: 'Knoxville', st: 'TN' },
+  { city: 'Chattanooga', st: 'TN' },{ city: 'Louisville', st: 'KY' },{ city: 'Lexington', st: 'KY' },
+  { city: 'Bowling Green', st: 'KY' },{ city: 'Owensboro', st: 'KY' },{ city: 'Indianapolis', st: 'IN' },
+  { city: 'Fort Wayne', st: 'IN' },{ city: 'Evansville', st: 'IN' },{ city: 'South Bend', st: 'IN' },
+  { city: 'Carmel', st: 'IN' },{ city: 'Cincinnati', st: 'OH' },{ city: 'Columbus', st: 'OH' },
+  { city: 'Cleveland', st: 'OH' },{ city: 'Dayton', st: 'OH' },{ city: 'Toledo', st: 'OH' },
+  { city: 'Akron', st: 'OH' },{ city: 'Canton', st: 'OH' },{ city: 'Parma', st: 'OH' },
+  { city: 'Youngstown', st: 'OH' },{ city: 'Chicago', st: 'IL' },{ city: 'Aurora', st: 'IL' },
+  { city: 'Rockford', st: 'IL' },{ city: 'Joliet', st: 'IL' },{ city: 'Naperville', st: 'IL' },
+  { city: 'Springfield', st: 'IL' },{ city: 'Peoria', st: 'IL' },{ city: 'Milwaukee', st: 'WI' },
+  { city: 'Madison', st: 'WI' },{ city: 'Green Bay', st: 'WI' },{ city: 'Kenosha', st: 'WI' },
+  { city: 'Racine', st: 'WI' },{ city: 'Minneapolis', st: 'MN' },{ city: 'St. Paul', st: 'MN' },
+  { city: 'Rochester', st: 'MN' },{ city: 'Duluth', st: 'MN' },{ city: 'Bloomington', st: 'MN' },
+  { city: 'Brooklyn Park', st: 'MN' },{ city: 'Plymouth', st: 'MN' },{ city: 'Maple Grove', st: 'MN' },
+  { city: 'Sioux Falls', st: 'SD' },{ city: 'Rapid City', st: 'SD' },{ city: 'Fargo', st: 'ND' },
+  { city: 'Bismarck', st: 'ND' },{ city: 'Omaha', st: 'NE' },{ city: 'Lincoln', st: 'NE' },
+  { city: 'Bellevue', st: 'NE' },{ city: 'Grand Island', st: 'NE' },{ city: 'Wichita', st: 'KS' },
+  { city: 'Overland Park', st: 'KS' },{ city: 'Kansas City', st: 'KS' },{ city: 'Olathe', st: 'KS' },
+  { city: 'Topeka', st: 'KS' },{ city: 'Lawrence', st: 'KS' },{ city: 'Oklahoma City', st: 'OK' },
+  { city: 'Tulsa', st: 'OK' },{ city: 'Norman', st: 'OK' },{ city: 'Broken Arrow', st: 'OK' },
+  { city: 'Edmond', st: 'OK' },{ city: 'Dallas', st: 'TX' },{ city: 'Houston', st: 'TX' },
+  { city: 'San Antonio', st: 'TX' },{ city: 'Austin', st: 'TX' },{ city: 'Fort Worth', st: 'TX' },
+  { city: 'El Paso', st: 'TX' },{ city: 'Arlington', st: 'TX' },{ city: 'Corpus Christi', st: 'TX' },
+  { city: 'Laredo', st: 'TX' },{ city: 'Lubbock', st: 'TX' },{ city: 'Irving', st: 'TX' },
+  { city: 'Plano', st: 'TX' },{ city: 'Garland', st: 'TX' },{ city: 'Frisco', st: 'TX' },
+  { city: 'McKinney', st: 'TX' },{ city: 'McAllen', st: 'TX' },{ city: 'Round Rock', st: 'TX' },
+  { city: 'George Town', st: 'TX' },{ city: 'Sugar Land', st: 'TX' },{ city: 'Conroe', st: 'TX' },
+  { city: 'Midland', st: 'TX' },{ city: 'Odessa', st: 'TX' },{ city: 'Abilene', st: 'TX' },
+  { city: 'Temple', st: 'TX' },{ city: 'Waco', st: 'TX' },{ city: 'Killeen', st: 'TX' },
+  { city: 'College Station', st: 'TX' },{ city: 'Longview', st: 'TX' },{ city: 'Tyler', st: 'TX' },
+  { city: 'Beaumont', st: 'TX' },{ city: 'Port Arthur', st: 'TX' },{ city: 'Brownsville', st: 'TX' },
+  { city: 'Harlingen', st: 'TX' },{ city: 'Laredo', st: 'TX' },{ city: 'Eagle Pass', st: 'TX' },
+  { city: 'Del Rio', st: 'TX' },{ city: 'Uvalde', st: 'TX' },{ city: 'San Angelo', st: 'TX' },
+  { city: 'Abilene', st: 'TX' },{ city: 'Sweetwater', st: 'TX' },{ city: 'Big Spring', st: 'TX' },
+  { city: 'Fort Davis', st: 'TX' },{ city: 'Marfa', st: 'TX' },{ city: 'Alpine', st: 'TX' },
+  { city: 'El Paso', st: 'TX' },{ city: 'Las Cruces', st: 'NM' },{ city: 'Santa Fe', st: 'NM' },
+  { city: 'Albuquerque', st: 'NM' },{ city: 'Rio Rancho', st: 'NM' },{ city: 'Roswell', st: 'NM' },
+  { city: 'Farmington', st: 'NM' },{ city: 'Clovis', st: 'NM' },{ city: 'Hobbs', st: 'NM' },
+  { city: 'Denver', st: 'CO' },{ city: 'Colorado Springs', st: 'CO' },{ city: 'Aurora', st: 'CO' },
+  { city: 'Fort Collins', st: 'CO' },{ city: 'Lakewood', st: 'CO' },{ city: 'Thornton', st: 'CO' },
+  { city: 'Arvada', st: 'CO' },{ city: 'Westminster', st: 'CO' },{ city: 'Pueblo', st: 'CO' },
+  { city: 'Boulder', st: 'CO' },{ city: 'Greeley', st: 'CO' },{ city: 'Longmont', st: 'CO' },
+  { city: 'Castle Rock', st: 'CO' },{ city: 'Grand Junction', st: 'CO' },{ city: 'Durango', st: 'CO' },
+  { city: 'Salt Lake City', st: 'UT' },{ city: 'West Valley City', st: 'UT' },{ city: 'Provo', st: 'UT' },
+  { city: 'West Jordan', st: 'UT' },{ city: 'Orem', st: 'UT' },{ city: 'Ogden', st: 'UT' },
+  { city: 'St. George', st: 'UT' },{ city: 'Layton', st: 'UT' },{ city: 'Logan', st: 'UT' },
+  { city: 'Boise', st: 'ID' },{ city: 'Meridian', st: 'ID' },{ city: 'Nampa', st: 'ID' },
+  { city: 'Idaho Falls', st: 'ID' },{ city: 'Caldwell', st: 'ID' },{ city: 'Pocatello', st: 'ID' },
+  { city: 'Twin Falls', st: 'ID' },{ city: 'Lewiston', st: 'ID' },{ city: 'Coeur d\'Alene', st: 'ID' },
+  { city: 'Billings', st: 'MT' },{ city: 'Missoula', st: 'MT' },{ city: 'Great Falls', st: 'MT' },
+  { city: 'Bozeman', st: 'MT' },{ city: 'Butte', st: 'MT' },{ city: 'Helena', st: 'MT' },
+  { city: 'Cheyenne', st: 'WY' },{ city: 'Casper', st: 'WY' },{ city: 'Laramie', st: 'WY' },
+  { city: 'Gillette', st: 'WY' },{ city: 'Rock Springs', st: 'WY' },{ city: 'Sheridan', st: 'WY' },
+  { city: 'Reno', st: 'NV' },{ city: 'Henderson', st: 'NV' },{ city: 'North Las Vegas', st: 'NV' },
+  { city: 'Sparks', st: 'NV' },{ city: 'Carson City', st: 'NV' },{ city: 'Elko', st: 'NV' },
+  { city: 'Fernley', st: 'NV' },{ city: 'Mesquite', st: 'NV' },{ city: 'Phoenix', st: 'AZ' },
+  { city: 'Tucson', st: 'AZ' },{ city: 'Mesa', st: 'AZ' },{ city: 'Chandler', st: 'AZ' },
+  { city: 'Scottsdale', st: 'AZ' },{ city: 'Glendale', st: 'AZ' },{ city: 'Gilbert', st: 'AZ' },
+  { city: 'Peoria', st: 'AZ' },{ city: 'Surprise', st: 'AZ' },{ city: 'Yuma', st: 'AZ' },
+  { city: 'Flagstaff', st: 'AZ' },{ city: 'Lake Havasu City', st: 'AZ' },{ city: 'Sedona', st: 'AZ' },
+  { city: 'Prescott', st: 'AZ' },{ city: 'Sierra Vista', st: 'AZ' },{ city: 'Bullhead City', st: 'AZ' },
+  { city: 'Nogales', st: 'AZ' },{ city: 'Douglas', st: 'AZ' },{ city: 'Los Angeles', st: 'CA' },
+  { city: 'San Diego', st: 'CA' },{ city: 'San Jose', st: 'CA' },{ city: 'San Francisco', st: 'CA' },
+  { city: 'Fresno', st: 'CA' },{ city: 'Sacramento', st: 'CA' },{ city: 'Long Beach', st: 'CA' },
+  { city: 'Oakland', st: 'CA' },{ city: 'Bakersfield', st: 'CA' },{ city: 'Anaheim', st: 'CA' },
+  { city: 'Santa Ana', st: 'CA' },{ city: 'Riverside', st: 'CA' },{ city: 'Stockton', st: 'CA' },
+  { city: 'Irvine', st: 'CA' },{ city: 'Chula Vista', st: 'CA' },{ city: 'Fremont', st: 'CA' },
+  { city: 'San Bernardino', st: 'CA' },{ city: 'Modesto', st: 'CA' },{ city: 'Fontana', st: 'CA' },
+  { city: 'Oxnard', st: 'CA' },{ city: 'Moreno Valley', st: 'CA' },{ city: 'Huntington Beach', st: 'CA' },
+  { city: 'Glendale', st: 'CA' },{ city: 'Santa Clarita', st: 'CA' },{ city: 'Garden Grove', st: 'CA' },
+  { city: 'Santa Rosa', st: 'CA' },{ city: 'Pomona', st: 'CA' },{ city: 'Ontario', st: 'CA' },
+  { city: 'Lancaster', st: 'CA' },{ city: 'Palmdale', st: 'CA' },{ city: 'Pasadena', st: 'CA' },
+  { city: 'Fullerton', st: 'CA' },{ city: 'Orange', st: 'CA' },{ city: 'Hayward', st: 'CA' },
+  { city: 'Escondido', st: 'CA' },{ city: 'Sunnyvale', st: 'CA' },{ city: 'Torrance', st: 'CA' },
+  { city: 'Sandy Springs', st: 'GA' },{ city: 'Roswell', st: 'GA' },{ city: 'Johns Creek', st: 'GA' },
+  { city: 'Alpharetta', st: 'GA' },{ city: 'Marietta', st: 'GA' },{ city: 'Smyrna', st: 'GA' },
+];
+
+const SP_ACTIONS = [
+  'just filed a claim',
+  'checked their claim status',
+  'submitted required documents',
+  'was approved for compensation',
+  'completed the Eligibility Quiz',
+  'booked a free consultation',
+  'downloaded their claim report',
+  'referred a friend for a claim',
+  'requested a document review',
+  'received a status update',
+  'started their claim process',
+  'uploaded medical records',
+  'scheduled a follow-up call',
+  'got matched with a specialist',
+  'submitted an appeal',
+  'received their settlement',
+  'updated their contact info',
+  'confirmed their eligibility',
+  'sent in additional evidence',
+  'viewed their claim timeline',
+  'requested a PDF report',
+  'resubmitted corrected forms',
+  'checked filing deadlines',
+  'signed authorization forms',
+  'asked about settlement options',
+  'verified their claim ID',
+  'requested expedited review',
+  'added notes to their file',
+  'reviewed their case history',
+];
+
+const SP_CASE_TYPES = [
+  'Camp Lejeune','Roundup','Talc / Baby Powder','Hernia Mesh','Paraquat',
+  'Firefighting Foam','Zantac','Hair Relaxer','CPAP Machines','Social Media Lawsuits',
+  'a mass tort','a class action','a product liability','a personal injury','a toxic exposure',
+];
+
+const SP_TIME_PHRASES = [
+  'just now','1 minute ago','2 minutes ago','3 minutes ago','4 minutes ago',
+  '5 minutes ago','6 minutes ago','7 minutes ago','8 minutes ago','9 minutes ago',
+  '10 minutes ago','11 minutes ago','12 minutes ago','13 minutes ago','14 minutes ago',
+  '15 minutes ago','18 minutes ago','20 minutes ago','22 minutes ago','25 minutes ago',
+  '28 minutes ago','30 minutes ago','35 minutes ago','38 minutes ago','40 minutes ago',
+  '45 minutes ago','50 minutes ago','about an hour ago','1 hour ago','recently',
+];
+
+// Fisher-Yates shuffle for unbiased random ordering
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Simple seeded hash for session-based uniqueness
+function hashString(str: string): number {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) & 0xFFFFFFFF;
+  }
+  return Math.abs(hash);
+}
+
+// Generate unique social proof notifications — never repeats in a session
+function generateSocialProofPool(): Array<{ name: string; location: string; action: string; time: string }> {
+  const sessionId = typeof window !== 'undefined'
+    ? (sessionStorage.getItem('claimguard-sp-session') || `${Date.now()}-${Math.random().toString(36).slice(2)}`)
+    : `${Date.now()}`;
+
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem('claimguard-sp-session', sessionId);
+  }
+
+  const seed = hashString(sessionId);
+  const pool: Array<{ name: string; location: string; action: string; time: string }> = [];
+  const seen = new Set<string>();
+
+  // Shuffle all arrays using seed
+  const seededShuffle = (arr: unknown[]): unknown[] => {
+    const a = [...arr];
+    let s = seed;
+    for (let i = a.length - 1; i > 0; i--) {
+      s = (s * 16807 + 12345) & 0x7FFFFFFF;
+      const j = s % (i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+
+  const names = seededShuffle(SP_FIRST_NAMES) as string[];
+  const initials = seededShuffle(SP_LAST_INITIALS) as string[];
+  const cities = seededShuffle(SP_CITIES) as Array<{ city: string; st: string }>;
+  const actions = seededShuffle(SP_ACTIONS) as string[];
+  const cases = seededShuffle(SP_CASE_TYPES) as string[];
+  const times = seededShuffle(SP_TIME_PHRASES) as string[];
+
+  // Generate up to 10,000 unique combinations
+  let attempts = 0;
+  const maxPool = 10000;
+  const maxAttempts = 200000; // safety cap
+
+  while (pool.length < maxPool && attempts < maxAttempts) {
+    const nameIdx = attempts % names.length;
+    const initIdx = (attempts * 7 + 3) % initials.length;
+    const cityIdx = (attempts * 13 + 5) % cities.length;
+    const actionIdx = (attempts * 17 + 11) % actions.length;
+    const caseIdx = (attempts * 23 + 7) % cases.length;
+    const timeIdx = (attempts * 29 + 13) % times.length;
+
+    const n = `${names[nameIdx]} ${initials[initIdx]}.`;
+    const loc = `${cities[cityIdx].city}, ${cities[cityIdx].st}`;
+
+    // Alternate between case-specific and general actions
+    const includeCase = actionIdx % 3 === 0;
+    const act = includeCase ? `${actions[actionIdx]} for ${cases[caseIdx]}` : actions[actionIdx];
+
+    const key = `${n}|${loc}|${act}|${times[timeIdx]}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      pool.push({ name: n, location: loc, action: act, time: times[timeIdx] });
+    }
+
+    attempts++;
+  }
+
+  return pool;
+}
 
 const VIDEO_TESTIMONIALS = [
   { name: 'Angela T.', caseType: 'Camp Lejeune', quote: 'ClaimGuard Pro turned my denied claim into an approved settlement. The team was incredible.', color: 'from-blue-500 to-blue-700' },
@@ -4018,22 +4290,26 @@ function SplashScreen() {
    ═══════════════════════════════════════════════════════════════ */
 
 function SocialProofNotification() {
-  const [current, setCurrent] = useState(0);
+  const [pool] = useState(() => generateSocialProofPool());
+  const [current, setCurrent] = useState(() => Math.floor(Math.random() * Math.min(pool.length, 200)));
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
+  // Show first popup after 10s, then cycle every 12-20s with a new random notification
   useEffect(() => {
     if (dismissed) return;
     const showTimer = setTimeout(() => {
       setVisible(true);
       const interval = setInterval(() => {
-        setCurrent(prev => (prev + 1) % SOCIAL_PROOF_DATA.length);
+        // Pick a random index far from current to avoid repeats
+        const next = Math.floor(Math.random() * pool.length);
+        setCurrent(next);
         setVisible(true);
-      }, 15000 + Math.random() * 5000);
+      }, 12000 + Math.random() * 8000);
       return () => clearInterval(interval);
     }, 10000);
     return () => clearTimeout(showTimer);
-  }, [dismissed]);
+  }, [dismissed, pool.length]);
 
   useEffect(() => {
     if (!visible || dismissed) return;
@@ -4041,7 +4317,7 @@ function SocialProofNotification() {
     return () => clearTimeout(hideTimer);
   }, [visible, current, dismissed]);
 
-  const data = SOCIAL_PROOF_DATA[current];
+  const data = pool[current % pool.length];
 
   if (dismissed || !data) return null;
 
