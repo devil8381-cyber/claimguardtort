@@ -2804,6 +2804,7 @@ function AdminPanel() {
         e.preventDefault();
         if (authenticated) {
           setOpen(true);
+          setLoading(true);
         } else {
           setPinOpen(true);
         }
@@ -2819,6 +2820,7 @@ function AdminPanel() {
       setPinOpen(false);
       setPinInput('');
       setOpen(true);
+      setLoading(true);
       toast({ title: 'Admin Access Granted', description: 'Welcome to the admin panel.' });
     } else {
       toast({ title: 'Invalid PIN', description: 'Please try again.', variant: 'destructive' });
@@ -2868,9 +2870,14 @@ function AdminPanel() {
 
   useEffect(() => {
     if (!open) return;
-    setLoading(true);
-    Promise.all([fetchDashboard(), fetchClaims(), fetchClaimants(), fetchMessages(), fetchNewsletter()])
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    (async () => {
+      await Promise.all([
+        fetchDashboard(), fetchClaims(), fetchClaimants(), fetchMessages(), fetchNewsletter()
+      ]);
+      if (!cancelled) setLoading(false);
+    })().catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [open, fetchDashboard, fetchClaims, fetchClaimants, fetchMessages, fetchNewsletter]);
 
   const handleTabChange = (tab: string) => {
@@ -3104,7 +3111,7 @@ function AdminPanel() {
                             <CardContent className="p-4">
                               <p className="text-sm text-muted-foreground">Messages</p>
                               <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).messages)?.total ?? 0}</p>
-                              {((dashboardData as Record<string, Record<string, number>>).messages)?.unread ?? 0 > 0 && (
+                              {(((dashboardData as Record<string, Record<string, number>>).messages)?.unread ?? 0) > 0 && (
                                 <p className="text-xs text-amber-600 mt-1">{((dashboardData as Record<string, Record<string, number>>).messages)!.unread} unread</p>
                               )}
                             </CardContent>
