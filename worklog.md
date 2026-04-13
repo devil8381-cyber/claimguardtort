@@ -567,3 +567,119 @@ Built a comprehensive **Admin Panel** for the ClaimGuard Pro website, accessible
 - ✅ Professional navy/gold theme consistent with main site
 - ✅ Prisma used for all database operations with proper relations
 - ✅ Status changes automatically create ClaimHistory entries
+
+---
+
+## Task ID: Full Bug Audit
+## Date: 2025-01-18
+
+---
+
+## Overview
+Performed a comprehensive bug audit of the entire ClaimGuard Pro website, examining all sections, components, API interactions, event handlers, state management, and rendering logic. Found and fixed 5 bugs across 4 components.
+
+---
+
+## Bugs Found & Fixed
+
+### BUG 1 (CRITICAL): EligibilityQuizSection — Select-type options non-functional
+- **File**: `src/app/page.tsx`, line 1152
+- **Description**: The "select" type quiz questions (Q2: claim type, Q3: current status, Q5: primary concern) used custom `<label>` elements with styled radio circles but had **no onClick handler**. Clicking these options did not update the `answers` state, meaning users could never complete the quiz or see results. The radio-type questions (Q1, Q4) worked fine because they used shadcn's `RadioGroup` component with `onValueChange`.
+- **Fix**: Added `onClick={() => setAnswers(prev => ({ ...prev, [currentQ.key]: opt }))}` to each select-type `<label>` element.
+- **Impact**: 3 out of 5 quiz questions were completely broken. This was the most severe bug.
+
+### BUG 2 (CRITICAL): TrackClaimSection — PDF download crashes with undefined data
+- **File**: `src/app/page.tsx`, line 1425
+- **Description**: The `/api/claims/report` endpoint returns `{ success: true, report: { trackingId, claimant, ... } }` (nested under `report` key). However, the PDF download code did `const report = await reportRes.json()` and then accessed `report.trackingId`, `report.pipeline`, `report.checklist`, `report.history`, etc. — all of which were `undefined` because the actual data was at `report.report.trackingId`. This caused the PDF generation to either crash with a TypeError (`Cannot read properties of undefined (reading 'forEach')`) or produce an empty/invalid PDF.
+- **Fix**: Changed to `const resData = await reportRes.json(); const report = resData.report;` to correctly extract the nested report object.
+- **Impact**: The "Download PDF Report" button was completely non-functional for all claims.
+
+### BUG 3 (HIGH): LiveChatWidget — Chat window layout broken (messages don't scroll)
+- **File**: `src/app/page.tsx`, line 2570
+- **Description**: The chat window's parent `motion.div` container was missing `flex flex-col` classes. The messages container used `flex-1 overflow-y-auto` to fill remaining space and scroll independently, but without the parent being a flex container, `flex-1` had no effect. This caused the messages div to grow with content instead of being constrained, potentially pushing the input area off-screen (clipped by parent's `overflow-hidden`). Messages couldn't scroll properly when there were many of them.
+- **Fix**: Added `flex flex-col` to the parent container's className.
+- **Impact**: Chat messages area couldn't properly scroll when conversations got long.
+
+### BUG 4 (MEDIUM): NewsletterSection — Checkbox toggle only works on the checkbox itself
+- **File**: `src/app/page.tsx`, line 1950
+- **Description**: The newsletter preference checkboxes (Claim Updates, Deadline Alerts, Expert Tips) had their `onClick` handler on the inner `<div>` (the visual checkbox square) rather than on the outer `<label>`. This meant clicking the label text or the icon next to the checkbox did nothing — only clicking the small checkbox square toggled the preference.
+- **Fix**: Moved `onClick={() => item.onChange(!item.checked)}` from the inner `<div>` to the parent `<label>` element.
+- **Impact**: Users had to precisely click the small checkbox area; clicking the label text/icon was unresponsive.
+
+### BUG 5 (LOW): NewsletterSection — Form reset doesn't restore checkbox defaults
+- **File**: `src/app/page.tsx`, line 1923
+- **Description**: After successful newsletter subscription, a 4-second timer resets the form state (`email`, `claimType`, `submitted`) but did NOT reset the checkbox preferences (`checkUpdates`, `checkDeadlines`, `checkTips`). If a user unchecked "Expert Tips", subscribed, then after the form auto-reset, the "Expert Tips" checkbox would still appear unchecked on the next submission attempt, even though its default is `false` (correct in this case, but if they had checked it, it would persist as checked).
+- **Fix**: Added `setCheckUpdates(true); setCheckDeadlines(true); setCheckTips(false);` to the reset timer callback.
+- **Impact**: Subtle state inconsistency after form auto-reset.
+
+---
+
+## Areas Audited (No Bugs Found)
+
+### TrackClaimSection
+- ✅ Search input and Enter key work correctly
+- ✅ API call to `/api/claims/track` succeeds with proper error handling
+- ✅ Result card displays all fields correctly (status badge, pipeline, checklist, history timeline)
+- ✅ Pipeline visualization renders with correct stage highlighting
+- ✅ Document checklist displays with proper check/X icons
+- ✅ History timeline ordered newest-first with gold dot on latest entry
+
+### LiveChatWidget
+- ✅ Open/close toggle works with animation
+- ✅ API call to `/api/chat` with proper history context
+- ✅ Messages displayed with correct bot/user styling
+- ✅ Quick replies work and send messages
+- ✅ Typing indicator (bouncing dots) shown during API call
+- ✅ Chat scroll auto-scrolls to bottom on new messages
+- ✅ Input refocuses on open
+
+### ContactSection
+- ✅ Form validation (name, email, message required)
+- ✅ Form submission to `/api/contact` with file metadata
+- ✅ File upload drag-and-drop and click-to-upload work
+- ✅ File removal works
+- ✅ Preferred contact method radio buttons functional
+
+### NewsletterSection
+- ✅ API call to `/api/newsletter` works
+- ✅ Success state shows properly
+- ✅ Email validation works
+
+### AdminPanel
+- ✅ Ctrl+Shift+A opens PIN dialog
+- ✅ PIN entry works (Enter key and button)
+- ✅ All 5 tabs render (Dashboard, Claims, Claimants, Messages, Newsletter)
+- ✅ Dashboard data displays correctly
+- ✅ Claims table with search/filter works
+- ✅ Claim detail dialog with status change, notes editing, delete
+- ✅ New claim creation works
+- ✅ Messages tab with mark read/unread
+- ✅ Newsletter subscribers tab
+
+### Dark Mode Toggle
+- ✅ Toggle works with next-themes
+- ✅ Hydration mismatch prevented with mounted state
+- ✅ Persists via next-themes (localStorage)
+
+### Navigation
+- ✅ Scroll spy correctly highlights active section
+- ✅ All nav links scroll to correct sections
+- ✅ Mobile Sheet menu works
+- ✅ Smooth scroll behavior
+
+### General
+- ✅ No undefined variable references
+- ✅ No TypeScript type errors
+- ✅ All imports present and correct
+- ✅ All event handlers properly bound
+- ✅ All sections render without blank/broken layouts
+- ✅ Responsive design verified
+- ✅ Accessibility attributes present (aria-labels, roles, semantic HTML)
+
+---
+
+## Technical Quality
+- ✅ ESLint passes with zero errors
+- ✅ Dev server compiles successfully
+- ✅ No new dependencies added
+- ✅ All fixes are minimal and targeted

@@ -1149,7 +1149,7 @@ function EligibilityQuizSection() {
                     ) : (
                       <div className="space-y-3">
                         {currentQ.options.map(opt => (
-                          <label key={opt} className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${answers[currentQ.key] === opt ? 'border-gold bg-gold/5 shadow-sm' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
+                          <label key={opt} onClick={() => setAnswers(prev => ({ ...prev, [currentQ.key]: opt }))} className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${answers[currentQ.key] === opt ? 'border-gold bg-gold/5 shadow-sm' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${answers[currentQ.key] === opt ? 'border-gold bg-gold' : 'border-gray-300 dark:border-gray-500'}`}>
                               {answers[currentQ.key] === opt && <div className="w-2 h-2 rounded-full bg-white" />}
                             </div>
@@ -1422,7 +1422,8 @@ function TrackClaimSection() {
     try {
       const reportRes = await fetch(`/api/claims/report?trackingId=${result.trackingId}`);
       if (!reportRes.ok) throw new Error('Failed to fetch report data');
-      const report = await reportRes.json();
+      const resData = await reportRes.json();
+      const report = resData.report;
 
       const { jsPDF } = await import('jspdf');
       const doc = new jsPDF();
@@ -1919,7 +1920,7 @@ function NewsletterSection() {
       if (res.ok) {
         setSubmitted(true);
         toast({ title: 'Subscribed!', description: data.message || 'Welcome to our newsletter!' });
-        setTimeout(() => { setSubmitted(false); setEmail(''); setClaimType(''); }, 4000);
+        setTimeout(() => { setSubmitted(false); setEmail(''); setClaimType(''); setCheckUpdates(true); setCheckDeadlines(true); setCheckTips(false); }, 4000);
       } else {
         toast({ title: 'Subscription Error', description: data.error || 'Please try again.', variant: 'destructive' });
       }
@@ -1946,8 +1947,8 @@ function NewsletterSection() {
                 { label: 'Filing Deadline Alerts', checked: checkDeadlines, onChange: setCheckDeadlines, icon: Clock },
                 { label: 'Expert Tips & Guides', checked: checkTips, onChange: setCheckTips, icon: BookOpen },
               ].map((item) => (
-                <label key={item.label} className="flex items-center gap-3 cursor-pointer group">
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${item.checked ? 'bg-gold border-gold' : 'border-white/30 group-hover:border-white/50'}`} onClick={() => item.onChange(!item.checked)}>
+                <label key={item.label} onClick={() => item.onChange(!item.checked)} className="flex items-center gap-3 cursor-pointer group">
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${item.checked ? 'bg-gold border-gold' : 'border-white/30 group-hover:border-white/50'}`}>
                     {item.checked && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                   </div>
                   <item.icon className="w-4 h-4 text-gold/70" aria-hidden="true" />
@@ -2566,7 +2567,7 @@ function LiveChatWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-6 right-6 z-50 w-[calc(100vw-2rem)] h-[70vh] max-w-[400px] max-h-[550px] rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+            className="fixed bottom-6 right-6 z-50 w-[calc(100vw-2rem)] h-[70vh] max-w-[400px] max-h-[550px] rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col"
             role="dialog"
             aria-label="Live chat window"
           >
