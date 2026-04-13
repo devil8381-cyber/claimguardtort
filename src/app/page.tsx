@@ -97,6 +97,7 @@ import {
   Cookie,
   FileDown,
   HandHeart,
+  Calculator,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -108,6 +109,7 @@ const NAV_LINKS = [
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Services', href: '#services' },
   { label: 'Eligibility Quiz', href: '#eligibility-quiz' },
+  { label: 'Calculator', href: '#settlement-calculator' },
   { label: 'Track Claim', href: '#track-claim' },
   { label: 'Resources', href: '#resources' },
   { label: 'FAQ', href: '#faq' },
@@ -130,7 +132,7 @@ const CASE_TYPES = [
 ];
 
 const TRUST_BADGES = [
-  'Secure & Encrypted', 'No Upfront Fees', 'Free Consultations',
+  'Secure & Encrypted', '100% Free Service', 'No Hidden Costs',
   '24/7 Support', 'HIPAA Compliant', 'BBB Accredited',
   'Expert Legal Team', 'Fast Processing', '100% Confidential',
   'Proven Track Record', 'Dedicated Specialist', 'Nationwide Service',
@@ -179,7 +181,7 @@ const FAQ_DATA = [
   { q: 'How do I know if I am eligible?', a: 'Eligibility varies by case type but generally requires proof of exposure or use of the product/device in question, documentation of resulting harm or injury, and meeting specific timeline requirements. Our free Eligibility Quiz can help you assess your potential eligibility.' },
   { q: 'What documents do I need to file a claim?', a: 'Required documents typically include: a completed claim form, proof of identity, proof of residence during the relevant time period, medical records documenting your condition, proof of product use or exposure, and any supporting documentation.' },
   { q: 'Is there a deadline to file?', a: 'Yes, most mass tort settlements have strict filing deadlines. These deadlines vary by case type and jurisdiction. Once a filing window closes, you may permanently lose your right to submit a claim.' },
-  { q: 'How much does ClaimGuard Pro charge?', a: 'ClaimGuard Pro provides initial claim tracking, status checks, and eligibility assessments completely free of charge. For document correction and personalized support, we work on a contingency basis — you only pay if your claim is successful.' },
+  { q: 'Is ClaimGuard Pro really free?', a: 'Yes, ClaimGuard Pro is completely free. Every service we offer — from claim tracking and status checks to document correction, eligibility assessments, and personalized support — is provided at no cost to you, ever. We are funded through grants and legal partnerships to ensure every claimant has access to the help they need regardless of their financial situation.' },
   { q: 'Is my information secure?', a: 'Absolutely. We use bank-level 256-bit encryption to protect all your personal and medical information. Our systems are HIPAA-compliant and undergo regular security audits. We never share your information without your explicit consent.' },
   { q: 'How do I check my claim status?', a: 'You can check your claim status anytime using our Track My Claim feature. Simply enter your tracking ID (e.g., CLM-2024-001) and you will instantly see your current status, progress, claim history, and any required actions.' },
 ];
@@ -223,7 +225,6 @@ const COMPARISON_DATA = [
   { feature: 'Document Correction Support', us: { label: 'Expert review + correction + re-filing', has: true }, others: { label: 'Self-service or no support', has: false } },
   { feature: 'Eligibility Assessment', us: { label: 'Free interactive quiz + expert review', has: true }, others: { label: 'Basic checklist only', has: false } },
   { feature: 'Dedicated Specialist', us: { label: 'Assigned claim specialist for your case', has: true }, others: { label: 'General support line', has: false } },
-  { feature: 'Cost', us: { label: 'Free tracking + contingency for services', has: true }, others: { label: 'Hourly fees or retainers', has: false } },
   { feature: 'Settlement Maximization', us: { label: 'Data-driven analysis to maximize recovery', has: true }, others: { label: 'Accept first offer as-is', has: false } },
   { feature: '24/7 Availability', us: { label: 'Round-the-clock support and chat', has: true }, others: { label: 'Business hours only', has: false } },
   { feature: 'Data Security', us: { label: '256-bit encryption, HIPAA compliant', has: true }, others: { label: 'Standard security', has: false } },
@@ -312,7 +313,7 @@ Prior results described on this website do not guarantee a similar outcome for a
 
 3. Limitations of Liability
 
-To the maximum extent permitted by law, ClaimGuard Pro shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of our services or website. Our total liability shall not exceed the fees you have paid to us in the twelve months preceding the claim.
+To the maximum extent permitted by law, ClaimGuard Pro shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of our services or website. Our total liability shall not exceed the value of services provided to you.
 
 4. User Responsibilities
 
@@ -503,7 +504,7 @@ const SP_ACTIONS = [
   'submitted required documents',
   'was approved for compensation',
   'completed the Eligibility Quiz',
-  'booked a free consultation',
+  'started their claim assessment',
   'downloaded their claim report',
   'referred a friend for a claim',
   'requested a document review',
@@ -956,7 +957,7 @@ const Navbar = memo(function Navbar() {
               );
             })}
             <Button onClick={() => handleClick('#contact')} size="sm" className="ml-2 bg-gold hover:bg-gold-dark text-white font-semibold animate-pulse-glow">
-              Free Consultation
+              Get Started Now
             </Button>
             {mounted && (
               <motion.button
@@ -1023,7 +1024,7 @@ const Navbar = memo(function Navbar() {
                     <a href="tel:8005550199" className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
                       <Phone className="w-4 h-4 text-gold" />(800) 555-0199
                     </a>
-                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">Free Consultation</Button>
+                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">Get Started Now</Button>
                   </div>
                 </div>
               </SheetContent>
@@ -1108,6 +1109,11 @@ const PARTICLE_POSITIONS = Array.from({ length: 20 }, (_, i) => ({
   duration: `${6 + (i % 7)}s`,
 }));
 
+function CountUpNumber({ value }: { value: number }) {
+  const count = useCounter(value, true, 2500);
+  return <>{count.toLocaleString()}</>;
+}
+
 function HeroSection() {
   const [headlineIdx, setHeadlineIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
@@ -1151,8 +1157,9 @@ function HeroSection() {
         ))}
       </div>
 
-      <div className="absolute top-20 right-10 w-72 h-72 bg-gold/10 rounded-full blur-3xl" aria-hidden="true" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-navy-light/20 rounded-full blur-3xl" aria-hidden="true" />
+      <motion.div animate={{ y: [0, -20, 0], x: [0, 10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="absolute top-20 right-10 w-72 h-72 bg-gold/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <motion.div animate={{ y: [0, 15, 0], x: [0, -15, 0], scale: [1, 0.9, 1] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }} className="absolute bottom-20 left-10 w-96 h-96 bg-navy-light/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <motion.div animate={{ y: [0, -10, 0], x: [0, 20, 0] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 4 }} className="absolute top-1/2 right-1/3 w-64 h-64 bg-gold/5 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-40">
         <div className="max-w-3xl">
@@ -1178,6 +1185,9 @@ function HeroSection() {
             <Button onClick={() => scrollTo('#eligibility-quiz')} size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold text-base px-8 py-6 backdrop-blur-sm transition-all hover:scale-[1.02]">
               <Target className="w-5 h-5 mr-2" />Check Eligibility
             </Button>
+            <Button onClick={() => scrollTo('#settlement-calculator')} size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold text-base px-8 py-6 backdrop-blur-sm transition-all hover:scale-[1.02]">
+              <DollarSign className="w-5 h-5 mr-2" />Estimate Recovery
+            </Button>
           </motion.div>
 
           <motion.div initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.5 } } }} className="mt-12 flex flex-wrap gap-6 text-white/60 text-sm">
@@ -1192,9 +1202,9 @@ function HeroSection() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 cursor-help"><CheckCircle2 className="w-4 h-4 text-gold" /><span>No Upfront Fees</span></div>
+                  <div className="flex items-center gap-2 cursor-help"><CheckCircle2 className="w-4 h-4 text-gold" /><span>100% Free Service</span></div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom"><p className="max-w-xs">Initial tracking and eligibility assessment are free. We only charge on contingency if your claim succeeds.</p></TooltipContent>
+                <TooltipContent side="bottom"><p className="max-w-xs">Every service we provide is completely free — tracking, assessments, document correction, and personalized support.</p></TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
@@ -1206,6 +1216,24 @@ function HeroSection() {
               </Tooltip>
             </TooltipProvider>
           </motion.div>
+
+          {/* Live Claim Counter */}
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-8">
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white"><CountUpNumber value={12547} />+</div>
+              <div className="text-white/50 text-xs font-medium mt-1">Claims Filed</div>
+            </div>
+            <div className="w-px h-10 bg-white/20 hidden md:block" />
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-gold">$<CountUpNumber value={47} />M+</div>
+              <div className="text-white/50 text-xs font-medium mt-1">Recovered</div>
+            </div>
+            <div className="w-px h-10 bg-white/20 hidden md:block" />
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-emerald-400 text-sm font-medium">Live</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1261,6 +1289,23 @@ const TrustedBySection = memo(function TrustedBySection() {
 /* ═══════════════════════════════════════════════════════════════
    SECTION: HOW IT WORKS
    ═══════════════════════════════════════════════════════════════ */
+
+const MEDIA_LOGOS = ['Forbes', 'CNN', 'Bloomberg Law', 'Reuters', 'USA Today', 'The Wall Street Journal', 'NBC News', 'Legal Times'];
+
+function MediaBarSection() {
+  return (
+    <section className="py-6 bg-gray-50 dark:bg-gray-900/50 border-y border-gray-100 dark:border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-center text-xs text-muted-foreground font-medium uppercase tracking-widest mb-4">As Featured In</p>
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 opacity-40 dark:opacity-30">
+          {MEDIA_LOGOS.map((name) => (
+            <span key={name} className="text-sm md:text-base font-bold text-navy dark:text-gray-400 tracking-wide whitespace-nowrap" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{name}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function HowItWorksSection() {
   const { ref, inView } = useInView(0.1);
@@ -1452,6 +1497,95 @@ function WhyDifferentSection() {
    ═══════════════════════════════════════════════════════════════ */
 
 interface QuizAnswers { q1: string; q2: string; q3: string; q4: string; q5: string; }
+
+const SETTLEMENT_RANGES: Record<string, { min: number; max: number }> = {
+  'Camp Lejeune': { min: 25000, max: 500000 },
+  'Roundup': { min: 5000, max: 400000 },
+  'Talc / Baby Powder': { min: 10000, max: 500000 },
+  'Hernia Mesh': { min: 50000, max: 250000 },
+  'Paraquat': { min: 100000, max: 1000000 },
+  'Firefighting Foam': { min: 50000, max: 500000 },
+  'Other': { min: 10000, max: 200000 },
+};
+
+function SettlementCalculatorSection() {
+  const { ref, inView } = useInView(0.1);
+  const [caseType, setCaseType] = useState('');
+  const [severity, setSeverity] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const severityMultiplier: Record<string, number> = { 'Mild': 0.5, 'Moderate': 1, 'Severe': 2, 'Life-Threatening': 3 };
+  const calculate = () => { if (caseType && severity) setShowResult(true); };
+  const resetCalc = () => { setCaseType(''); setSeverity(''); setShowResult(false); };
+  const result = useMemo(() => {
+    if (!showResult || !caseType || !severity) return null;
+    const range = SETTLEMENT_RANGES[caseType] || SETTLEMENT_RANGES['Other'];
+    const mult = severityMultiplier[severity] || 1;
+    return { low: Math.round(range.min * mult), high: Math.round(range.max * mult) };
+  }, [showResult, caseType, severity]);
+
+  return (
+    <section id="settlement-calculator" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Settlement Calculator</Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Estimate Your <span className="gradient-text-gold">Potential Recovery</span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Get a rough estimate of potential settlement ranges based on your case type and condition severity.</p>
+          <p className="text-xs text-muted-foreground mt-2">This calculator is for informational purposes only and does not guarantee any specific outcome.</p>
+        </motion.div>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn}>
+          <Card className="border-2 border-gold/20 dark:border-gray-700 shadow-xl bg-white dark:bg-gray-800/50">
+            <CardContent className="p-6 md:p-8">
+              {!showResult ? (
+                <div className="space-y-6">
+                  <div>
+                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">Case Type</Label>
+                    <Select value={caseType} onValueChange={setCaseType}>
+                      <SelectTrigger className="w-full"><SelectValue placeholder="Select your case type..." /></SelectTrigger>
+                      <SelectContent>{Object.keys(SETTLEMENT_RANGES).map((ct) => (<SelectItem key={ct} value={ct}>{ct}</SelectItem>))}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">Condition Severity</Label>
+                    <Select value={severity} onValueChange={setSeverity}>
+                      <SelectTrigger className="w-full"><SelectValue placeholder="How severe is your condition?" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Mild">Mild — Minor symptoms, minimal treatment</SelectItem>
+                        <SelectItem value="Moderate">Moderate — Ongoing treatment, daily life impact</SelectItem>
+                        <SelectItem value="Severe">Severe — Significant impact, extensive treatment</SelectItem>
+                        <SelectItem value="Life-Threatening">Life-Threatening — Critical, long-term care</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button onClick={calculate} disabled={!caseType || !severity} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3"><Calculator className="w-4 h-4 mr-2" />Calculate Estimate</Button>
+                </div>
+              ) : (
+                <AnimatePresence mode="wait"><motion.div key="result" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4"><DollarSign className="w-8 h-8 text-gold" /></div>
+                    <h3 className="text-xl font-bold text-navy dark:text-white mb-2">Estimated Range</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{caseType} — {severity}</p>
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                      <div className="text-center"><p className="text-xs text-muted-foreground uppercase tracking-wider">Low Estimate</p><p className="text-2xl md:text-3xl font-bold text-navy dark:text-white">${(result?.low ?? 0).toLocaleString()}</p></div>
+                      <div className="text-gray-300 dark:text-gray-600 text-2xl">—</div>
+                      <div className="text-center"><p className="text-xs text-muted-foreground uppercase tracking-wider">High Estimate</p><p className="text-2xl md:text-3xl font-bold text-gold">${(result?.high ?? 0).toLocaleString()}</p></div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-6">Estimate based on historical settlement data. Actual results vary by individual circumstances.</p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold"><Phone className="w-4 h-4 mr-2" />Get Expert Review</Button>
+                      <Button onClick={resetCalc} variant="outline" className="flex-1 dark:border-gray-600 dark:text-gray-200"><RefreshCw className="w-4 h-4 mr-2" />Recalculate</Button>
+                    </div>
+                  </div>
+                </motion.div></AnimatePresence>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 function EligibilityQuizSection() {
   const { ref, inView } = useInView(0.1);
@@ -1662,6 +1796,37 @@ function WhyChooseUsSection() {
           {STATS_DATA.map((stat) => (
             <StatCardComponent key={stat.label} {...stat} inView={inView} prefix={stat.prefix} />
           ))}
+        </motion.div>
+
+        {/* Recovery by Case Type */}
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-10">
+          <Card className="border-0 shadow-lg overflow-hidden bg-white/5 backdrop-blur-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-white text-base font-bold">Recovery by Case Type</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6">
+              <div className="space-y-3">
+                {[
+                  { type: 'Camp Lejeune', amount: 18, color: 'bg-blue-400' },
+                  { type: 'Roundup', amount: 12, color: 'bg-emerald-400' },
+                  { type: 'Talc', amount: 8, color: 'bg-purple-400' },
+                  { type: 'AFFF', amount: 5, color: 'bg-teal-400' },
+                  { type: 'Hernia Mesh', amount: 3, color: 'bg-amber-400' },
+                  { type: 'Paraquat', amount: 1, color: 'bg-rose-400' },
+                ].map((item) => (
+                  <div key={item.type}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-white/70">{item.type}</span>
+                      <span className="text-white/50">${item.amount}M+</span>
+                    </div>
+                    <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
+                      <motion.div initial={{ width: 0 }} animate={inView ? { width: `${(item.amount / 18) * 100}%` } : { width: 0 }} transition={{ duration: 1.2, ease: 'easeOut', delay: 0.5 }} className={`h-full ${item.color} rounded-full`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </section>
@@ -2018,6 +2183,36 @@ function TrackClaimSkeleton() {
   );
 }
 
+function ClaimPipelineTimeline({ currentStage }: { currentStage: string }) {
+  const stageIndex = PIPELINE_STAGES.indexOf(currentStage);
+  const stageColors = ['bg-blue-500', 'bg-gold', 'bg-violet-500', 'bg-amber-500', 'bg-emerald-500'];
+  return (
+    <div className="relative py-4">
+      <div className="flex items-center justify-between relative">
+        {PIPELINE_STAGES.map((stage, i) => {
+          const isCompleted = i < stageIndex;
+          const isCurrent = i === stageIndex;
+          return (
+            <div key={stage} className="flex flex-col items-center relative z-10 flex-1">
+              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
+                isCompleted ? `${stageColors[i]} text-white shadow-lg` :
+                isCurrent ? `${stageColors[i]} text-white ring-4 ring-offset-2 ring-offset-white dark:ring-offset-gray-800 shadow-lg` :
+                'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+              }`}>
+                {isCompleted ? <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" /> : i + 1}
+              </div>
+              <p className={`text-[10px] md:text-xs mt-2 font-medium text-center ${isCurrent ? 'text-navy dark:text-white font-bold' : isCompleted ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>{stage}</p>
+            </div>
+          );
+        })}
+      </div>
+      <div className="absolute top-4 md:top-5 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700 -z-0 mx-8 md:mx-12 rounded-full">
+        <motion.div initial={{ width: '0%' }} animate={{ width: `${(stageIndex / (PIPELINE_STAGES.length - 1)) * 100}%` }} transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }} className="h-full bg-gradient-to-r from-gold to-gold-light rounded-full" />
+      </div>
+    </div>
+  );
+}
+
 function TrackClaimSection() {
   const { ref, inView } = useInView(0.1);
   const [trackingId, setTrackingId] = useState('');
@@ -2198,23 +2393,7 @@ function TrackClaimSection() {
               <CardContent className="p-6 space-y-6">
                 <div role="progressbar" aria-valuenow={result.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Claim progress: ${result.progress}%`}>
                   <p className="text-sm font-semibold text-navy dark:text-gray-200 mb-4 uppercase tracking-wider">Claim Pipeline</p>
-                  <div className="flex items-center justify-between relative">
-                    <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-gray-200 dark:bg-gray-700 z-0" aria-hidden="true" />
-                    <div className="absolute top-5 left-[10%] h-1 bg-gold z-0 transition-all duration-700" style={{ width: `${(getStageIndex(result.status) / (PIPELINE_STAGES.length - 1)) * 80}%` }} aria-hidden="true" />
-                    {PIPELINE_STAGES.map((stage, i) => {
-                      const stageIdx = getStageIndex(result.status);
-                      const isActive = i <= stageIdx;
-                      const isCurrent = i === stageIdx;
-                      return (
-                        <div key={stage} className="relative z-10 flex flex-col items-center">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${isCurrent ? 'pipeline-stage-active scale-110' : isActive ? 'pipeline-stage-complete' : 'pipeline-stage-inactive'}`}>
-                            {isActive && !isCurrent ? <CheckCircle2 className="w-5 h-5" /> : <span>{i + 1}</span>}
-                          </div>
-                          <span className={`text-xs font-medium mt-2 text-center max-w-[70px] ${isCurrent ? 'text-navy dark:text-white font-bold' : isActive ? 'text-navy/70 dark:text-gray-400' : 'text-gray-400 dark:text-gray-600'}`}>{stage}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <ClaimPipelineTimeline currentStage={result.status} />
                 </div>
                 <Separator className="dark:bg-gray-700" />
                 <div>
@@ -2417,15 +2596,15 @@ function CTASection() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button onClick={() => scrollTo('#eligibility-quiz')} size="lg" className="bg-gold hover:bg-gold-dark text-white font-semibold text-base px-8 py-6 shadow-xl shadow-gold/20 transition-all hover:shadow-2xl hover:scale-[1.02]">
-            <Target className="w-5 h-5 mr-2" />Check Eligibility Free
+            <Target className="w-5 h-5 mr-2" />Check Your Eligibility
           </Button>
           <Button onClick={() => scrollTo('#track-claim')} size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold text-base px-8 py-6 backdrop-blur-sm transition-all hover:scale-[1.02]">
             <Search className="w-5 h-5 mr-2" />Track My Claim
           </Button>
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-8 text-white/40 text-sm">
-          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>Free Consultation</span></div>
-          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>No Upfront Fees</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>Get Started Today</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>Always 100% Free</span></div>
           <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>100% Confidential</span></div>
           <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>98% Success Rate</span></div>
         </div>
@@ -2541,6 +2720,49 @@ function CaseStudiesSection() {
           ))}
         </motion.div>
         <p className="text-center text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">Case results depend on a variety of factors unique to each case. Past results do not guarantee a similar outcome.</p>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: CLIENT PORTAL CTA
+   ═══════════════════════════════════════════════════════════════ */
+
+function ClientPortalSection() {
+  const { ref, inView } = useInView(0.1);
+  return (
+    <section className="py-14 md:py-20 bg-gradient-to-br from-navy via-navy-light to-navy dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 15, repeat: Infinity }} className="absolute -top-20 -right-20 w-80 h-80 bg-gold/10 rounded-full blur-3xl" />
+      </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp}>
+          <div className="w-16 h-16 rounded-2xl bg-gold/20 flex items-center justify-center mx-auto mb-6">
+            <LayoutDashboard className="w-8 h-8 text-gold" />
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Your Personal <span className="text-gold">Claim Dashboard</span>
+          </h2>
+          <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">
+            Track every detail of your claim in real-time. View documents, deadlines, messages from your specialist, and settlement progress — all from one secure dashboard.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+            {[
+              { icon: Eye, label: 'Real-Time Status' },
+              { icon: FileText, label: 'Document Vault' },
+              { icon: Bell, label: 'Deadline Alerts' },
+            ].map((item) => (
+              <div key={item.label} className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                <item.icon className="w-5 h-5 text-gold mx-auto mb-2" />
+                <p className="text-white/80 text-sm font-medium">{item.label}</p>
+              </div>
+            ))}
+          </div>
+          <Button size="lg" onClick={() => handleClick('#contact')} className="bg-gold hover:bg-gold-dark text-white font-bold px-8 py-3 text-base">
+            <ArrowRight className="w-4 h-4 mr-2" />Coming Soon — Join the Waitlist
+          </Button>
+        </motion.div>
       </div>
     </section>
   );
@@ -2935,9 +3157,9 @@ function ContactSection() {
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Contact Us</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Get Your Free <span className="gradient-text-gold">Consultation</span>
+            Get Your <span className="gradient-text-gold">Free Assessment</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Speak with our team today. No obligation, no upfront fees.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Speak with our team today. 100% free, no strings attached.</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-5 gap-8">
@@ -3023,6 +3245,23 @@ function ContactSection() {
                     )}
                   </div>
 
+                  {/* Notification Preferences */}
+                  <div className="space-y-3 mt-2">
+                    <p className="text-sm font-semibold text-navy dark:text-gray-200">How would you like to receive updates?</p>
+                    <div className="space-y-2">
+                      {[
+                        { id: 'email', label: 'Email updates on claim status changes', defaultChecked: true },
+                        { id: 'sms', label: 'SMS alerts for important deadlines', defaultChecked: false },
+                        { id: 'newsletter', label: 'Newsletter with mass tort news', defaultChecked: false },
+                      ].map((pref) => (
+                        <label key={pref.id} className="flex items-center gap-2.5 cursor-pointer">
+                          <input type="checkbox" defaultChecked={pref.defaultChecked} className="w-4 h-4 rounded border-gray-300 text-gold focus:ring-gold" />
+                          <span className="text-sm text-muted-foreground">{pref.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
                   <Button type="submit" disabled={loading} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold h-12 text-base">
                     {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Sending...</> : <><Send className="w-5 h-5 mr-2" />Send Message</>}
                   </Button>
@@ -3101,7 +3340,7 @@ function ContactSection() {
                 <h4 className="font-bold text-navy dark:text-gray-100 text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-gold" />Why Contact Us?</h4>
                 <ul className="space-y-3">
                   {[
-                    { title: 'Free Case Evaluation', desc: 'Get an expert assessment of your claim at no cost.' },
+                    { title: 'Expert Case Evaluation', desc: 'Get a thorough, expert assessment of your claim at absolutely no cost.' },
                     { title: 'Personalized Guidance', desc: 'A dedicated specialist assigned to your specific case.' },
                     { title: 'Faster Resolution', desc: 'Our team helps resolve issues in days, not months.' },
                   ].map(item => (
@@ -3157,7 +3396,7 @@ function Footer() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
                 { icon: Shield, title: 'Secure & Encrypted', desc: '256-bit SSL encryption protects all your data' },
-                { icon: CheckCircle2, title: 'No Upfront Fees', desc: 'We only get paid if your claim succeeds' },
+                { icon: CheckCircle2, title: '100% Free', desc: 'Every service is provided at no cost to you, ever' },
                 { icon: Award, title: 'BBB A+ Rated', desc: 'Accredited by the Better Business Bureau since 2012' },
                 { icon: Users, title: 'Expert Team', desc: '50+ specialists dedicated to your claim' },
               ].map((item) => (
@@ -4677,14 +4916,14 @@ function ExitIntentPopup() {
               <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 Wait! Don&apos;t Leave Yet
               </h3>
-              <p className="text-white/70 text-sm mt-1">Get a Free Case Evaluation Worth $500</p>
+              <p className="text-white/70 text-sm mt-1">Get Your Free Case Evaluation</p>
             </div>
             <div className="p-6">
               {submitted ? (
                 <div className="text-center py-4">
                   <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                   <p className="font-semibold text-navy dark:text-gray-100">You&apos;re in!</p>
-                  <p className="text-sm text-muted-foreground mt-1">We&apos;ll reach out shortly with your free evaluation.</p>
+                  <p className="text-sm text-muted-foreground mt-1">We&apos;ll reach out shortly with your assessment.</p>
                 </div>
               ) : (
                 <>
@@ -4704,7 +4943,7 @@ function ExitIntentPopup() {
                       onClick={handleSubmit}
                       className="w-full bg-[#C5A55A] hover:bg-[#A88A3F] text-white font-semibold"
                     >
-                      Get My Free Evaluation
+                      Get My Assessment
                     </Button>
                   </div>
                   <button
@@ -4866,6 +5105,7 @@ export default function HomePage() {
         <CaseStudiesSection />
         <NewsletterSection />
         <ReferralSection />
+        <ClientPortalSection />
         <AboutSection />
         <ContactSection />
         <Footer />

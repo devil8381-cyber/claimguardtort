@@ -90,7 +90,7 @@ const jsonLd = {
         "Mass tort claim tracking, document correction, eligibility assessment, and settlement maximization.",
       url: "https://claimguardpro.com",
       telephone: "(800) 555-0199",
-      priceRange: "Free tracking; contingency for services",
+      priceRange: "Free",
       areaServed: "US",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
@@ -117,7 +117,6 @@ const jsonLd = {
               "@type": "PriceSpecification",
               price: "0",
               priceCurrency: "USD",
-              priceComponentType: "https://schema.org/ContingentPrice",
             },
           },
           {
@@ -162,10 +161,10 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          name: "How much does ClaimGuard Pro charge?",
+          name: "Is ClaimGuard Pro really free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "ClaimGuard Pro provides initial claim tracking, status checks, and eligibility assessments completely free of charge. For document correction and personalized support, we work on a contingency basis — you only pay if your claim is successful.",
+            text: "Yes, ClaimGuard Pro is completely free. Every service we offer — from claim tracking and status checks to document correction, eligibility assessments, and personalized support — is provided at no cost to you, ever.",
           },
         },
         {
