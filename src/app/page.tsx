@@ -37,7 +37,7 @@ import {
   RadioGroupItem,
 } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import {
   Shield,
   Search,
@@ -84,13 +84,17 @@ import {
   Leaf,
   Sun,
   Moon,
-  FileDown,
   Trash2,
   Plus,
   LayoutDashboard,
   BarChart3,
   Bell,
   RefreshCw,
+  Facebook,
+  Linkedin,
+  Twitter,
+  Cookie,
+  FileDown,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -103,6 +107,7 @@ const NAV_LINKS = [
   { label: 'Services', href: '#services' },
   { label: 'Eligibility Quiz', href: '#eligibility-quiz' },
   { label: 'Track Claim', href: '#track-claim' },
+  { label: 'Resources', href: '#resources' },
   { label: 'FAQ', href: '#faq' },
   { label: 'About', href: '#about' },
   { label: 'Contact', href: '#contact' },
@@ -655,12 +660,16 @@ const Navbar = memo(function Navbar() {
                         <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </button>
                     ))}
+                    <button onClick={() => handleClick('#track-claim')} className="w-full text-left px-6 py-3 text-base font-bold text-gold hover:bg-gold/5 transition-colors flex items-center justify-between">
+                      <span className="flex items-center gap-2"><Search className="w-4 h-4" />Track My Claim</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </button>
                   </ScrollArea>
                   <div className="p-4 border-t border-border">
-                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">Free Consultation</Button>
-                    <a href="tel:8005550199" className="flex items-center justify-center gap-2 mt-3 text-sm text-navy dark:text-gray-300 font-medium">
+                    <a href="tel:8005550199" className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
                       <Phone className="w-4 h-4 text-gold" />(800) 555-0199
                     </a>
+                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">Free Consultation</Button>
                   </div>
                 </div>
               </SheetContent>
@@ -1394,7 +1403,6 @@ function TrackClaimSection() {
   const [result, setResult] = useState<ClaimResult | null>(null);
   const [error, setError] = useState('');
   const [pdfLoading, setPdfLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleTrack = useCallback(async () => {
     const trimmed = trackingId.trim();
@@ -1405,14 +1413,14 @@ function TrackClaimSection() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || 'Claim not found');
-        toast({ title: 'Claim Not Found', description: data.error || 'Please verify your tracking ID.', variant: 'destructive' });
+        toast.error('Claim Not Found', { description: data.error || 'Please verify your tracking ID.' });
         return;
       }
       setResult(data.claim);
-      toast({ title: 'Claim Found', description: `Successfully retrieved status for ${data.claim.trackingId}` });
+      toast.success('Claim Found', { description: `Successfully retrieved status for ${data.claim.trackingId}` });
     } catch {
       setError('Network error. Please try again.');
-      toast({ title: 'Error', description: 'Could not connect to the server.', variant: 'destructive' });
+      toast.error('Network Error', { description: 'Could not connect to the server.' });
     } finally { setLoading(false); }
   }, [trackingId, toast]);
 
@@ -1509,9 +1517,9 @@ function TrackClaimSection() {
       doc.text('For legal guidance, please consult with a qualified attorney. © ' + new Date().getFullYear() + ' ClaimGuard Pro. All rights reserved.', 20, 295);
 
       doc.save(`ClaimGuard-Report-${result.trackingId}.pdf`);
-      toast({ title: 'PDF Downloaded', description: `ClaimGuard-Report-${result.trackingId}.pdf` });
+      toast.success('PDF Downloaded', { description: `ClaimGuard-Report-${result.trackingId}.pdf` });
     } catch {
-      toast({ title: 'PDF Error', description: 'Failed to generate PDF report.', variant: 'destructive' });
+      toast.error('PDF Error', { description: 'Failed to generate PDF report.' });
     } finally { setPdfLoading(false); }
   }, [result, toast]);
 
@@ -1810,19 +1818,39 @@ function CTASection() {
 
 function FAQSection() {
   const { ref, inView } = useInView(0.1);
+  const [search, setSearch] = useState('');
+  const filteredFAQ = useMemo(() => {
+    if (!search.trim()) return FAQ_DATA;
+    const q = search.toLowerCase();
+    return FAQ_DATA.filter(item => item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q));
+  }, [search]);
   return (
     <section id="faq" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-12">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">FAQ</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Frequently Asked <span className="gradient-text-gold">Questions</span>
           </h2>
           <p className="text-muted-foreground text-lg">Everything you need to know about mass tort claims and our services.</p>
         </motion.div>
+        <div className="relative mb-8">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search questions..."
+            className="pl-10 h-11 bg-[#F4F1EB] dark:bg-gray-800 border-0 focus-visible:ring-gold"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-navy transition-colors" aria-label="Clear search">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer}>
           <Accordion type="single" collapsible className="space-y-3">
-            {FAQ_DATA.map((item, i) => (
+            {filteredFAQ.map((item, i) => (
               <motion.div key={i} variants={fadeInUp}>
                 <AccordionItem value={`faq-${i}`} className="border-0 bg-[#F4F1EB] dark:bg-gray-800/50 rounded-xl overflow-hidden px-0">
                   <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-gold/5 transition-colors [&[data-state=open]]:text-gold-dark [&[data-state=open]]:bg-gold/5 dark:[&[data-state=open]]:text-gold-light">
@@ -1833,11 +1861,18 @@ function FAQSection() {
               </motion.div>
             ))}
           </Accordion>
+          {filteredFAQ.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">No questions match your search.</p>
+          )}
         </motion.div>
       </div>
     </section>
   );
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: RESOURCES & INSIGHTS
+   ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
    SECTION: CASE STUDIES
@@ -1902,13 +1937,11 @@ function NewsletterSection() {
   const [checkUpdates, setCheckUpdates] = useState(true);
   const [checkDeadlines, setCheckDeadlines] = useState(true);
   const [checkTips, setCheckTips] = useState(false);
-  const { toast } = useToast();
-
   const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
 
   const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
-    if (!emailRegex.test(email)) { toast({ title: 'Invalid email', description: 'Please enter a valid email address.', variant: 'destructive' }); return; }
+    if (!emailRegex.test(email)) { toast.error('Please enter a valid email address.'); return; }
     setLoading(true);
     try {
       const res = await fetch('/api/newsletter', {
@@ -1919,15 +1952,15 @@ function NewsletterSection() {
       const data = await res.json();
       if (res.ok) {
         setSubmitted(true);
-        toast({ title: 'Subscribed!', description: data.message || 'Welcome to our newsletter!' });
+        toast.success(data.message || 'Welcome to our newsletter!');
         setTimeout(() => { setSubmitted(false); setEmail(''); setClaimType(''); setCheckUpdates(true); setCheckDeadlines(true); setCheckTips(false); }, 4000);
       } else {
-        toast({ title: 'Subscription Error', description: data.error || 'Please try again.', variant: 'destructive' });
+        toast.error(data.error || 'Please try again.');
       }
     } catch {
-      toast({ title: 'Network Error', description: 'Please try again.', variant: 'destructive' });
+      toast.error('Please try again.');
     } finally { setLoading(false); }
-  }, [email, claimType, checkUpdates, checkDeadlines, checkTips, emailRegex, toast]);
+  }, [email, claimType, checkUpdates, checkDeadlines, checkTips, emailRegex]);
 
   return (
     <section id="newsletter" className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
@@ -1984,6 +2017,95 @@ function NewsletterSection() {
           </div>
         </div>
       </motion.div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: RESOURCES & INSIGHTS (BLOG)
+   ═══════════════════════════════════════════════════════════════ */
+
+const BLOG_ARTICLES = [
+  {
+    title: 'Understanding Mass Tort vs Class Action Lawsuits',
+    excerpt: 'Learn the key differences between mass tort and class action cases, and how each affects your claim strategy, compensation timeline, and legal rights.',
+    readTime: '5 min read',
+    category: 'Legal Guide',
+    icon: Scale,
+    color: 'bg-blue-500',
+    content: 'Mass tort and class action lawsuits are two distinct legal mechanisms designed to handle situations where many people have been harmed by the same product, device, or practice. While they share similarities, understanding the differences is crucial for anyone considering legal action.\n\nIn a class action lawsuit, one or more plaintiffs file a case on behalf of a larger group, known as a "class." All members of the class are bound by the outcome of the case, whether favorable or not. The court certifies the class, and any settlement or judgment is divided among class members according to a predetermined formula. This means individual circumstances and damages may not be fully accounted for.\n\nIn a mass tort, each plaintiff files their own individual lawsuit, but the cases are grouped together for pretrial proceedings to improve efficiency. This approach preserves each claimant\'s right to present their unique damages, medical history, and circumstances. Mass torts are particularly common in pharmaceutical liability cases, environmental contamination claims, and defective medical device lawsuits.\n\nKey differences include: individual control over your case in mass torts versus collective decisions in class actions; potentially higher compensation in mass torts because individual damages are considered; longer timelines in mass torts since each case is evaluated separately; and the need for more active participation from each plaintiff in mass tort proceedings.\n\nFor claimants, the choice between these paths depends on the specifics of your case, the nature of your injuries, and the settlement structure. Our team can help you understand which approach best serves your interests and guide you through the process.',
+  },
+  {
+    title: 'How to Prepare Your Claim Documentation',
+    excerpt: 'A comprehensive checklist of documents you need to support your mass tort claim, from medical records to proof of exposure and everything in between.',
+    readTime: '7 min read',
+    category: 'Step-by-Step',
+    icon: ClipboardCheck,
+    color: 'bg-emerald-500',
+    content: 'Preparing thorough documentation is the single most important step in building a strong mass tort claim. Missing or incomplete documents are the primary reason claims get denied or delayed. This guide walks you through exactly what you need.\n\n1. Proof of Identity and Residence: You need a valid government-issued photo ID, proof of your address during the relevant time period (utility bills, lease agreements, or tax returns), and any documents showing name changes if applicable.\n\n2. Medical Records: Gather all medical records that document your condition, including diagnosis reports, treatment records, surgical reports, pathology results, and prescription histories. Request records from all healthcare providers who treated your condition. Make sure to obtain records that clearly establish a timeline connecting your exposure to your diagnosis.\n\n3. Proof of Exposure or Use: This varies by case type. For Camp Lejeune claims, you need military service records or base housing documentation. For Roundup claims, you need purchase receipts, agricultural supply invoices, or employer records showing herbicide use. For talc claims, you need purchase records or photographs showing product use over time.\n\n4. Employment and Financial Records: Documents showing lost wages, reduced earning capacity, or other financial impacts of your condition. This includes tax returns, pay stubs, and employer statements.\n\n5. Personal Statements: A detailed written account of how your condition has affected your daily life, including physical limitations, emotional impact, and changes to your quality of life.\n\nOrganize all documents chronologically and keep copies of everything you submit. Our document specialists can review your preparation and identify any gaps before submission, significantly improving your chances of approval.',
+  },
+  {
+    title: 'What to Do If Your Claim Is Denied',
+    excerpt: 'A denied claim is not the end of the road. Learn the appeals process, common denial reasons, and how to build a stronger case for reconsideration.',
+    readTime: '6 min read',
+    category: 'Claims Help',
+    icon: AlertCircle,
+    color: 'bg-amber-500',
+    content: 'Receiving a claim denial can be devastating, but it is important to understand that a denial is not final and does not mean you have no case. Many claims are initially denied due to documentation issues rather than a lack of merit. Here is what you should do.\n\nStep 1: Understand the Reason for Denial. Read the denial letter carefully. The claims administrator is required to explain why your claim was denied. Common reasons include: incomplete medical documentation, insufficient proof of exposure, missed filing deadlines, incorrect forms or signatures, and failure to meet specific eligibility criteria.\n\nStep 2: Gather Additional Evidence. Once you understand the gap, work to fill it. This may involve obtaining additional medical opinions, securing missing records from healthcare providers, gathering more detailed proof of product use, or obtaining expert testimony. Our team can help identify exactly what additional evidence would strengthen your appeal.\n\nStep 3: File a Timely Appeal. Most settlement programs have strict appeal deadlines, often 30 to 90 days from the denial date. Missing this deadline means permanently losing your right to appeal. Mark the deadline on your calendar and begin preparing your appeal immediately.\n\nStep 4: Submit a Detailed Appeal Letter. Your appeal should address each reason for denial point by point, providing new evidence and a clear explanation of why the denial was incorrect. Be specific, factual, and professional.\n\nStep 5: Consider Legal Representation. For complex denials or appeals involving significant compensation, having an attorney review your case can dramatically improve your chances. Our network of experienced mass tort attorneys specializes in claim appeals and has a strong track record of reversing denials.\n\nRemember, persistence pays off. Our data shows that claims with professional assistance on appeal have a significantly higher approval rate than those filed without support.',
+  },
+];
+
+function ResourcesSection() {
+  const { ref, inView } = useInView(0.1);
+  const [expandedArticle, setExpandedArticle] = useState<number | null>(null);
+
+  return (
+    <section id="resources" className="py-14 md:py-20 bg-white dark:bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Resources & Insights</Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Expert <span className="gradient-text-gold">Guides</span> for Claimants
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">In-depth articles to help you understand your rights, prepare your claim, and maximize your compensation.</p>
+        </motion.div>
+
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid md:grid-cols-3 gap-6">
+          {BLOG_ARTICLES.map((article, idx) => (
+            <motion.div key={article.title} variants={fadeInUp}>
+              <Card className="h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow flex flex-col">
+                <div className={`${article.color} p-6 text-white relative overflow-hidden`}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" aria-hidden="true" />
+                  <div className="relative">
+                    <article.icon className="w-8 h-8 mb-3 opacity-90" />
+                    <Badge className="bg-white/20 text-white border-white/30 text-xs font-medium mb-2">{article.category}</Badge>
+                    <p className="text-white/60 text-xs">{article.readTime}</p>
+                  </div>
+                </div>
+                <CardContent className="pt-5 pb-6 flex flex-col flex-1">
+                  <h3 className="font-bold text-navy dark:text-gray-100 text-base mb-3 leading-tight">{article.title}</h3>
+                  <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-4 flex-1">{article.excerpt}</p>
+                  <AnimatePresence>
+                    {expandedArticle === idx ? (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                        <div className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 whitespace-pre-line">{article.content}</div>
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+                  <button
+                    onClick={() => setExpandedArticle(expandedArticle === idx ? null : idx)}
+                    aria-expanded={expandedArticle === idx}
+                    className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors mt-auto"
+                  >
+                    {expandedArticle === idx ? 'Show Less' : 'Read Full Article'}
+                    {expandedArticle === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }
@@ -2110,7 +2232,6 @@ interface UploadedFile { file: File; id: string; }
 
 function ContactSection() {
   const { ref, inView } = useInView(0.1);
-  const { toast } = useToast();
   const [form, setForm] = useState({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -2163,16 +2284,16 @@ function ContactSection() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({ title: 'Message Sent!', description: data.message || 'We will get back to you shortly.' });
+        toast.success(data.message || 'We will get back to you shortly.');
         setForm({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
         setUploadedFiles([]);
       } else {
-        toast({ title: 'Error', description: data.error || 'Please try again.', variant: 'destructive' });
+        toast.error(data.error || 'Please try again.');
       }
     } catch {
-      toast({ title: 'Network Error', description: 'Please try again.', variant: 'destructive' });
+      toast.error('Please try again.');
     } finally { setLoading(false); }
-  }, [form, validate, toast, uploadedFiles]);
+  }, [form, validate, uploadedFiles]);
 
   const formatSize = useCallback((bytes: number) => {
     if (bytes < 1024) return `${bytes}B`;
@@ -2309,6 +2430,18 @@ function ContactSection() {
                     </div>
                   </div>
                 ))}
+                <div className="flex items-center gap-3 pt-2">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Follow Us</span>
+                  <div className="flex gap-2">
+                    {[
+                      { icon: Facebook, href: '#', label: 'Facebook' },
+                      { icon: Twitter, href: '#', label: 'Twitter' },
+                      { icon: Linkedin, href: '#', label: 'LinkedIn' },
+                    ].map(s => (
+                      <a key={s.label} href={s.href} aria-label={s.label} className="w-9 h-9 rounded-lg bg-navy/5 dark:bg-gray-900 flex items-center justify-center hover:bg-gold/10 hover:text-gold transition-colors text-muted-foreground"><s.icon className="w-4 h-4" /></a>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -2319,6 +2452,24 @@ function ContactSection() {
                 <p className="text-white/60 text-sm mb-4">Our specialists are standing by 24/7.</p>
                 <a href="tel:8005550199" className="block w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3 rounded-lg transition-colors mb-3"><Phone className="w-4 h-4 inline mr-2" />(800) 555-0199</a>
                 <a href="mailto:info@claimguardpro.com" className="block w-full bg-white/10 hover:bg-white/15 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"><Mail className="w-4 h-4 inline mr-2" />info@claimguardpro.com</a>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800/50 border-0 shadow-md dark:border-gray-700">
+              <CardContent className="p-5">
+                <h4 className="font-bold text-navy dark:text-gray-100 text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-gold" />Why Contact Us?</h4>
+                <ul className="space-y-3">
+                  {[
+                    { title: 'Free Case Evaluation', desc: 'Get an expert assessment of your claim at no cost.' },
+                    { title: 'Personalized Guidance', desc: 'A dedicated specialist assigned to your specific case.' },
+                    { title: 'Faster Resolution', desc: 'Our team helps resolve issues in days, not months.' },
+                  ].map(item => (
+                    <li key={item.title} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                      <div><p className="text-sm font-semibold text-navy dark:text-gray-100">{item.title}</p><p className="text-xs text-muted-foreground dark:text-gray-400">{item.desc}</p></div>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
 
@@ -2394,6 +2545,7 @@ function Footer() {
                   { label: 'Eligibility Quiz', href: '#eligibility-quiz' },
                   { label: 'Our Services', href: '#services' },
                   { label: 'Claims We Handle', href: '#what-we-handle' },
+                  { label: 'Resources', href: '#resources' },
                   { label: 'FAQ', href: '#faq' },
                   { label: 'Case Studies', href: '#case-studies' },
                   { label: 'Contact Us', href: '#contact' },
@@ -2481,7 +2633,7 @@ interface ChatMessage { id: number; text: string; sender: 'bot' | 'user'; }
 function LiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 0, text: "Hi! I'm the Claims Assistant. How can I help you with your claim today?", sender: 'bot' },
+    { id: 0, text: "Hi! I'm the Claims Assistant. How can I help you today?\n\nYou can try asking: \"How do I track my claim?\" or \"What happens if my claim is denied?\"", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -2535,7 +2687,8 @@ function LiveChatWidget() {
     }
   }, [messages]);
 
-  const quickReplies = useMemo(() => ['Track My Claim', 'Check Eligibility', 'Talk to Agent', 'FAQ', 'Camp Lejeune Info', 'File a Claim'], []);
+  const quickReplies = useMemo(() => ['Track My Claim', 'Check Eligibility', 'Contact Us', 'FAQ'], []);
+  const maxChars = 500;
 
   return (
     <>
@@ -2590,7 +2743,7 @@ function LiveChatWidget() {
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 chat-scrollbar bg-gray-50 dark:bg-gray-900" aria-live="polite">
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} chat-message-enter`}>
-                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.sender === 'user' ? 'bg-navy dark:bg-gold text-white dark:text-navy rounded-br-md' : 'bg-white dark:bg-gray-800 text-navy dark:text-gray-200 shadow-sm border border-gray-100 dark:border-gray-700 rounded-bl-md'}`}>
+                  <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${msg.sender === 'user' ? 'bg-navy dark:bg-gold text-white dark:text-navy rounded-br-md' : 'bg-white dark:bg-gray-800 text-navy dark:text-gray-200 shadow-sm border border-gray-100 dark:border-gray-700 rounded-bl-md'}`}>
                     {msg.text}
                   </div>
                 </div>
@@ -2621,14 +2774,18 @@ function LiveChatWidget() {
             <div className="bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700">
               <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center mb-2">This is an automated assistant. For legal advice, please consult a qualified attorney.</p>
               <div className="flex gap-2">
-                <Input
-                  ref={chatInputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
-                  placeholder="Type your message..."
-                  className="flex-1 h-10 text-sm border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                />
+                <div className="relative flex-1">
+                  <Input
+                    ref={chatInputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value.slice(0, maxChars))}
+                    onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
+                    placeholder="Type your message..."
+                    className="pr-10 h-10 text-sm border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    maxLength={maxChars}
+                  />
+                  <span className="absolute right-2 bottom-2 text-[10px] text-gray-400">{input.length}/{maxChars}</span>
+                </div>
                 <Button onClick={() => sendMessage(input)} size="icon" className="h-10 w-10 bg-gold hover:bg-gold-dark shrink-0" aria-label="Send message">
                   <Send className="w-4 h-4 text-white" />
                 </Button>
@@ -2647,11 +2804,18 @@ function LiveChatWidget() {
 
 const BackToTopButton = memo(function BackToTopButton() {
   const [visible, setVisible] = useState(false);
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
     let ticking = false;
     const handler = () => {
       if (!ticking) {
-        requestAnimationFrame(() => { setVisible(window.scrollY > 400); ticking = false; });
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          setVisible(scrollY > 400);
+          setProgress(docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0);
+          ticking = false;
+        });
         ticking = true;
       }
     };
@@ -2660,6 +2824,8 @@ const BackToTopButton = memo(function BackToTopButton() {
   }, []);
 
   const scrollToTop = useCallback(() => window.scrollTo({ top: 0, behavior: 'smooth' }), []);
+  const circumference = 2 * Math.PI * 18;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
     <AnimatePresence>
@@ -2669,10 +2835,14 @@ const BackToTopButton = memo(function BackToTopButton() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 left-6 z-50 w-11 h-11 rounded-full bg-gold hover:bg-gold-dark text-white shadow-lg flex items-center justify-center transition-colors"
+          className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full bg-gold hover:bg-gold-dark text-white shadow-lg flex items-center justify-center transition-colors"
           aria-label="Back to top"
         >
-          <ArrowUp className="w-5 h-5" />
+          <svg className="absolute inset-0 w-12 h-12 -rotate-90" viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
+            <circle cx="20" cy="20" r="18" fill="none" stroke="white" strokeWidth="2" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} strokeLinecap="round" className="transition-all duration-150" />
+          </svg>
+          <ArrowUp className="w-5 h-5 relative z-10" />
         </motion.button>
       )}
     </AnimatePresence>
@@ -2687,6 +2857,9 @@ function CookieConsentBanner() {
   const [visible, setVisible] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const [preferences, setPreferences] = useState({ analytics: true, marketing: false, functional: true });
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const consent = localStorage.getItem('claimguard-cookie-consent');
@@ -2696,7 +2869,16 @@ function CookieConsentBanner() {
     }
   }, []);
 
-  const handleAccept = useCallback(() => {
+  const handleSavePrefs = useCallback(() => {
+    localStorage.setItem('claimguard-cookie-prefs', JSON.stringify(preferences));
+    localStorage.setItem('claimguard-cookie-consent', 'accepted');
+    setSaved(true);
+    setTimeout(() => setVisible(false), 800);
+  }, [preferences]);
+
+  const handleAcceptAll = useCallback(() => {
+    setPreferences({ analytics: true, marketing: true, functional: true });
+    localStorage.setItem('claimguard-cookie-prefs', JSON.stringify({ analytics: true, marketing: true, functional: true }));
     localStorage.setItem('claimguard-cookie-consent', 'accepted');
     setVisible(false);
   }, []);
@@ -2705,6 +2887,23 @@ function CookieConsentBanner() {
     localStorage.setItem('claimguard-cookie-consent', 'declined');
     setVisible(false);
   }, []);
+
+  if (saved) {
+    return (
+      <AnimatePresence>
+        {visible && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-0 left-0 right-0 z-[60]">
+            <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl shadow-2xl border border-emerald-200 dark:border-emerald-800 p-4 flex items-center gap-3">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <p className="text-sm text-emerald-800 dark:text-emerald-200 font-medium">Preferences saved successfully.</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -2715,23 +2914,47 @@ function CookieConsentBanner() {
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-0 left-0 right-0 z-[60]"
         >
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><Shield className="w-5 h-5 text-gold" /></div>
-                <div>
-                  <p className="text-sm font-semibold text-navy dark:text-white mb-1">Cookie Notice</p>
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><Cookie className="w-5 h-5 text-gold" /></div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-navy dark:text-white mb-1">We value your privacy</p>
                   <p className="text-xs text-muted-foreground dark:text-gray-400 leading-relaxed">
-                    We use cookies to improve your experience and analyze site traffic. By continuing to use our site, you agree to our{' '}
+                    We use cookies to improve your experience. Choose which cookies you'd like to allow.{' '}
                     <button onClick={() => setPrivacyOpen(true)} className="text-gold underline hover:text-gold-dark">Privacy Policy</button>
-                    {' '}and{' '}
-                    <button onClick={() => setTermsOpen(true)} className="text-gold underline hover:text-gold-dark">Terms of Service</button>.
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0 self-end sm:self-center">
-                <Button onClick={handleDecline} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300">Decline Non-Essential</Button>
-                <Button onClick={handleAccept} size="sm" className="text-xs h-9 bg-gold hover:bg-gold-dark text-white font-semibold">Accept All Cookies</Button>
+
+              {prefsOpen && (
+                <div className="space-y-3 mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+                  {[
+                    { key: 'analytics' as const, label: 'Analytics', desc: 'Help us understand how visitors interact with the site.' },
+                    { key: 'marketing' as const, label: 'Marketing', desc: 'Used to deliver relevant ads and track campaigns.' },
+                    { key: 'functional' as const, label: 'Functional', desc: 'Required for the site to work properly.' },
+                  ].map(pref => (
+                    <label key={pref.key} className="flex items-center justify-between cursor-pointer group">
+                      <div>
+                        <p className="text-sm font-medium text-navy dark:text-gray-200">{pref.label}</p>
+                        <p className="text-xs text-muted-foreground dark:text-gray-500">{pref.desc}</p>
+                      </div>
+                      <div
+                        onClick={() => setPreferences(p => ({ ...p, [pref.key]: !p[pref.key] }))}
+                        className={`w-11 h-6 rounded-full transition-colors relative ${preferences[pref.key] ? 'bg-gold' : 'bg-gray-300 dark:bg-gray-600'}`}
+                      >
+                        <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${preferences[pref.key] ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button onClick={handleDecline} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300 flex-1">Decline Non-Essential</Button>
+                {!prefsOpen && <Button onClick={() => setPrefsOpen(true)} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300 flex-1">Customize</Button>}
+                {prefsOpen && <Button onClick={handleSavePrefs} size="sm" className="text-xs h-9 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex-1">Save Preferences</Button>}
+                <Button onClick={handleAcceptAll} size="sm" className="text-xs h-9 bg-gold hover:bg-gold-dark text-white font-semibold flex-1">Accept All Cookies</Button>
               </div>
             </div>
           </div>
@@ -2760,6 +2983,7 @@ function CookieConsentBanner() {
    ═══════════════════════════════════════════════════════════════ */
 
 const ADMIN_PIN = '0000';
+const ADMIN_HEADERS = { headers: { Authorization: 'Bearer claimguard-admin-2025' } };
 
 const CLAIM_STATUSES = ['Pending', 'Under Review', 'Approved', 'Denied', 'Correction Needed'];
 
@@ -2775,7 +2999,6 @@ function getStatusColor(status: string) {
 }
 
 function AdminPanel() {
-  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [pinOpen, setPinOpen] = useState(false);
   const [pinInput, setPinInput] = useState('');
@@ -2822,16 +3045,16 @@ function AdminPanel() {
       setPinInput('');
       setOpen(true);
       setLoading(true);
-      toast({ title: 'Admin Access Granted', description: 'Welcome to the admin panel.' });
+      toast.success('Welcome to the admin panel.');
     } else {
-      toast({ title: 'Invalid PIN', description: 'Please try again.', variant: 'destructive' });
+      toast.error('Invalid PIN. Please try again.');
       setPinInput('');
     }
   };
 
   const fetchDashboard = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/dashboard');
+      const res = await fetch('/api/admin/dashboard', ADMIN_HEADERS);
       const data = await res.json();
       setDashboardData(data);
     } catch { /* silent */ }
@@ -2839,7 +3062,7 @@ function AdminPanel() {
 
   const fetchClaims = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/claims');
+      const res = await fetch('/api/admin/claims', ADMIN_HEADERS);
       const data = await res.json();
       setClaims(data);
     } catch { /* silent */ }
@@ -2847,7 +3070,7 @@ function AdminPanel() {
 
   const fetchClaimants = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/claimants');
+      const res = await fetch('/api/admin/claimants', ADMIN_HEADERS);
       const data = await res.json();
       setClaimants(data);
     } catch { /* silent */ }
@@ -2855,7 +3078,7 @@ function AdminPanel() {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/messages');
+      const res = await fetch('/api/admin/messages', ADMIN_HEADERS);
       const data = await res.json();
       setMessages(data);
     } catch { /* silent */ }
@@ -2863,7 +3086,7 @@ function AdminPanel() {
 
   const fetchNewsletter = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/newsletter');
+      const res = await fetch('/api/admin/newsletter', ADMIN_HEADERS);
       const data = await res.json();
       setNewsletter(data);
     } catch { /* silent */ }
@@ -2888,12 +3111,12 @@ function AdminPanel() {
   const handleStatusChange = async (claimId: string, newStatus: string) => {
     try {
       const res = await fetch(`/api/admin/claims/${claimId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        ...ADMIN_HEADERS, method: 'PUT',
+        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
-        toast({ title: 'Status Updated', description: `Claim status changed to ${newStatus}.` });
+        toast.success(`Claim status changed to ${newStatus}.`);
         fetchClaims();
         fetchDashboard();
         if (selectedClaim && (selectedClaim as Record<string, unknown>).id === claimId) {
@@ -2902,7 +3125,7 @@ function AdminPanel() {
         }
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to update status.', variant: 'destructive' });
+      toast.error('Update Failed', { description: 'Failed to update status.' });
     }
   };
 
@@ -2911,18 +3134,18 @@ function AdminPanel() {
     const id = (selectedClaim as Record<string, string>).id;
     try {
       const res = await fetch(`/api/admin/claims/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        ...ADMIN_HEADERS, method: 'PUT',
+        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
         body: JSON.stringify({ notes: editNotes, nextSteps: editNextSteps }),
       });
       if (res.ok) {
-        toast({ title: 'Updated', description: 'Claim notes and next steps saved.' });
+        toast.success('Claim notes and next steps saved.');
         const updated = await res.json();
         setSelectedClaim(updated);
         fetchClaims();
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to update notes.', variant: 'destructive' });
+      toast.error('Failed to update notes.');
     }
   };
 
@@ -2930,9 +3153,9 @@ function AdminPanel() {
     if (!selectedClaim) return;
     const id = (selectedClaim as Record<string, string>).id;
     try {
-      const res = await fetch(`/api/admin/claims/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/claims/${id}`, { ...ADMIN_HEADERS, method: 'DELETE' });
       if (res.ok) {
-        toast({ title: 'Deleted', description: 'Claim has been deleted.' });
+        toast.success('Claim has been deleted.');
         setDeleteDialogOpen(false);
         setClaimDetailOpen(false);
         setSelectedClaim(null);
@@ -2940,15 +3163,15 @@ function AdminPanel() {
         fetchDashboard();
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to delete claim.', variant: 'destructive' });
+      toast.error('Failed to delete claim.');
     }
   };
 
   const handleMarkMessage = async (msgId: string, read: boolean) => {
     try {
       await fetch(`/api/admin/messages/${msgId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        ...ADMIN_HEADERS, method: 'PUT',
+        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
         body: JSON.stringify({ read }),
       });
       fetchMessages();
@@ -2959,17 +3182,17 @@ function AdminPanel() {
   const handleCreateClaim = async () => {
     const f = newClaimForm;
     if (!f.firstName || !f.lastName || !f.email || !f.trackingId) {
-      toast({ title: 'Validation Error', description: 'First name, last name, email, and tracking ID are required.', variant: 'destructive' });
+      toast.error('First name, last name, email, and tracking ID are required.');
       return;
     }
     try {
       const res = await fetch('/api/admin/claims', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        ...ADMIN_HEADERS, method: 'POST',
+        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
         body: JSON.stringify(f),
       });
       if (res.ok) {
-        toast({ title: 'Claim Created', description: `New claim ${f.trackingId} has been created.` });
+        toast.success(`New claim ${f.trackingId} has been created.`);
         setNewClaimOpen(false);
         setNewClaimForm({ firstName: '', lastName: '', email: '', phone: '', trackingId: '', claimType: '', status: 'Pending', description: '' });
         fetchClaims();
@@ -2977,10 +3200,10 @@ function AdminPanel() {
         fetchClaimants();
       } else {
         const data = await res.json();
-        toast({ title: 'Error', description: data.error || 'Failed to create claim.', variant: 'destructive' });
+        toast.error(data.error || 'Failed to create claim.');
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to create claim.', variant: 'destructive' });
+      toast.error('Failed to create claim.');
     }
   };
 
@@ -3160,9 +3383,14 @@ function AdminPanel() {
                             className="pl-9"
                           />
                         </div>
-                        <Button className="bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={() => setNewClaimOpen(true)}>
-                          <Plus className="w-4 h-4 mr-1" /> New Claim
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/claims?export=csv'; }}>
+                            <Download className="w-4 h-4 mr-1" /> Export CSV
+                          </Button>
+                          <Button className="bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={() => setNewClaimOpen(true)}>
+                            <Plus className="w-4 h-4 mr-1" /> New Claim
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="border rounded-lg overflow-hidden">
@@ -3245,6 +3473,11 @@ function AdminPanel() {
 
                   {/* Messages Tab */}
                   <TabsContent value="messages">
+                    <div className="flex justify-end mb-4">
+                      <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/messages?export=csv'; }}>
+                        <Download className="w-4 h-4 mr-1" /> Export CSV
+                      </Button>
+                    </div>
                     <div className="space-y-3">
                       {Array.isArray(messages) && messages.map((msg: unknown) => {
                         const m = msg as Record<string, unknown>;
@@ -3534,6 +3767,7 @@ export default function HomePage() {
         Skip to main content
       </a>
       <main id="main-content" className="min-h-screen flex flex-col">
+        <div className="scroll-progress-bar" id="scroll-progress-bar" />
         <CountdownBanner />
         <Navbar />
         <HeroSection />
@@ -3545,6 +3779,7 @@ export default function HomePage() {
         <WhyChooseUsSection />
         <TestimonialsSection />
         <TrackClaimSection />
+        <ResourcesSection />
         <WhatWeHandleSection />
         <CTASection />
         <FAQSection />

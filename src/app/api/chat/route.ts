@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ZAI from 'z-ai-web-dev-sdk';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 const SYSTEM_PROMPT = `You are a helpful assistant for ClaimGuard Pro, a company that helps claimants with mass tort class action lawsuits. You help people track their claims, understand eligibility, navigate the claims process, and get assistance with denied or stuck claims. Be professional, empathetic, and informative. Keep responses concise (2-3 sentences). If asked about specific claim details, direct them to use the Track My Claim feature or call (800) 555-0199. Never fabricate specific compensation amounts or legal advice.`;
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 10 requests per minute per IP
+    const ip = getClientIp(request);
+    const { allowed } = rateLimit(ip, 10);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment before trying again.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { message, history } = body;
 

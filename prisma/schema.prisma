@@ -30,8 +30,10 @@ model Claim {
   notes       String?
   nextSteps   String?
   claimantId  String
-  claimant    Claimant       @relation(fields: [claimantId], references: [id])
+  claimant    Claimant       @relation(fields: [claimantId], references: [id], onDelete: Cascade)
   history     ClaimHistory[]
+
+  @@index([status])
 }
 
 model ClaimHistory {
@@ -40,7 +42,7 @@ model ClaimHistory {
   notes   String?
   date    DateTime @default(now())
   claimId String
-  claim   Claim    @relation(fields: [claimId], references: [id])
+  claim   Claim    @relation(fields: [claimId], references: [id], onDelete: Cascade)
 }
 
 model ContactMessage {
@@ -55,7 +57,10 @@ model ContactMessage {
   read      Boolean   @default(false)
   createdAt DateTime  @default(now())
   claimantId String?
-  claimant   Claimant? @relation(fields: [claimantId], references: [id])
+  claimant   Claimant? @relation(fields: [claimantId], references: [id], onDelete: Cascade)
+
+  @@index([read])
+  @@index([createdAt])
 }
 
 model Newsletter {
