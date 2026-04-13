@@ -39,7 +39,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
-  --color-destructive: var(--destructive);
+  --color-destructive: oklch(0.577 0.245 27.325);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -93,6 +93,36 @@
   --sidebar-ring: #C5A55A;
 }
 
+/* ─── Dark Mode ─── */
+.dark {
+  --background: #111D33;
+  --foreground: #E5E7EB;
+  --card: #1E293B;
+  --card-foreground: #E5E7EB;
+  --popover: #1E293B;
+  --popover-foreground: #E5E7EB;
+  --primary: #D4B97A;
+  --primary-foreground: #111D33;
+  --secondary: #1E293B;
+  --secondary-foreground: #E5E7EB;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --accent: #C5A55A;
+  --accent-foreground: #111D33;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #334155;
+  --input: #334155;
+  --ring: #C5A55A;
+  --sidebar: #111D33;
+  --sidebar-foreground: #E5E7EB;
+  --sidebar-primary: #D4B97A;
+  --sidebar-primary-foreground: #111D33;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #E5E7EB;
+  --sidebar-border: #334155;
+  --sidebar-ring: #C5A55A;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -103,6 +133,12 @@ body {
   color: #1B2A4A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #111D33;
+  color: #E5E7EB;
 }
 
 @layer base {
@@ -126,6 +162,13 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
+  background: #A88A3F;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+.dark ::-webkit-scrollbar-thumb {
   background: #A88A3F;
 }
 
@@ -303,6 +346,10 @@ body {
   background: linear-gradient(135deg, rgba(27, 42, 74, 0.92) 0%, rgba(27, 42, 74, 0.75) 50%, rgba(197, 165, 90, 0.3) 100%);
 }
 
+.dark .hero-gradient {
+  background: linear-gradient(135deg, rgba(17, 29, 51, 0.95) 0%, rgba(17, 29, 51, 0.85) 50%, rgba(197, 165, 90, 0.2) 100%);
+}
+
 /* ─── Gold Shimmer Effect ─── */
 .gold-shimmer {
   background: linear-gradient(90deg, #C5A55A 0%, #D4B97A 50%, #C5A55A 100%);
@@ -321,6 +368,12 @@ body {
 .status-approved { color: #10B981; background: #D1FAE5; }
 .status-denied { color: #EF4444; background: #FEE2E2; }
 .status-correction { color: #8B5CF6; background: #EDE9FE; }
+
+.dark .status-pending { color: #FCD34D; background: #451A03; }
+.dark .status-review { color: #60A5FA; background: #172554; }
+.dark .status-approved { color: #34D399; background: #022C22; }
+.dark .status-denied { color: #F87171; background: #450A0A; }
+.dark .status-correction { color: #A78BFA; background: #2E1065; }
 
 /* ─── Glass Morphism ─── */
 .glass {
@@ -359,6 +412,13 @@ body {
   background-clip: text;
 }
 
+.dark .gradient-text-navy {
+  background: linear-gradient(135deg, #D4B97A 0%, #E5CBA0 50%, #C5A55A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* ─── Typewriter Cursor ─── */
 .typewriter-cursor {
   border-right: 3px solid #C5A55A;
@@ -384,11 +444,20 @@ body {
   color: #9CA3AF;
 }
 
+.dark .pipeline-stage-inactive {
+  background: #334155;
+  color: #64748B;
+}
+
 /* ─── Card Gradient Border ─── */
 .card-gradient-border {
   position: relative;
   background: white;
   border-radius: 1rem;
+}
+
+.dark .card-gradient-border {
+  background: #1E293B;
 }
 
 .card-gradient-border::before {
@@ -456,4 +525,58 @@ body {
 .countdown-timer {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+}
+
+/* ─── Skip to Content ─── */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: 0.75rem 1.5rem;
+  background: #1B2A4A;
+  color: #C5A55A;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0.5rem;
+  transition: top 0.2s;
+}
+.skip-to-content:focus {
+  top: 0;
+  outline: 2px solid #C5A55A;
+  outline-offset: 2px;
+}
+
+/* ─── Section backgrounds in dark mode ─── */
+.section-light {
+  background-color: #ffffff;
+}
+.dark .section-light {
+  background-color: #111D33;
+}
+
+.section-cream {
+  background-color: #F4F1EB;
+}
+.dark .section-cream {
+  background-color: #0F172A;
+}
+
+.section-navy {
+  background-color: #1B2A4A;
+}
+.dark .section-navy {
+  background-color: #0B1120;
+}
+
+/* ─── Dark mode overlay colors ─── */
+.dark .hero-gradient {
+  background: linear-gradient(135deg, rgba(11, 17, 32, 0.95) 0%, rgba(11, 17, 32, 0.8) 50%, rgba(197, 165, 90, 0.15) 100%);
+}
+
+/* ─── Print-friendly dialogs ─── */
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }

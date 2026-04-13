@@ -50,8 +50,20 @@ model ContactMessage {
   phone     String?
   claimId   String?
   message   String
+  fileName  String?
+  fileSize  String?
   read      Boolean   @default(false)
   createdAt DateTime  @default(now())
   claimantId String?
   claimant   Claimant? @relation(fields: [claimantId], references: [id])
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  claimType String?
+  updates   Boolean  @default(true)
+  deadlines Boolean  @default(true)
+  tips      Boolean  @default(true)
+  createdAt DateTime @default(now())
 }

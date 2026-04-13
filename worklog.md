@@ -224,3 +224,117 @@ Complete rewrite of the ClaimGuard Pro website frontend with 19 major new featur
 - ✅ localStorage for cookie consent
 - ✅ shadcn/ui components used: Accordion, Carousel, Badge, Card, Button, Input, Label, Textarea, Progress, Separator, Sheet, RadioGroup, Tooltip
 - ✅ 2474 lines in page.tsx, 459 lines in globals.css (2933 total)
+
+---
+
+## Task ID: 1
+## Date: 2025-01-15
+
+---
+
+## Overview
+Added 4 new API routes, updated the Prisma schema with 2 model changes, enhanced the contact route, updated seed data, and installed jspdf for client-side PDF generation.
+
+---
+
+## Schema Changes
+
+### `prisma/schema.prisma`
+
+#### New Model: `Newsletter`
+- `id` (String, @id, @default(cuid()))
+- `email` (String, @unique)
+- `claimType` (String, optional)
+- `updates` (Boolean, default true)
+- `deadlines` (Boolean, default true)
+- `tips` (Boolean, default true)
+- `createdAt` (DateTime, default now())
+
+#### Updated Model: `ContactMessage`
+- Added `fileName` (String, optional) — stores uploaded file name metadata
+- Added `fileSize` (String, optional) — stores uploaded file size metadata
+
+---
+
+## New API Routes
+
+### 1. POST `/api/newsletter` — Newsletter Subscription
+- **File**: `src/app/api/newsletter/route.ts`
+- **Accepts**: `{ email: string, claimType?: string, updates?: boolean, deadlines?: boolean, tips?: boolean }`
+- Validates email with regex pattern
+- Checks for duplicate email — returns 409 if already subscribed
+- Normalizes email to lowercase
+- Stores subscription preferences
+- Returns 201 with success message and subscriber ID
+
+### 2. GET `/api/newsletter` — List Subscribers (Admin)
+- **File**: `src/app/api/newsletter/route.ts`
+- Returns all newsletter subscribers ordered by creation date
+- Includes subscriber count
+
+### 3. POST `/api/chat` — AI-Powered Chat
+- **File**: `src/app/api/chat/route.ts`
+- **Accepts**: `{ message: string, history?: { role: string, content: string }[] }`
+- Uses `z-ai-web-dev-sdk` for AI completions (backend only)
+- System prompt: ClaimGuard Pro claims assistant — professional, empathetic, concise
+- Maintains last 10 messages of conversation history for context
+- Validates that message is non-empty
+- Returns AI reply or fallback message with phone number
+
+### 4. GET `/api/claims/report?trackingId=CLM-2024-001` — Claim Report Data
+- **File**: `src/app/api/claims/report/route.ts`
+- Looks up claim by trackingId
+- Returns structured JSON with all claim details formatted for PDF generation:
+  - trackingId, claimant (masked), status, progress
+  - claimType, filedDate, lastUpdated
+  - description, notes, nextSteps
+  - history (chronological timeline)
+  - pipeline (5-stage visual pipeline with active/complete states)
+  - checklist (5 document items with done status based on claim status)
+  - generatedAt, disclaimer
+- 404 if trackingId not found
+
+---
+
+## Updated API Routes
+
+### POST `/api/contact` — Enhanced with File Metadata
+- **File**: `src/app/api/contact/route.ts`
+- Now accepts optional `fileName` and `fileSize` fields in request body
+- Stores file metadata alongside the contact message
+- No breaking changes — existing fields unchanged
+
+---
+
+## Seed Data Updates
+
+### `prisma/seed.ts`
+- Updated all 6 claims with more detailed and realistic descriptions matching real mass tort case types:
+  - CLM-2024-001: Camp Lejeune Water Contamination
+  - CLM-2024-002: Roundup (Glyphosate) Herbicide
+  - CLM-2024-003: Talcum Powder (Ovarian Cancer)
+  - CLM-2024-004: Hernia Mesh (Medical Device)
+  - CLM-2024-005: Paraquat Herbicide (Parkinson's Disease)
+  - CLM-2024-006: AFFF Firefighting Foam (PFAS)
+- Added more varied history entries (4-8 per claim) with reviewer IDs, specific actions, and detailed notes
+- Added 5 newsletter subscribers with varied preference combinations
+- Cleanup now includes `prisma.newsletter.deleteMany()`
+
+---
+
+## Package Changes
+
+### Installed: `jspdf@4.2.1`
+- For client-side PDF claim report generation
+- Available for use in frontend components
+
+---
+
+## Technical Quality
+- ✅ ESLint passes with zero errors
+- ✅ Prisma schema synced with `npx prisma db push`
+- ✅ Prisma client regenerated with `npx prisma generate`
+- ✅ Seed data created successfully (6 claimants, 6 claims, 5 newsletter subscribers)
+- ✅ TypeScript strict mode throughout
+- ✅ All API routes have error handling and validation
+- ✅ z-ai-web-dev-sdk used only in backend (api/chat/route.ts)

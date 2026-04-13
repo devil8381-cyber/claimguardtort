@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, claimId, message } = body;
+    const { name, email, phone, claimId, message, fileName, fileSize } = body;
 
     // Validation
     const errors: string[] = [];
@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
         phone: phone ? phone.trim() : null,
         claimId: claimId ? claimId.trim() : null,
         message: message.trim(),
+        fileName: fileName && typeof fileName === 'string' ? fileName.trim() : null,
+        fileSize: fileSize && typeof fileSize === 'string' ? fileSize.trim() : null,
         claimantId,
       },
     });
