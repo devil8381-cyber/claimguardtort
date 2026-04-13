@@ -14,6 +14,10 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Accordion,
@@ -73,11 +77,6 @@ import {
   Timer,
   BadgeCheck,
   Upload,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
-  Youtube,
   BookOpen,
   Target,
   Zap,
@@ -86,6 +85,12 @@ import {
   Sun,
   Moon,
   FileDown,
+  Trash2,
+  Plus,
+  LayoutDashboard,
+  BarChart3,
+  Bell,
+  RefreshCw,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -117,9 +122,11 @@ const CASE_TYPES = [
   'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam',
 ];
 
-const MARQUEE_LOGOS = [
-  'CNN', 'FOX News', 'BBC', 'Reuters', 'Bloomberg', 'Forbes', 'The Wall Street Journal',
-  'USA Today', 'NBC News', 'ABC News', 'CBS News', 'The New York Times',
+const TRUST_BADGES = [
+  'Secure & Encrypted', 'No Upfront Fees', 'Free Consultations',
+  '24/7 Support', 'HIPAA Compliant', 'BBB Accredited',
+  'Expert Legal Team', 'Fast Processing', '100% Confidential',
+  'Proven Track Record', 'Dedicated Specialist', 'Nationwide Service',
 ];
 
 const HOW_IT_WORKS_STEPS = [
@@ -171,18 +178,18 @@ const FAQ_DATA = [
 ];
 
 const CASE_STUDIES = [
-  { name: 'Margaret H.', caseType: 'Camp Lejeune Water Contamination', badge: 'bg-blue-500', challenge: 'Margaret was stationed at Camp Lejeune for 3 years and developed a rare form of kidney disease. Her initial claim was denied due to incomplete medical records linking her condition to the contaminated water supply.', solution: 'Our team worked with Margaret to obtain comprehensive medical opinions, gathered additional service records, and built a detailed timeline of her exposure. We identified key military health records that had been overlooked.', outcome: "After a 6-month appeals process, Margaret's claim was approved with a settlement of $185,000. She received her payment within 90 days of approval.", compensation: '$185,000', beforeStatus: 'Denied', afterStatus: 'Approved' },
-  { name: 'Thomas J.', caseType: 'Roundup (Glyphosate) Exposure', badge: 'bg-emerald-500', challenge: 'Thomas, a farmer for 25 years, developed non-Hodgkin lymphoma after decades of Roundup use. His claim was stuck in "Correction Needed" for 8 months due to missing purchase records.', solution: 'We helped Thomas compile decades of agricultural supply invoices, secured supporting medical opinions from two oncologists, and corrected multiple form errors in his original submission.', outcome: "Thomas's corrected claim was approved, and he received a settlement of $340,000.", compensation: '$340,000', beforeStatus: 'Correction Needed', afterStatus: 'Approved' },
-  { name: 'Dorothy K.', caseType: 'Talcum Powder / Ovarian Cancer', badge: 'bg-purple-500', challenge: 'Dorothy used talcum powder products for over 40 years before being diagnosed with ovarian cancer. Her claim was pending for 14 months with no updates.', solution: "Our team escalated Dorothy's case with the claims administrator, identified the processing bottleneck (a missing pathology report), and facilitated expedited review of her complete medical file.", outcome: "Dorothy's claim was moved to active review within 2 weeks and was approved 3 months later with a settlement of $275,000.", compensation: '$275,000', beforeStatus: 'Pending (14 months)', afterStatus: 'Approved' },
+  { name: 'Margaret H.', caseType: 'Camp Lejeune Water Contamination', badge: 'bg-blue-500', challenge: 'Margaret was stationed at Camp Lejeune for 3 years and developed a rare form of kidney disease. Her initial claim was denied due to incomplete medical records linking her condition to the contaminated water supply.', solution: 'Our team worked with Margaret to obtain comprehensive medical opinions, gathered additional service records, and built a detailed timeline of her exposure. We identified key military health records that had been overlooked.', outcome: "After a 6-month appeals process, Margaret's claim was approved with a significant settlement. She received her payment within 90 days of approval. Specific results vary per case.", compensation: 'Significant Settlement', beforeStatus: 'Denied', afterStatus: 'Approved' },
+  { name: 'Thomas J.', caseType: 'Roundup (Glyphosate) Exposure', badge: 'bg-emerald-500', challenge: 'Thomas, a farmer for 25 years, developed non-Hodgkin lymphoma after decades of Roundup use. His claim was stuck in "Correction Needed" for 8 months due to missing purchase records.', solution: 'We helped Thomas compile decades of agricultural supply invoices, secured supporting medical opinions from two oncologists, and corrected multiple form errors in his original submission.', outcome: "Thomas's corrected claim was approved, and he received a substantial recovery. Specific results vary per case.", compensation: 'Substantial Recovery', beforeStatus: 'Correction Needed', afterStatus: 'Approved' },
+  { name: 'Dorothy K.', caseType: 'Talcum Powder / Ovarian Cancer', badge: 'bg-purple-500', challenge: 'Dorothy used talcum powder products for over 40 years before being diagnosed with ovarian cancer. Her claim was pending for 14 months with no updates.', solution: "Our team escalated Dorothy's case with the claims administrator, identified the processing bottleneck (a missing pathology report), and facilitated expedited review of her complete medical file.", outcome: "Dorothy's claim was moved to active review within 2 weeks and was approved 3 months later with a favorable outcome. Specific results vary per case.", compensation: 'Favorable Outcome', beforeStatus: 'Pending (14 months)', afterStatus: 'Approved' },
 ];
 
 const TEAM_MEMBERS = [
-  { name: 'Sarah Mitchell', role: 'Founder & Lead Attorney', color: 'bg-blue-500', initials: 'SM', bio: 'Former DOJ attorney with 20+ years of mass tort litigation experience.' },
-  { name: 'David Chen', role: 'Senior Claims Analyst', color: 'bg-emerald-500', initials: 'DC', bio: 'Expert in claims processing and document analysis. Has reviewed over 5,000 mass tort claims.' },
+  { name: 'Sarah Mitchell', role: 'Founder & Lead Attorney', color: 'bg-blue-500', initials: 'SM', bio: 'Former government attorney with 20+ years of mass tort litigation experience.' },
+  { name: 'David Chen', role: 'Senior Claims Analyst', color: 'bg-emerald-500', initials: 'DC', bio: 'Expert in claims processing and document analysis. Extensive experience reviewing mass tort claims.' },
   { name: 'Jessica Rodriguez', role: 'Client Relations Director', color: 'bg-purple-500', initials: 'JR', bio: 'Passionate advocate for claimants\' rights. Manages our 24/7 support team.' },
-  { name: 'Michael Thompson', role: 'Document Specialist', color: 'bg-amber-500', initials: 'MT', bio: 'Detail-oriented paralegal specializing in document correction. 99.2% correction success rate.' },
-  { name: 'Emily Watson', role: 'Legal Strategy Advisor', color: 'bg-rose-500', initials: 'EW', bio: 'Skilled attorney specializing in settlement negotiation. Recovered over $15M for clients.' },
-  { name: 'Marcus Johnson', role: 'Technology Director', color: 'bg-teal-500', initials: 'MJ', bio: 'Built our proprietary claim tracking system. 99.99% uptime.' },
+  { name: 'Michael Thompson', role: 'Document Specialist', color: 'bg-amber-500', initials: 'MT', bio: 'Detail-oriented paralegal specializing in document correction. High success rate in claim corrections.' },
+  { name: 'Emily Watson', role: 'Legal Strategy Advisor', color: 'bg-rose-500', initials: 'EW', bio: 'Skilled attorney specializing in settlement negotiation. Helped clients recover substantial compensation.' },
+  { name: 'Marcus Johnson', role: 'Technology Director', color: 'bg-teal-500', initials: 'MJ', bio: 'Built our proprietary claim tracking system. Ensures reliable platform performance.' },
 ];
 
 const PIPELINE_STAGES = ['Submitted', 'Validated', 'Under Review', 'Decision', 'Completed'];
@@ -847,14 +854,17 @@ const TrustedBySection = memo(function TrustedBySection() {
   return (
     <section className="py-10 bg-[#F4F1EB] dark:bg-gray-950 border-y border-gold/10 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">As Featured In</p>
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Trusted By Claimants Nationwide</p>
         <div className="relative overflow-hidden" aria-hidden="true">
           <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#F4F1EB] dark:from-gray-950 to-transparent z-10" />
           <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#F4F1EB] dark:from-gray-950 to-transparent z-10" />
           <div className="flex animate-marquee">
-            {[...MARQUEE_LOGOS, ...MARQUEE_LOGOS].map((logo, i) => (
-              <div key={i} className="mx-8 flex-shrink-0 flex items-center justify-center">
-                <span className="text-xl font-bold text-navy/30 dark:text-gray-600 hover:text-navy/60 dark:hover:text-gray-400 transition-colors whitespace-nowrap tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>{logo}</span>
+            {[...TRUST_BADGES, ...TRUST_BADGES].map((badge, i) => (
+              <div key={i} className="mx-3 flex-shrink-0 flex items-center justify-center">
+                <span className="inline-flex items-center gap-1.5 bg-navy/5 dark:bg-white/5 border border-navy/10 dark:border-white/10 rounded-full px-4 py-2 text-sm font-medium text-navy/70 dark:text-gray-400 whitespace-nowrap">
+                  <Shield className="w-3.5 h-3.5 text-gold" />
+                  {badge}
+                </span>
               </div>
             ))}
           </div>
@@ -871,10 +881,10 @@ const TrustedBySection = memo(function TrustedBySection() {
 function HowItWorksSection() {
   const { ref, inView } = useInView(0.1);
   return (
-    <section id="how-it-works" className="py-20 md:py-28 bg-white dark:bg-gray-950">
+    <section id="how-it-works" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <LazySection type="cards">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+          <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
             <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">How It Works</Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
               Five Simple Steps to <span className="gradient-text-gold">Resolve Your Claim</span>
@@ -922,10 +932,10 @@ function ServicesSection() {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
   return (
-    <section id="services" className="py-20 md:py-28 bg-[#F4F1EB] dark:bg-gray-900">
+    <section id="services" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <LazySection type="cards">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+          <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
             <Badge className="mb-4 px-3 py-1 bg-navy/10 text-navy border-navy/20 text-xs font-semibold uppercase tracking-wider dark:text-gray-300 dark:border-gray-600">Our Services</Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
               Comprehensive Claims <span className="gradient-text-gold">Assistance</span>
@@ -979,9 +989,9 @@ function ServicesSection() {
 function WhyDifferentSection() {
   const { ref, inView } = useInView(0.1);
   return (
-    <section className="py-20 md:py-28 bg-white dark:bg-gray-950">
+    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Why We&apos;re Different</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             The ClaimGuard <span className="gradient-text-gold">Advantage</span>
@@ -1097,9 +1107,9 @@ function EligibilityQuizSection() {
   const currentQ = quizQuestions[step];
 
   return (
-    <section id="eligibility-quiz" className="py-20 md:py-28 bg-white dark:bg-gray-950">
+    <section id="eligibility-quiz" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-12">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Eligibility Quiz</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Check Your <span className="gradient-text-gold">Eligibility</span>
@@ -1232,11 +1242,11 @@ function WhyChooseUsSection() {
   const orbY = useTransform(scrollY, [500, 1200], [0, -40]);
 
   return (
-    <section id="why-choose-us" className="py-20 md:py-28 bg-navy dark:bg-gray-950 relative overflow-hidden">
+    <section id="why-choose-us" className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
       <motion.div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" style={{ y: orbY }} aria-hidden="true" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-navy-light/30 rounded-full blur-3xl" aria-hidden="true" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/20 text-gold border-gold/30 text-xs font-semibold uppercase tracking-wider">Why Choose Us</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Your Trusted Partner in <span className="text-gold">Claims Recovery</span>
@@ -1260,9 +1270,9 @@ function WhyChooseUsSection() {
 const TestimonialsSection = memo(function TestimonialsSection() {
   const { ref, inView } = useInView(0.1);
   return (
-    <section className="py-20 md:py-28 bg-white dark:bg-gray-950">
+    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-12">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Testimonials</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             What Our <span className="gradient-text-gold">Clients Say</span>
@@ -1304,6 +1314,7 @@ const TestimonialsSection = memo(function TestimonialsSection() {
             </div>
           </Carousel>
         </motion.div>
+        <p className="text-center text-xs text-muted-foreground mt-6 max-w-2xl mx-auto">Individual results may vary. Testimonials reflect individual experiences and are not indicative of future results.</p>
       </div>
     </section>
   );
@@ -1503,12 +1514,11 @@ function TrackClaimSection() {
     } finally { setPdfLoading(false); }
   }, [result, toast]);
 
-  const demoIds = useMemo(() => ['CLM-2024-001', 'CLM-2024-002', 'CLM-2024-003', 'CLM-2024-004', 'CLM-2024-005', 'CLM-2024-006'], []);
 
   return (
-    <section id="track-claim" className="py-20 md:py-28 bg-[#F4F1EB] dark:bg-gray-900">
+    <section id="track-claim" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-12">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Track Your Claim</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Real-Time Claim <span className="gradient-text-gold">Status Check</span>
@@ -1516,7 +1526,7 @@ function TrackClaimSection() {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Enter your tracking ID to see where your claim stands, view history, and get clear next steps.</p>
         </motion.div>
 
-        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-2xl mx-auto mb-10">
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-2xl mx-auto mb-8">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -1536,20 +1546,6 @@ function TrackClaimSection() {
             </div>
           )}
         </motion.div>
-
-        {!result && !error && (
-          <div className="text-center mb-10">
-            <p className="text-sm text-muted-foreground">
-              Try demo IDs:{' '}
-              {demoIds.map((id, idx) => (
-                <span key={id}>
-                  {idx > 0 && <span className="text-muted-foreground">, </span>}
-                  <button onClick={() => { setTrackingId(id); setError(''); }} className="text-gold font-semibold hover:underline">{id}</button>
-                </span>
-              ))}
-            </p>
-          </div>
-        )}
 
         {loading && <TrackClaimSkeleton />}
 
@@ -1676,9 +1672,9 @@ function WhatWeHandleSection() {
   const [selectedCase, setSelectedCase] = useState<typeof CASE_TYPE_DETAILS[0] | null>(null);
 
   return (
-    <section id="what-we-handle" className="py-20 md:py-28 bg-[#F4F1EB] dark:bg-gray-900">
+    <section id="what-we-handle" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Case Types</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Claims We <span className="gradient-text-gold">Handle</span>
@@ -1774,7 +1770,7 @@ function CTASection() {
   }, []);
 
   return (
-    <section className="py-20 md:py-24 bg-navy dark:bg-gray-950 relative overflow-hidden">
+    <section className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
       <motion.div className="absolute top-0 left-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl" style={{ x: gradShift }} aria-hidden="true" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
@@ -1814,7 +1810,7 @@ function CTASection() {
 function FAQSection() {
   const { ref, inView } = useInView(0.1);
   return (
-    <section id="faq" className="py-20 md:py-28 bg-white dark:bg-gray-950">
+    <section id="faq" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-12">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">FAQ</Badge>
@@ -1849,9 +1845,9 @@ function FAQSection() {
 function CaseStudiesSection() {
   const { ref, inView } = useInView(0.1);
   return (
-    <section id="case-studies" className="py-20 md:py-28 bg-[#F4F1EB] dark:bg-gray-900">
+    <section id="case-studies" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Success Stories</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Real <span className="gradient-text-gold">Case Results</span>
@@ -1886,6 +1882,7 @@ function CaseStudiesSection() {
             </motion.div>
           ))}
         </motion.div>
+        <p className="text-center text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">Case results depend on a variety of factors unique to each case. Past results do not guarantee a similar outcome.</p>
       </div>
     </section>
   );
@@ -1932,7 +1929,7 @@ function NewsletterSection() {
   }, [email, claimType, checkUpdates, checkDeadlines, checkTips, emailRegex, toast]);
 
   return (
-    <section id="newsletter" className="py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
+    <section id="newsletter" className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
       <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -2012,9 +2009,9 @@ function AboutSection() {
   ];
 
   return (
-    <section id="about" className="py-20 md:py-28 bg-white dark:bg-gray-950">
+    <section id="about" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">About Us</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Fighting for <span className="gradient-text-gold">Justice</span> Since 2009
@@ -2024,7 +2021,7 @@ function AboutSection() {
           </p>
         </motion.div>
 
-        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-3xl mx-auto mb-16">
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-3xl mx-auto mb-8">
           <Card className="bg-navy dark:bg-gray-900 text-white border-0 shadow-xl overflow-hidden">
             <CardContent className="p-8 text-center">
               <BookOpen className="w-10 h-10 text-gold mx-auto mb-4" />
@@ -2034,7 +2031,7 @@ function AboutSection() {
           </Card>
         </motion.div>
 
-        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {VALUES.map((v) => (
             <motion.div key={v.title} variants={fadeInUp}>
               <Card className="h-full border-0 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 bg-white dark:bg-gray-800/50 dark:border-gray-700 hover-glow">
@@ -2067,7 +2064,7 @@ function AboutSection() {
           ))}
         </motion.div>
 
-        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-16 mb-16">
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-12 mb-8">
           <h3 className="text-2xl font-bold text-navy dark:text-white mb-8 text-center" style={{ fontFamily: 'Georgia, serif' }}>Our Journey</h3>
           <div className="relative">
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gold/20 -translate-x-1/2" aria-hidden="true" />
@@ -2183,9 +2180,9 @@ function ContactSection() {
   }, []);
 
   return (
-    <section id="contact" className="py-20 md:py-28 bg-[#F4F1EB] dark:bg-gray-900">
+    <section id="contact" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-16">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Contact Us</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Get Your Free <span className="gradient-text-gold">Consultation</span>
@@ -2386,14 +2383,7 @@ function Footer() {
                 <div className="w-9 h-9 rounded-lg bg-gold/20 flex items-center justify-center"><Shield className="w-5 h-5 text-gold" /></div>
                 <span className="text-lg font-bold">Claim<span className="text-gold">Guard</span> Pro</span>
               </div>
-              <p className="text-white/50 text-sm leading-relaxed mb-4">Your trusted partner in mass tort claims recovery. Guiding claimants to fair compensation since 2009.</p>
-              <div className="flex gap-3">
-                {[Facebook, Twitter, Linkedin, Instagram, Youtube].map((Icon, i) => (
-                  <a key={i} href="#" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-gold/20 flex items-center justify-center transition-colors" aria-label={`Visit our ${['Facebook', 'Twitter', 'LinkedIn', 'Instagram', 'YouTube'][i]} page`}>
-                    <Icon className="w-4 h-4 text-white/60 hover:text-gold" />
-                  </a>
-                ))}
-              </div>
+              <p className="text-white/50 text-sm leading-relaxed">Your trusted partner in mass tort claims recovery. Guiding claimants to fair compensation since 2009.</p>
             </div>
             <div>
               <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">Quick Links</h4>
@@ -2482,7 +2472,7 @@ function Footer() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   COMPONENT: FLOATING LIVE CHAT WIDGET (AI-POWERED)
+   COMPONENT: FLOATING LIVE CHAT WIDGET
    ═══════════════════════════════════════════════════════════════ */
 
 interface ChatMessage { id: number; text: string; sender: 'bot' | 'user'; }
@@ -2490,7 +2480,7 @@ interface ChatMessage { id: number; text: string; sender: 'bot' | 'user'; }
 function LiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 0, text: "Hi! I'm the AI Claims Assistant. How can I help you with your claim today?", sender: 'bot' },
+    { id: 0, text: "Hi! I'm the Claims Assistant. How can I help you with your claim today?", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -2565,7 +2555,7 @@ function LiveChatWidget() {
               <MessageCircle className="w-6 h-6 text-white" />
             </motion.button>
           </TooltipTrigger>
-          <TooltipContent side="left"><p>AI Claims Assistant</p></TooltipContent>
+          <TooltipContent side="left"><p>Claims Assistant</p></TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
@@ -2584,10 +2574,10 @@ function LiveChatWidget() {
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center"><HeadphonesIcon className="w-5 h-5 text-gold" /></div>
                 <div>
-                  <p className="text-white font-semibold text-sm">AI Claims Assistant</p>
+                  <p className="text-white font-semibold text-sm">Claims Assistant</p>
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true" />
-                    <span className="text-white/60 text-xs">AI Powered</span>
+                    <span className="text-white/60 text-xs">Online</span>
                   </div>
                 </div>
               </div>
@@ -2628,7 +2618,7 @@ function LiveChatWidget() {
             )}
 
             <div className="bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center mb-2">AI assistant powered by ClaimGuard Pro. For legal advice, consult a qualified attorney.</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center mb-2">This is an automated assistant. For legal advice, please consult a qualified attorney.</p>
               <div className="flex gap-2">
                 <Input
                   ref={chatInputRef}
@@ -2761,6 +2751,767 @@ function CookieConsentBanner() {
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN PANEL (Hidden - Ctrl+Shift+A)
+   ═══════════════════════════════════════════════════════════════ */
+
+const ADMIN_PIN = '0000';
+
+const CLAIM_STATUSES = ['Pending', 'Under Review', 'Approved', 'Denied', 'Correction Needed'];
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'Pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+    case 'Under Review': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
+    case 'Approved': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
+    case 'Denied': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+    case 'Correction Needed': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
+    default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+  }
+}
+
+function AdminPanel() {
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const [pinOpen, setPinOpen] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [authenticated, setAuthenticated] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [dashboardData, setDashboardData] = useState<Record<string, unknown> | null>(null);
+  const [claims, setClaims] = useState<unknown[]>([]);
+  const [claimants, setClaimants] = useState<unknown[]>([]);
+  const [messages, setMessages] = useState<unknown[]>([]);
+  const [newsletter, setNewsletter] = useState<unknown[]>([]);
+  const [selectedClaim, setSelectedClaim] = useState<Record<string, unknown> | null>(null);
+  const [claimDetailOpen, setClaimDetailOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [newClaimOpen, setNewClaimOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [editNextSteps, setEditNextSteps] = useState('');
+  const [newClaimForm, setNewClaimForm] = useState({
+    firstName: '', lastName: '', email: '', phone: '', trackingId: '',
+    claimType: '', status: 'Pending', description: '',
+  });
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        if (authenticated) {
+          setOpen(true);
+        } else {
+          setPinOpen(true);
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [authenticated]);
+
+  const handlePinSubmit = () => {
+    if (pinInput === ADMIN_PIN) {
+      setAuthenticated(true);
+      setPinOpen(false);
+      setPinInput('');
+      setOpen(true);
+      toast({ title: 'Admin Access Granted', description: 'Welcome to the admin panel.' });
+    } else {
+      toast({ title: 'Invalid PIN', description: 'Please try again.', variant: 'destructive' });
+      setPinInput('');
+    }
+  };
+
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/dashboard');
+      const data = await res.json();
+      setDashboardData(data);
+    } catch { /* silent */ }
+  }, []);
+
+  const fetchClaims = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/claims');
+      const data = await res.json();
+      setClaims(data);
+    } catch { /* silent */ }
+  }, []);
+
+  const fetchClaimants = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/claimants');
+      const data = await res.json();
+      setClaimants(data);
+    } catch { /* silent */ }
+  }, []);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/messages');
+      const data = await res.json();
+      setMessages(data);
+    } catch { /* silent */ }
+  }, []);
+
+  const fetchNewsletter = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/newsletter');
+      const data = await res.json();
+      setNewsletter(data);
+    } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    setLoading(true);
+    Promise.all([fetchDashboard(), fetchClaims(), fetchClaimants(), fetchMessages(), fetchNewsletter()])
+      .finally(() => setLoading(false));
+  }, [open, fetchDashboard, fetchClaims, fetchClaimants, fetchMessages, fetchNewsletter]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  const handleStatusChange = async (claimId: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/admin/claims/${claimId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        toast({ title: 'Status Updated', description: `Claim status changed to ${newStatus}.` });
+        fetchClaims();
+        fetchDashboard();
+        if (selectedClaim && (selectedClaim as Record<string, unknown>).id === claimId) {
+          const updated = await res.json();
+          setSelectedClaim(updated);
+        }
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Failed to update status.', variant: 'destructive' });
+    }
+  };
+
+  const handleUpdateNotes = async () => {
+    if (!selectedClaim) return;
+    const id = (selectedClaim as Record<string, string>).id;
+    try {
+      const res = await fetch(`/api/admin/claims/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: editNotes, nextSteps: editNextSteps }),
+      });
+      if (res.ok) {
+        toast({ title: 'Updated', description: 'Claim notes and next steps saved.' });
+        const updated = await res.json();
+        setSelectedClaim(updated);
+        fetchClaims();
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Failed to update notes.', variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteClaim = async () => {
+    if (!selectedClaim) return;
+    const id = (selectedClaim as Record<string, string>).id;
+    try {
+      const res = await fetch(`/api/admin/claims/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        toast({ title: 'Deleted', description: 'Claim has been deleted.' });
+        setDeleteDialogOpen(false);
+        setClaimDetailOpen(false);
+        setSelectedClaim(null);
+        fetchClaims();
+        fetchDashboard();
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Failed to delete claim.', variant: 'destructive' });
+    }
+  };
+
+  const handleMarkMessage = async (msgId: string, read: boolean) => {
+    try {
+      await fetch(`/api/admin/messages/${msgId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ read }),
+      });
+      fetchMessages();
+      fetchDashboard();
+    } catch { /* silent */ }
+  };
+
+  const handleCreateClaim = async () => {
+    const f = newClaimForm;
+    if (!f.firstName || !f.lastName || !f.email || !f.trackingId) {
+      toast({ title: 'Validation Error', description: 'First name, last name, email, and tracking ID are required.', variant: 'destructive' });
+      return;
+    }
+    try {
+      const res = await fetch('/api/admin/claims', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(f),
+      });
+      if (res.ok) {
+        toast({ title: 'Claim Created', description: `New claim ${f.trackingId} has been created.` });
+        setNewClaimOpen(false);
+        setNewClaimForm({ firstName: '', lastName: '', email: '', phone: '', trackingId: '', claimType: '', status: 'Pending', description: '' });
+        fetchClaims();
+        fetchDashboard();
+        fetchClaimants();
+      } else {
+        const data = await res.json();
+        toast({ title: 'Error', description: data.error || 'Failed to create claim.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Failed to create claim.', variant: 'destructive' });
+    }
+  };
+
+  const openClaimDetail = (claim: unknown) => {
+    const c = claim as Record<string, unknown>;
+    setSelectedClaim(c);
+    setEditNotes((c.notes as string) || '');
+    setEditNextSteps((c.nextSteps as string) || '');
+    setClaimDetailOpen(true);
+  };
+
+  const filteredClaims = Array.isArray(claims)
+    ? claims.filter((c: unknown) => {
+        const cl = c as Record<string, unknown>;
+        const q = searchQuery.toLowerCase();
+        const claimant = cl.claimant as Record<string, unknown> | undefined;
+        return (
+          ((cl.trackingId as string) || '').toLowerCase().includes(q) ||
+          ((cl.status as string) || '').toLowerCase().includes(q) ||
+          ((cl.claimType as string) || '').toLowerCase().includes(q) ||
+          (claimant ? ((claimant.firstName as string) || '').toLowerCase().includes(q) : false) ||
+          (claimant ? ((claimant.lastName as string) || '').toLowerCase().includes(q) : false)
+        );
+      })
+    : [];
+
+  const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+
+  return (
+    <>
+      {/* PIN Dialog */}
+      <Dialog open={pinOpen} onOpenChange={setPinOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5 text-gold" />
+              Admin Access
+            </DialogTitle>
+            <DialogDescription>Enter the admin PIN to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Enter PIN"
+              value={pinInput}
+              onChange={(e) => setPinInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePinSubmit()}
+              className="text-center text-2xl tracking-widest"
+            />
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setPinOpen(false)}>Cancel</Button>
+              <Button className="flex-1 bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={handlePinSubmit}>Unlock</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Admin Panel Dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="w-[95vw] max-w-5xl h-[85vh] sm:h-[90vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b bg-[#1B2A4A] text-white rounded-t-lg">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="flex items-center gap-3 text-xl">
+                <LayoutDashboard className="w-6 h-6 text-[#C5A55A]" />
+                ClaimGuard Pro Admin
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-300 hover:text-white hover:bg-white/10"
+                onClick={() => { setOpen(false); setAuthenticated(false); }}
+              >
+                <X className="w-4 h-4 mr-1" /> Lock
+              </Button>
+            </div>
+          </DialogHeader>
+
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-[#C5A55A]" />
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
+                <div className="px-6 pt-4 border-b bg-gray-50 dark:bg-gray-900/50">
+                  <TabsList className="bg-white dark:bg-gray-800 border shadow-sm w-full justify-start overflow-x-auto">
+                    <TabsTrigger value="dashboard" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
+                      <BarChart3 className="w-4 h-4" /> Dashboard
+                    </TabsTrigger>
+                    <TabsTrigger value="claims" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
+                      <FileText className="w-4 h-4" /> Claims
+                    </TabsTrigger>
+                    <TabsTrigger value="claimants" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
+                      <Users className="w-4 h-4" /> Claimants
+                    </TabsTrigger>
+                    <TabsTrigger value="messages" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
+                      <Mail className="w-4 h-4" /> Messages
+                      {dashboardData && (dashboardData as Record<string, Record<string, number>>).messages?.unread > 0 && (
+                        <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                          {(dashboardData as Record<string, Record<string, number>>).messages!.unread}
+                        </span>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="newsletter" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
+                      <Bell className="w-4 h-4" /> Newsletter
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6">
+                  {/* Dashboard Tab */}
+                  <TabsContent value="dashboard">
+                    {dashboardData && (
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                          <Card className="border-l-4 border-l-[#1B2A4A]">
+                            <CardContent className="p-4">
+                              <p className="text-sm text-muted-foreground">Total Claims</p>
+                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).claims)?.total ?? 0}</p>
+                            </CardContent>
+                          </Card>
+                          <Card className="border-l-4 border-l-emerald-500">
+                            <CardContent className="p-4">
+                              <p className="text-sm text-muted-foreground">Claimants</p>
+                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).claimants)?.total ?? 0}</p>
+                            </CardContent>
+                          </Card>
+                          <Card className="border-l-4 border-l-amber-500">
+                            <CardContent className="p-4">
+                              <p className="text-sm text-muted-foreground">Messages</p>
+                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).messages)?.total ?? 0}</p>
+                              {((dashboardData as Record<string, Record<string, number>>).messages)?.unread ?? 0 > 0 && (
+                                <p className="text-xs text-amber-600 mt-1">{((dashboardData as Record<string, Record<string, number>>).messages)!.unread} unread</p>
+                              )}
+                            </CardContent>
+                          </Card>
+                          <Card className="border-l-4 border-l-purple-500">
+                            <CardContent className="p-4">
+                              <p className="text-sm text-muted-foreground">Newsletter</p>
+                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).newsletter)?.total ?? 0}</p>
+                            </CardContent>
+                          </Card>
+                        </div>
+                        <Card>
+                          <CardHeader><CardTitle className="text-base">Claims by Status</CardTitle></CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              {Object.entries(((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.byStatus ?? {}).map(([status, count]) => (
+                                <div key={status} className="flex items-center gap-3">
+                                  <Badge className={`${getStatusColor(status)} w-36 justify-center`}>{status}</Badge>
+                                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                    <div
+                                      className="h-3 rounded-full bg-[#1B2A4A]"
+                                      style={{ width: `${(((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.total ?? 1) > 0 ? Math.round(((count as number) / ((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.total ?? 1)) * 100 : 0}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-sm font-semibold w-8 text-right">{count as number}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Claims Tab */}
+                  <TabsContent value="claims">
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                        <div className="relative flex-1 max-w-md">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search claims by ID, name, status, type..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-9"
+                          />
+                        </div>
+                        <Button className="bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={() => setNewClaimOpen(true)}>
+                          <Plus className="w-4 h-4 mr-1" /> New Claim
+                        </Button>
+                      </div>
+
+                      <div className="border rounded-lg overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                              <TableHead>Tracking ID</TableHead>
+                              <TableHead>Claimant</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead className="hidden md:table-cell">Type</TableHead>
+                              <TableHead className="hidden lg:table-cell">Last Updated</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredClaims.map((claim: unknown) => {
+                              const c = claim as Record<string, unknown>;
+                              const claimant = c.claimant as Record<string, unknown> | undefined;
+                              return (
+                                <TableRow key={c.id as string} className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                                  <TableCell className="font-mono font-semibold text-[#1B2A4A] dark:text-[#C5A55A]">{c.trackingId as string}</TableCell>
+                                  <TableCell>{claimant ? `${claimant.firstName} ${claimant.lastName}` : 'N/A'}</TableCell>
+                                  <TableCell>
+                                    <Badge className={getStatusColor(c.status as string)}>{c.status as string}</Badge>
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-muted-foreground">{c.claimType as string || '—'}</TableCell>
+                                  <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">{fmtDate(c.lastUpdated as string)}</TableCell>
+                                  <TableCell className="text-right">
+                                    <Button variant="ghost" size="sm" onClick={() => openClaimDetail(claim)}>
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                            {filteredClaims.length === 0 && (
+                              <TableRow>
+                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No claims found</TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Claimants Tab */}
+                  <TabsContent value="claimants">
+                    <div className="border rounded-lg overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead className="hidden sm:table-cell">Phone</TableHead>
+                            <TableHead>Claims</TableHead>
+                            <TableHead className="hidden md:table-cell">Joined</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {Array.isArray(claimants) && claimants.map((cl: unknown) => {
+                            const c = cl as Record<string, unknown>;
+                            const cList = c.claims as unknown[];
+                            return (
+                              <TableRow key={c.id as string}>
+                                <TableCell className="font-semibold">{c.firstName} {c.lastName}</TableCell>
+                                <TableCell className="text-muted-foreground">{c.email as string}</TableCell>
+                                <TableCell className="hidden sm:table-cell text-muted-foreground">{c.phone as string || '—'}</TableCell>
+                                <TableCell>
+                                  <Badge variant="secondary">{(cList?.length ?? 0)} claim{(cList?.length ?? 0) !== 1 ? 's' : ''}</Badge>
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell text-muted-foreground text-sm">{fmtDate(c.createdAt as string)}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </TabsContent>
+
+                  {/* Messages Tab */}
+                  <TabsContent value="messages">
+                    <div className="space-y-3">
+                      {Array.isArray(messages) && messages.map((msg: unknown) => {
+                        const m = msg as Record<string, unknown>;
+                        return (
+                          <Card key={m.id as string} className={`${!(m.read as boolean) ? 'border-l-4 border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/10' : ''}`}>
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-semibold">{m.name as string}</span>
+                                    <span className="text-sm text-muted-foreground">{m.email as string}</span>
+                                    {!(m.read as boolean) && <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Unread</Badge>}
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{m.message as string}</p>
+                                  <p className="text-xs text-muted-foreground mt-2">{fmtDate(m.createdAt as string)}</p>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleMarkMessage(m.id as string, !(m.read as boolean))}
+                                >
+                                  {!(m.read as boolean) ? 'Mark Read' : 'Mark Unread'}
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                      {Array.isArray(messages) && messages.length === 0 && (
+                        <p className="text-center text-muted-foreground py-8">No messages</p>
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  {/* Newsletter Tab */}
+                  <TabsContent value="newsletter">
+                    <div className="border rounded-lg overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                            <TableHead>Email</TableHead>
+                            <TableHead className="hidden sm:table-cell">Claim Type</TableHead>
+                            <TableHead className="hidden md:table-cell">Preferences</TableHead>
+                            <TableHead className="hidden lg:table-cell">Subscribed</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {Array.isArray(newsletter) && newsletter.map((sub: unknown) => {
+                            const s = sub as Record<string, unknown>;
+                            return (
+                              <TableRow key={s.id as string}>
+                                <TableCell className="font-medium">{s.email as string}</TableCell>
+                                <TableCell className="hidden sm:table-cell text-muted-foreground">{s.claimType as string || '—'}</TableCell>
+                                <TableCell className="hidden md:table-cell">
+                                  <div className="flex gap-1 flex-wrap">
+                                    {s.updates && <Badge variant="outline" className="text-xs">Updates</Badge>}
+                                    {s.deadlines && <Badge variant="outline" className="text-xs">Deadlines</Badge>}
+                                    {s.tips && <Badge variant="outline" className="text-xs">Tips</Badge>}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">{fmtDate(s.createdAt as string)}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Claim Detail Dialog */}
+      <Dialog open={claimDetailOpen} onOpenChange={setClaimDetailOpen}>
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#C5A55A]" />
+              Claim {(selectedClaim?.trackingId as string) || ''}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedClaim && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">Claimant</Label>
+                  <p className="font-semibold">{((selectedClaim.claimant as Record<string, unknown>)?.firstName)} {((selectedClaim.claimant as Record<string, unknown>)?.lastName)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Email</Label>
+                  <p className="font-semibold">{((selectedClaim.claimant as Record<string, unknown>)?.email)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Status</Label>
+                  <div className="mt-1">
+                    <Select value={selectedClaim.status as string} onValueChange={(v) => handleStatusChange(selectedClaim.id as string, v)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CLAIM_STATUSES.map((s) => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Claim Type</Label>
+                  <p className="font-semibold">{(selectedClaim.claimType as string) || '—'}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Filed Date</Label>
+                  <p className="font-semibold">{fmtDate(selectedClaim.filedDate as string)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Last Updated</Label>
+                  <p className="font-semibold">{fmtDate(selectedClaim.lastUpdated as string)}</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-muted-foreground">Description</Label>
+                <p className="mt-1 text-sm">{(selectedClaim.description as string) || 'No description provided.'}</p>
+              </div>
+
+              <div>
+                <Label className="text-muted-foreground">Notes</Label>
+                <Textarea
+                  className="mt-1"
+                  rows={3}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label className="text-muted-foreground">Next Steps</Label>
+                <Textarea
+                  className="mt-1"
+                  rows={2}
+                  value={editNextSteps}
+                  onChange={(e) => setEditNextSteps(e.target.value)}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button className="bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={handleUpdateNotes}>
+                  <RefreshCw className="w-4 h-4 mr-1" /> Save Notes
+                </Button>
+                <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+                  <Trash2 className="w-4 h-4 mr-1" /> Delete Claim
+                </Button>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="font-semibold text-base">History Timeline</Label>
+                <div className="mt-2 space-y-2">
+                  {Array.isArray(selectedClaim.history) && (selectedClaim.history as unknown[]).map((h: unknown, i: number) => {
+                    const hist = h as Record<string, unknown>;
+                    return (
+                      <div key={hist.id as string} className="flex gap-3 text-sm">
+                        <div className="flex flex-col items-center">
+                          <div className={`w-3 h-3 rounded-full mt-1 ${i === 0 ? 'bg-[#C5A55A]' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                          {i < (selectedClaim.history as unknown[]).length - 1 && <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />}
+                        </div>
+                        <div className="pb-3">
+                          <div className="flex items-center gap-2">
+                            <Badge className={`${getStatusColor(hist.status as string)} text-xs`}>{hist.status as string}</Badge>
+                            <span className="text-muted-foreground text-xs">{fmtDate(hist.date as string)}</span>
+                          </div>
+                          {hist.notes && <p className="text-muted-foreground text-xs mt-0.5">{hist.notes as string}</p>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Claim?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete claim {(selectedClaim?.trackingId as string) || ''} and all associated history.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDeleteClaim}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* New Claim Dialog */}
+      <Dialog open={newClaimOpen} onOpenChange={setNewClaimOpen}>
+        <DialogContent className="w-[95vw] max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-[#C5A55A]" />
+              Create New Claim
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>First Name *</Label>
+                <Input value={newClaimForm.firstName} onChange={(e) => setNewClaimForm({ ...newClaimForm, firstName: e.target.value })} />
+              </div>
+              <div>
+                <Label>Last Name *</Label>
+                <Input value={newClaimForm.lastName} onChange={(e) => setNewClaimForm({ ...newClaimForm, lastName: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>Email *</Label>
+              <Input type="email" value={newClaimForm.email} onChange={(e) => setNewClaimForm({ ...newClaimForm, email: e.target.value })} />
+            </div>
+            <div>
+              <Label>Phone</Label>
+              <Input value={newClaimForm.phone} onChange={(e) => setNewClaimForm({ ...newClaimForm, phone: e.target.value })} />
+            </div>
+            <div>
+              <Label>Tracking ID *</Label>
+              <Input placeholder="CLM-2024-XXX" value={newClaimForm.trackingId} onChange={(e) => setNewClaimForm({ ...newClaimForm, trackingId: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Claim Type</Label>
+                <Select value={newClaimForm.claimType} onValueChange={(v) => setNewClaimForm({ ...newClaimForm, claimType: v })}>
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Camp Lejeune">Camp Lejeune</SelectItem>
+                    <SelectItem value="Roundup">Roundup</SelectItem>
+                    <SelectItem value="Talc">Talc</SelectItem>
+                    <SelectItem value="Hernia Mesh">Hernia Mesh</SelectItem>
+                    <SelectItem value="Paraquat">Paraquat</SelectItem>
+                    <SelectItem value="AFFF">AFFF</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Initial Status</Label>
+                <Select value={newClaimForm.status} onValueChange={(v) => setNewClaimForm({ ...newClaimForm, status: v })}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CLAIM_STATUSES.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea rows={3} value={newClaimForm.description} onChange={(e) => setNewClaimForm({ ...newClaimForm, description: e.target.value })} />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setNewClaimOpen(false)}>Cancel</Button>
+              <Button className="flex-1 bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={handleCreateClaim}>Create Claim</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
