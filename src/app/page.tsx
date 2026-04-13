@@ -1203,43 +1203,41 @@ function HowItWorksSection() {
   const { ref, inView } = useInView(0.1);
   return (
     <section id="how-it-works" className="py-14 md:py-20 bg-white dark:bg-gray-950">
-      <LazySection type="cards">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-            <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">How It Works</Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-              Five Simple Steps to <span className="gradient-text-gold">Resolve Your Claim</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              We&apos;ve streamlined the claims assistance process so you can focus on what matters — getting the compensation you deserve.
-            </p>
-          </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">How It Works</Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Five Simple Steps to <span className="gradient-text-gold">Resolve Your Claim</span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            We&apos;ve streamlined the claims assistance process so you can focus on what matters — getting the compensation you deserve.
+          </p>
+        </motion.div>
 
-          <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-            {HOW_IT_WORKS_STEPS.map((item, idx) => (
-              <motion.div key={item.step} variants={fadeInUp} className="relative group">
-                {idx < HOW_IT_WORKS_STEPS.length - 1 && (
-                  <div className="hidden md:block absolute top-12 left-[calc(50%+2rem)] right-[calc(-50%+2rem)] h-0.5 z-0" aria-hidden="true">
-                    <div className="w-full h-full bg-gradient-to-r from-gold/40 to-gold/10" />
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+          {HOW_IT_WORKS_STEPS.map((item, idx) => (
+            <motion.div key={item.step} variants={fadeInUp} className="relative group">
+              {idx < HOW_IT_WORKS_STEPS.length - 1 && (
+                <div className="hidden md:block absolute top-12 left-[calc(50%+2rem)] right-[calc(-50%+2rem)] h-0.5 z-0" aria-hidden="true">
+                  <div className="w-full h-full bg-gradient-to-r from-gold/40 to-gold/10" />
+                </div>
+              )}
+              <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full bg-white dark:bg-gray-800/50 dark:border-gray-700 hover-glow z-10">
+                <CardHeader className="pb-4 text-center">
+                  <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-3`}>
+                    <item.icon className="w-6 h-6 md:w-7 md:h-7" />
                   </div>
-                )}
-                <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full bg-white dark:bg-gray-800/50 dark:border-gray-700 hover-glow z-10">
-                  <CardHeader className="pb-4 text-center">
-                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-3`}>
-                      <item.icon className="w-6 h-6 md:w-7 md:h-7" />
-                    </div>
-                    <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-navy flex items-center justify-center text-white font-bold text-sm md:text-xs mx-auto -mt-1 mb-2">{item.step}</div>
-                    <CardTitle className="text-sm md:text-base font-bold text-navy dark:text-gray-100">{item.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-muted-foreground dark:text-gray-400 text-xs md:text-sm leading-relaxed text-center">{item.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </LazySection>
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-navy flex items-center justify-center text-white font-bold text-sm md:text-xs mx-auto -mt-1 mb-2">{item.step}</div>
+                  <CardTitle className="text-sm md:text-base font-bold text-navy dark:text-gray-100">{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-muted-foreground dark:text-gray-400 text-xs md:text-sm leading-relaxed text-center">{item.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }
@@ -1254,58 +1252,56 @@ function ServicesSection() {
 
   return (
     <section id="services" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
-      <LazySection type="cards">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-            <Badge className="mb-4 px-3 py-1 bg-navy/10 text-navy border-navy/20 text-xs font-semibold uppercase tracking-wider dark:text-gray-300 dark:border-gray-600">Our Services</Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-              Comprehensive Claims <span className="gradient-text-gold">Assistance</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">From tracking to resolution, we provide end-to-end support for your mass tort claim.</p>
-          </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
+          <Badge className="mb-4 px-3 py-1 bg-navy/10 text-navy border-navy/20 text-xs font-semibold uppercase tracking-wider dark:text-gray-300 dark:border-gray-600">Our Services</Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Comprehensive Claims <span className="gradient-text-gold">Assistance</span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">From tracking to resolution, we provide end-to-end support for your mass tort claim.</p>
+        </motion.div>
 
-          <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES_DATA.map((service, idx) => (
-              <motion.div key={service.title} variants={fadeInUp}>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Card className="group h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
-                        <CardHeader className="pb-3 relative">
-                          <div className="w-12 h-12 rounded-xl bg-navy/5 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-gold/10 transition-colors">
-                            <service.icon className="w-6 h-6 text-navy dark:text-gray-300 group-hover:text-gold transition-colors" />
-                          </div>
-                          <CardTitle className="text-lg font-bold text-navy dark:text-gray-100">{service.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-0 relative">
-                          <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-3">{service.description}</p>
-                          <button
-                            onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-                            aria-expanded={expandedIdx === idx}
-                            className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors"
-                          >
-                            {expandedIdx === idx ? 'Show Less' : 'Learn More'}
-                            {expandedIdx === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                          </button>
-                          <AnimatePresence>
-                            {expandedIdx === idx && (
-                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
-                                <p className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">{service.detail}</p>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </CardContent>
-                      </Card>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom"><p className="max-w-xs">{service.detail}</p></TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </LazySection>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SERVICES_DATA.map((service, idx) => (
+            <motion.div key={service.title} variants={fadeInUp}>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Card className="group h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
+                      <CardHeader className="pb-3 relative">
+                        <div className="w-12 h-12 rounded-xl bg-navy/5 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-gold/10 transition-colors">
+                          <service.icon className="w-6 h-6 text-navy dark:text-gray-300 group-hover:text-gold transition-colors" />
+                        </div>
+                        <CardTitle className="text-lg font-bold text-navy dark:text-gray-100">{service.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0 relative">
+                        <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-3">{service.description}</p>
+                        <button
+                          onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+                          aria-expanded={expandedIdx === idx}
+                          className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors"
+                        >
+                          {expandedIdx === idx ? 'Show Less' : 'Learn More'}
+                          {expandedIdx === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </button>
+                        <AnimatePresence>
+                          {expandedIdx === idx && (
+                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                              <p className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">{service.detail}</p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </CardContent>
+                    </Card>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom"><p className="max-w-xs">{service.detail}</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }
