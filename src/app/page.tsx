@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type FormEvent, memo, type ReactNode } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -95,7 +96,6 @@ import {
   Twitter,
   Cookie,
   FileDown,
-  PlayCircle,
   HandHeart,
 } from 'lucide-react';
 
@@ -629,10 +629,73 @@ function generateSocialProofPool(): Array<{ name: string; location: string; acti
   return pool;
 }
 
-const VIDEO_TESTIMONIALS = [
-  { name: 'Angela T.', caseType: 'Camp Lejeune', quote: 'ClaimGuard Pro turned my denied claim into an approved settlement. The team was incredible.', color: 'from-blue-500 to-blue-700' },
-  { name: 'George P.', caseType: 'Roundup', quote: 'After 3 years of fighting alone, their team helped me get results in just 6 months.', color: 'from-emerald-500 to-emerald-700' },
-  { name: 'Susan L.', caseType: 'Talcum Powder', quote: 'The document specialist caught errors I never would have found. They saved my claim.', color: 'from-purple-500 to-purple-700' },
+const SUCCESS_STORIES = [
+  {
+    name: 'Angela Torres',
+    location: 'Jacksonville, NC',
+    caseType: 'Camp Lejeune',
+    image: '/images/success-story-1.jpg',
+    quote: 'When I received the denial letter, I felt completely defeated. After 22 years of military service, dealing with kidney disease felt like a second battle I wasn\'t prepared for. ClaimGuard Pro stepped in and fought alongside me when I had nothing left to give.',
+    beforeStatus: 'Denied',
+    afterStatus: 'Approved',
+    timeline: '6 months',
+    highlight: 'Full medical expenses covered plus additional compensation',
+  },
+  {
+    name: 'George Patterson',
+    location: 'Des Moines, IA',
+    caseType: 'Roundup',
+    image: '/images/success-story-2.jpg',
+    quote: 'Three years of going in circles with paperwork and phone calls. I almost gave up entirely. Their team took over and had everything sorted within months. I only wish I had found them sooner.',
+    beforeStatus: 'Correction Needed',
+    afterStatus: 'Approved',
+    timeline: '8 months',
+    highlight: 'Substantial settlement after 3 years of stalled progress',
+  },
+  {
+    name: 'Susan Lewis',
+    location: 'Scottsdale, AZ',
+    caseType: 'Talcum Powder',
+    image: '/images/success-story-3.jpg',
+    quote: 'The document specialist caught a critical error in my pathology report submission that I never would have found on my own. That single correction saved my entire claim from being dismissed.',
+    beforeStatus: 'Pending (14 months)',
+    afterStatus: 'Approved',
+    timeline: '4 months',
+    highlight: 'Claim revived after 14 months of being stuck in review',
+  },
+  {
+    name: 'Robert Martinez',
+    location: 'Charlotte, NC',
+    caseType: 'Hernia Mesh',
+    image: '/images/success-story-4.jpg',
+    quote: 'After my hernia mesh failed and caused a second surgery, I didn\'t know where to turn. ClaimGuard Pro connected me with the right attorney and helped build a strong case for additional compensation.',
+    beforeStatus: 'Not Yet Filed',
+    afterStatus: 'Approved',
+    timeline: '10 months',
+    highlight: 'Successful claim covering surgical revision costs and damages',
+  },
+  {
+    name: 'Dorothy Kim',
+    location: 'Fresno, CA',
+    caseType: 'Paraquat',
+    image: '/images/success-story-5.jpg',
+    quote: 'Watching my husband struggle with Parkinson\'s after decades of farming was heartbreaking. ClaimGuard Pro helped us understand our options and navigate the claims process with compassion and expertise.',
+    beforeStatus: 'Under Review',
+    afterStatus: 'Approved',
+    timeline: '7 months',
+    highlight: 'Claim expedited with additional medical documentation support',
+  },
+  {
+    name: 'James Caldwell',
+    location: 'Norfolk, VA',
+    caseType: 'Firefighting Foam',
+    image: '/images/success-story-6.jpg',
+    quote: 'As a firefighter for 18 years, I was exposed to AFFF regularly. When I was diagnosed with thyroid cancer, ClaimGuard Pro helped me file and track my claim through every stage of the process.',
+    beforeStatus: 'Pending',
+    afterStatus: 'Approved',
+    timeline: '9 months',
+    highlight: 'Comprehensive settlement including ongoing medical monitoring',
+  },
 ];
 
 const DISCLAIMER_TEXT = `Legal Disclaimer
@@ -1606,6 +1669,217 @@ function WhyChooseUsSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   COMPONENT: SUCCESS STORIES CAROUSEL
+   ═══════════════════════════════════════════════════════════════ */
+
+const CASE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  'Camp Lejeune': { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
+  'Roundup': { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' },
+  'Talcum Powder': { bg: 'bg-purple-50 dark:bg-purple-900/20', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800' },
+  'Hernia Mesh': { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
+  'Paraquat': { bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-700 dark:text-rose-300', border: 'border-rose-200 dark:border-rose-800' },
+  'Firefighting Foam': { bg: 'bg-teal-50 dark:bg-teal-900/20', text: 'text-teal-700 dark:text-teal-300', border: 'border-teal-200 dark:border-teal-800' },
+};
+
+function SuccessStoriesCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const totalSlides = SUCCESS_STORIES.length;
+
+  const startAutoPlay = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setDirection(1);
+      setActiveIndex(prev => (prev + 1) % totalSlides);
+    }, 6000);
+  }, [totalSlides]);
+
+  const stopAutoPlay = useCallback(() => {
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+  }, []);
+
+  useEffect(() => {
+    startAutoPlay();
+    return stopAutoPlay;
+  }, [startAutoPlay, stopAutoPlay]);
+
+  const goTo = useCallback((idx: number) => {
+    setDirection(idx > activeIndex ? 1 : -1);
+    setActiveIndex(idx);
+    stopAutoPlay();
+    startAutoPlay();
+  }, [activeIndex, stopAutoPlay, startAutoPlay]);
+
+  const goPrev = useCallback(() => {
+    setDirection(-1);
+    setActiveIndex(prev => (prev - 1 + totalSlides) % totalSlides);
+    stopAutoPlay();
+    startAutoPlay();
+  }, [totalSlides, stopAutoPlay, startAutoPlay]);
+
+  const goNext = useCallback(() => {
+    setDirection(1);
+    setActiveIndex(prev => (prev + 1) % totalSlides);
+    stopAutoPlay();
+    startAutoPlay();
+  }, [totalSlides, stopAutoPlay, startAutoPlay]);
+
+  const story = SUCCESS_STORIES[activeIndex];
+  const colors = CASE_COLORS[story.caseType] || CASE_COLORS['Camp Lejeune'];
+
+  const slideVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 300 : -300, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -300 : 300, opacity: 0 }),
+  };
+
+  return (
+    <div className="relative">
+      {/* Main Card */}
+      <div className="max-w-5xl mx-auto">
+        <Card className="overflow-hidden border-0 shadow-xl bg-white dark:bg-gray-800/50">
+          <div className="grid md:grid-cols-2 gap-0">
+            {/* Left: Image */}
+            <div className="relative h-72 md:h-auto md:min-h-[480px] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={story.image}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={story.image}
+                    alt={`Photo of ${story.name}`}
+                    fill
+                    className="object-cover object-top"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority={activeIndex === 0}
+                  />
+                  {/* Gradient overlay for text readability on mobile */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-transparent" />
+                </motion.div>
+              </AnimatePresence>
+              {/* Case type badge on image */}
+              <div className="absolute top-4 left-4 z-10">
+                <Badge className={`${colors.bg} ${colors.text} ${colors.border} border text-xs font-semibold backdrop-blur-sm`}>
+                  {story.caseType}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Right: Content */}
+            <div className="p-6 md:p-8 lg:p-10 flex flex-col justify-center">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={story.name}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  {/* Before → After */}
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="flex-1 text-center p-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50">
+                      <p className="text-[10px] uppercase tracking-wider text-red-500 dark:text-red-400 font-semibold mb-0.5">Before</p>
+                      <p className="text-sm font-bold text-red-700 dark:text-red-300">{story.beforeStatus}</p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <ArrowRight className="w-5 h-5 text-gold" />
+                    </div>
+                    <div className="flex-1 text-center p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50">
+                      <p className="text-[10px] uppercase tracking-wider text-emerald-500 dark:text-emerald-400 font-semibold mb-0.5">After</p>
+                      <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{story.afterStatus}</p>
+                    </div>
+                  </div>
+
+                  {/* Name & Location */}
+                  <h4 className="text-xl md:text-2xl font-bold text-navy dark:text-white mb-1" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                    {story.name}
+                  </h4>
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm mb-4">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{story.location}</span>
+                    <span className="mx-1 text-gray-300 dark:text-gray-600">|</span>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Resolved in {story.timeline}</span>
+                  </div>
+
+                  {/* Quote */}
+                  <p className="text-navy/80 dark:text-gray-300 text-sm md:text-base leading-relaxed mb-5 italic">
+                    &ldquo;{story.quote}&rdquo;
+                  </p>
+
+                  {/* Highlight */}
+                  <div className={`flex items-start gap-2.5 p-3 rounded-xl ${colors.bg} border ${colors.border}`}>
+                    <CheckCircle2 className={`w-5 h-5 ${colors.text} shrink-0 mt-0.5`} />
+                    <p className={`text-sm ${colors.text} font-medium`}>{story.highlight}</p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Navigation Dots + Arrows */}
+      <div className="flex items-center justify-center gap-4 mt-6">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={goPrev}
+          className="rounded-full w-9 h-9 border-gray-200 dark:border-gray-700 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-colors"
+          aria-label="Previous story"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+
+        <div className="flex items-center gap-2" role="tablist" aria-label="Success stories navigation">
+          {SUCCESS_STORIES.map((s, i) => (
+            <button
+              key={s.name}
+              onClick={() => goTo(i)}
+              role="tab"
+              aria-selected={i === activeIndex}
+              aria-label={`View story of ${s.name}`}
+              className={`
+                rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold
+                ${i === activeIndex
+                  ? 'w-8 h-3 bg-gold'
+                  : 'w-3 h-3 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                }
+              `}
+            />
+          ))}
+        </div>
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={goNext}
+          className="rounded-full w-9 h-9 border-gray-200 dark:border-gray-700 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-colors"
+          aria-label="Next story"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+
+      {/* Counter */}
+      <p className="text-center text-xs text-muted-foreground mt-3">
+        {activeIndex + 1} of {totalSlides} stories
+      </p>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    SECTION: TESTIMONIALS CAROUSEL
    ═══════════════════════════════════════════════════════════════ */
 
@@ -1660,40 +1934,17 @@ const TestimonialsSection = memo(function TestimonialsSection() {
         </motion.div>
         <p className="text-center text-xs text-muted-foreground mt-6 max-w-2xl mx-auto">Individual results may vary. Testimonials reflect individual experiences and are not indicative of future results.</p>
 
-        {/* Video Testimonials */}
-        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-12">
-          <h3 className="text-2xl font-bold text-navy dark:text-white mb-6 text-center" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+        {/* Client Success Stories Carousel */}
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-16">
+          <h3 className="text-2xl md:text-3xl font-bold text-navy dark:text-white mb-3 text-center" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Client <span className="gradient-text-gold">Success Stories</span>
           </h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            {VIDEO_TESTIMONIALS.map((vt) => (
-              <Card key={vt.name} className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-shadow group">
-                <div className={`relative h-48 bg-gradient-to-br ${vt.color} flex items-center justify-center cursor-pointer`}>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-                  <div className="relative z-10 flex flex-col items-center">
-                    <PlayCircle className="w-14 h-14 text-white/90 group-hover:scale-110 transition-transform" />
-                  </div>
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-white/20 text-white border-white/30 text-[10px] font-medium backdrop-blur-sm">
-                      Video Coming Soon
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center text-white font-bold text-xs">
-                      {vt.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-navy dark:text-gray-100 text-sm">{vt.name}</p>
-                      <p className="text-xs text-muted-foreground">{vt.caseType}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground dark:text-gray-400 italic">&ldquo;{vt.quote}&rdquo;</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto text-sm md:text-base">
+            Real people, real results. Hear from claimants who turned their situations around with our help.
+          </p>
+          <LazySection type="cards">
+            <SuccessStoriesCarousel />
+          </LazySection>
         </motion.div>
       </div>
     </section>
