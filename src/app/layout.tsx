@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://claimguardpro.com'),
+  alternates: {
+    canonical: '/',
+  },
   title: "ClaimGuard Pro — Your Claims. Our Mission. Maximum Compensation.",
   description:
     "ClaimGuard Pro helps claimants in mass tort class action lawsuits track their claims, correct documentation issues, and maximize their compensation. Free consultation available.",
@@ -185,9 +189,23 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1B2A4A" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* Google Analytics - eslint-disable-next-line @next/next/next-script-for-ga */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+            `,
+          }}
         />
       </head>
       <body

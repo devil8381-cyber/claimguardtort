@@ -95,6 +95,8 @@ import {
   Twitter,
   Cookie,
   FileDown,
+  PlayCircle,
+  HandHeart,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -343,6 +345,23 @@ For questions about these Terms, contact us at:
 Email: legal@claimguardpro.com
 Phone: (800) 555-0199
 Address: 123 Justice Avenue, Washington, DC 20001`;
+
+const SOCIAL_PROOF_DATA = [
+  { name: 'Sarah M.', location: 'Austin, TX', action: 'just filed a Camp Lejeune claim', time: '2 minutes ago' },
+  { name: 'James R.', location: 'Columbus, OH', action: 'checked their Roundup claim status', time: '5 minutes ago' },
+  { name: 'Linda K.', location: 'Phoenix, AZ', action: 'was approved for a Talc claim', time: '8 minutes ago' },
+  { name: 'Robert D.', location: 'Charlotte, NC', action: 'submitted Hernia Mesh documents', time: '12 minutes ago' },
+  { name: 'Maria S.', location: 'Miami, FL', action: 'completed the Eligibility Quiz', time: '15 minutes ago' },
+  { name: 'David W.', location: 'Denver, CO', action: 'downloaded their claim report', time: '18 minutes ago' },
+  { name: 'Patricia H.', location: 'Seattle, WA', action: 'booked a free consultation', time: '22 minutes ago' },
+  { name: 'Michael B.', location: 'Chicago, IL', action: 'referred a friend for a claim', time: '25 minutes ago' },
+];
+
+const VIDEO_TESTIMONIALS = [
+  { name: 'Angela T.', caseType: 'Camp Lejeune', quote: 'ClaimGuard Pro turned my denied claim into an approved settlement. The team was incredible.', color: 'from-blue-500 to-blue-700' },
+  { name: 'George P.', caseType: 'Roundup', quote: 'After 3 years of fighting alone, their team helped me get results in just 6 months.', color: 'from-emerald-500 to-emerald-700' },
+  { name: 'Susan L.', caseType: 'Talcum Powder', quote: 'The document specialist caught errors I never would have found. They saved my claim.', color: 'from-purple-500 to-purple-700' },
+];
 
 const DISCLAIMER_TEXT = `Legal Disclaimer
 
@@ -787,7 +806,7 @@ function HeroSection() {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y: bgY }}>
-        <img src="/hero-bg.png" alt="" className="w-full h-full object-cover" aria-hidden="true" />
+        <img src="/hero-bg.png" alt="" className="w-full h-full object-cover" fetchPriority="high" aria-hidden="true" />
         <div className="hero-gradient absolute inset-0" />
       </motion.div>
 
@@ -827,9 +846,30 @@ function HeroSection() {
           </motion.div>
 
           <motion.div initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.5 } } }} className="mt-12 flex flex-wrap gap-6 text-white/60 text-sm">
-            <div className="flex items-center gap-2"><Lock className="w-4 h-4 text-gold" /><span>Secure & Confidential</span></div>
-            <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>No Upfront Fees</span></div>
-            <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-gold" /><span>24/7 Support Available</span></div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 cursor-help"><Lock className="w-4 h-4 text-gold" /><span>Secure & Confidential</span></div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p className="max-w-xs">256-bit encryption protects all your personal and medical information. HIPAA-compliant systems.</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 cursor-help"><CheckCircle2 className="w-4 h-4 text-gold" /><span>No Upfront Fees</span></div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p className="max-w-xs">Initial tracking and eligibility assessment are free. We only charge on contingency if your claim succeeds.</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 cursor-help"><Clock className="w-4 h-4 text-gold" /><span>24/7 Support Available</span></div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p className="max-w-xs">Round-the-clock support via phone, email, and live chat. Average response time under 30 seconds.</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </motion.div>
         </div>
       </div>
@@ -955,33 +995,40 @@ function ServicesSection() {
           <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {SERVICES_DATA.map((service, idx) => (
               <motion.div key={service.title} variants={fadeInUp}>
-                <Card className="group h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
-                  <CardHeader className="pb-3 relative">
-                    <div className="w-12 h-12 rounded-xl bg-navy/5 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-gold/10 transition-colors">
-                      <service.icon className="w-6 h-6 text-navy dark:text-gray-300 group-hover:text-gold transition-colors" />
-                    </div>
-                    <CardTitle className="text-lg font-bold text-navy dark:text-gray-100">{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0 relative">
-                    <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-3">{service.description}</p>
-                    <button
-                      onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-                      aria-expanded={expandedIdx === idx}
-                      className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors"
-                    >
-                      {expandedIdx === idx ? 'Show Less' : 'Learn More'}
-                      {expandedIdx === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    </button>
-                    <AnimatePresence>
-                      {expandedIdx === idx && (
-                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
-                          <p className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">{service.detail}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Card className="group h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
+                        <CardHeader className="pb-3 relative">
+                          <div className="w-12 h-12 rounded-xl bg-navy/5 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-gold/10 transition-colors">
+                            <service.icon className="w-6 h-6 text-navy dark:text-gray-300 group-hover:text-gold transition-colors" />
+                          </div>
+                          <CardTitle className="text-lg font-bold text-navy dark:text-gray-100">{service.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 relative">
+                          <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-3">{service.description}</p>
+                          <button
+                            onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+                            aria-expanded={expandedIdx === idx}
+                            className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors"
+                          >
+                            {expandedIdx === idx ? 'Show Less' : 'Learn More'}
+                            {expandedIdx === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </button>
+                          <AnimatePresence>
+                            {expandedIdx === idx && (
+                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                                <p className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">{service.detail}</p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </CardContent>
+                      </Card>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom"><p className="max-w-xs">{service.detail}</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </motion.div>
             ))}
           </motion.div>
@@ -1229,15 +1276,33 @@ function EligibilityQuizSection() {
    SECTION: WHY CHOOSE US / STATS
    ═══════════════════════════════════════════════════════════════ */
 
+const STATS_TOOLTIP_DATA: Record<string, string> = {
+  'Claims Assisted': 'Over 1,250 claimants have trusted us to guide them through the mass tort claims process since 2009.',
+  'Success Rate': '98% of our clients who complete the full process receive a favorable outcome on their claims.',
+  'Recovered': 'Our clients have recovered a combined total of over $47 million in settlements and compensation.',
+  'Years Experience': 'Our team brings 15+ years of specialized experience in mass tort litigation and claims management.',
+  'Dedicated Support': 'Our specialists are available 24 hours a day, 7 days a week via phone, email, and live chat.',
+  'Secure & Confidential': 'Bank-level 256-bit encryption with HIPAA-compliant systems. Regular third-party security audits.',
+};
+
 function StatCardComponent({ icon: Icon, value, suffix, label, inView, progress, prefix = '' }: {
   icon: typeof Users; value: number; suffix: string; label: string; inView: boolean; progress: number; prefix?: string;
 }) {
   const count = useCounter(value, inView);
   return (
     <motion.div variants={fadeInUp} className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
-      <Icon className="w-8 h-8 text-gold mx-auto mb-3" />
-      <div className="text-3xl sm:text-4xl font-bold text-white mb-1">{prefix}{count}{suffix}</div>
-      <div className="text-white/50 text-sm font-medium mb-3">{label}</div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>
+              <Icon className="w-8 h-8 text-gold mx-auto mb-3" />
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-1">{prefix}{count}{suffix}</div>
+              <div className="text-white/50 text-sm font-medium mb-3">{label}</div>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom"><p className="max-w-xs">{STATS_TOOLTIP_DATA[label] || 'Learn more about this metric.'}</p></TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
         <motion.div initial={{ width: 0 }} animate={inView ? { width: `${progress}%` } : { width: 0 }} transition={{ duration: 1.5, ease: 'easeOut', delay: 0.3 }} className="h-full bg-gradient-to-r from-gold to-gold-light rounded-full" />
       </div>
@@ -1288,7 +1353,8 @@ const TestimonialsSection = memo(function TestimonialsSection() {
           </h2>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn}>
-          <Carousel opts={{ loop: true, align: 'start' }} className="w-full">
+          <LazySection type="cards">
+            <Carousel opts={{ loop: true, align: 'start' }} className="w-full">
             <CarouselContent>
               {TESTIMONIALS_DATA.map((t) => (
                 <CarouselItem key={t.name} className="md:basis-1/2 lg:basis-1/3 pl-4">
@@ -1322,8 +1388,45 @@ const TestimonialsSection = memo(function TestimonialsSection() {
               <CarouselNext className="static translate-y-0 bg-navy/10 hover:bg-navy/20 border-none dark:bg-gray-700" />
             </div>
           </Carousel>
+          </LazySection>
         </motion.div>
         <p className="text-center text-xs text-muted-foreground mt-6 max-w-2xl mx-auto">Individual results may vary. Testimonials reflect individual experiences and are not indicative of future results.</p>
+
+        {/* Video Testimonials */}
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-12">
+          <h3 className="text-2xl font-bold text-navy dark:text-white mb-6 text-center" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Client <span className="gradient-text-gold">Success Stories</span>
+          </h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {VIDEO_TESTIMONIALS.map((vt) => (
+              <Card key={vt.name} className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-shadow group">
+                <div className={`relative h-48 bg-gradient-to-br ${vt.color} flex items-center justify-center cursor-pointer`}>
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+                  <div className="relative z-10 flex flex-col items-center">
+                    <PlayCircle className="w-14 h-14 text-white/90 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-white/20 text-white border-white/30 text-[10px] font-medium backdrop-blur-sm">
+                      Video Coming Soon
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center text-white font-bold text-xs">
+                      {vt.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-navy dark:text-gray-100 text-sm">{vt.name}</p>
+                      <p className="text-xs text-muted-foreground">{vt.caseType}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground dark:text-gray-400 italic">&ldquo;{vt.quote}&rdquo;</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -2027,31 +2130,37 @@ function NewsletterSection() {
 
 const BLOG_ARTICLES = [
   {
-    title: 'Understanding Mass Tort vs Class Action Lawsuits',
-    excerpt: 'Learn the key differences between mass tort and class action cases, and how each affects your claim strategy, compensation timeline, and legal rights.',
-    readTime: '5 min read',
-    category: 'Legal Guide',
-    icon: Scale,
+    id: 'camp-lejeune-guide',
+    title: 'The Complete Guide to Camp Lejeune Water Contamination Claims',
+    excerpt: 'Everything you need to know about filing a claim under the Camp Lejeune Justice Act...',
+    date: 'Jan 15, 2025',
+    readTime: '8 min read',
+    category: 'Camp Lejeune',
+    icon: Building2,
     color: 'bg-blue-500',
-    content: 'Mass tort and class action lawsuits are two distinct legal mechanisms designed to handle situations where many people have been harmed by the same product, device, or practice. While they share similarities, understanding the differences is crucial for anyone considering legal action.\n\nIn a class action lawsuit, one or more plaintiffs file a case on behalf of a larger group, known as a "class." All members of the class are bound by the outcome of the case, whether favorable or not. The court certifies the class, and any settlement or judgment is divided among class members according to a predetermined formula. This means individual circumstances and damages may not be fully accounted for.\n\nIn a mass tort, each plaintiff files their own individual lawsuit, but the cases are grouped together for pretrial proceedings to improve efficiency. This approach preserves each claimant\'s right to present their unique damages, medical history, and circumstances. Mass torts are particularly common in pharmaceutical liability cases, environmental contamination claims, and defective medical device lawsuits.\n\nKey differences include: individual control over your case in mass torts versus collective decisions in class actions; potentially higher compensation in mass torts because individual damages are considered; longer timelines in mass torts since each case is evaluated separately; and the need for more active participation from each plaintiff in mass tort proceedings.\n\nFor claimants, the choice between these paths depends on the specifics of your case, the nature of your injuries, and the settlement structure. Our team can help you understand which approach best serves your interests and guide you through the process.',
+    content: 'The Camp Lejeune Justice Act of 2022 created a pathway for veterans, their families, and civilians who were exposed to contaminated water at Camp Lejeune between 1953 and 1987 to seek compensation. Eligible individuals must have lived or worked at the base for at least 30 days during that period and later developed one of several qualifying conditions, including kidney cancer, liver cancer, non-Hodgkin lymphoma, leukemia, multiple myeloma, Parkinson\'s disease, and various other cancers and diseases. The filing process requires comprehensive documentation: military service records or proof of residence, medical records linking your condition to the exposure, and a detailed timeline. Claims are reviewed by the Navy and Justice Department, with current processing times ranging from 6 to 18 months. Our specialists recommend gathering all documentation before filing to avoid the common "Correction Needed" status that delays an estimated 30% of claims.',
   },
   {
-    title: 'How to Prepare Your Claim Documentation',
-    excerpt: 'A comprehensive checklist of documents you need to support your mass tort claim, from medical records to proof of exposure and everything in between.',
-    readTime: '7 min read',
-    category: 'Step-by-Step',
-    icon: ClipboardCheck,
-    color: 'bg-emerald-500',
-    content: 'Preparing thorough documentation is the single most important step in building a strong mass tort claim. Missing or incomplete documents are the primary reason claims get denied or delayed. This guide walks you through exactly what you need.\n\n1. Proof of Identity and Residence: You need a valid government-issued photo ID, proof of your address during the relevant time period (utility bills, lease agreements, or tax returns), and any documents showing name changes if applicable.\n\n2. Medical Records: Gather all medical records that document your condition, including diagnosis reports, treatment records, surgical reports, pathology results, and prescription histories. Request records from all healthcare providers who treated your condition. Make sure to obtain records that clearly establish a timeline connecting your exposure to your diagnosis.\n\n3. Proof of Exposure or Use: This varies by case type. For Camp Lejeune claims, you need military service records or base housing documentation. For Roundup claims, you need purchase receipts, agricultural supply invoices, or employer records showing herbicide use. For talc claims, you need purchase records or photographs showing product use over time.\n\n4. Employment and Financial Records: Documents showing lost wages, reduced earning capacity, or other financial impacts of your condition. This includes tax returns, pay stubs, and employer statements.\n\n5. Personal Statements: A detailed written account of how your condition has affected your daily life, including physical limitations, emotional impact, and changes to your quality of life.\n\nOrganize all documents chronologically and keep copies of everything you submit. Our document specialists can review your preparation and identify any gaps before submission, significantly improving your chances of approval.',
-  },
-  {
-    title: 'What to Do If Your Claim Is Denied',
-    excerpt: 'A denied claim is not the end of the road. Learn the appeals process, common denial reasons, and how to build a stronger case for reconsideration.',
+    id: 'roundup-update',
+    title: 'Roundup Lawsuit 2025: Latest Settlement Updates and Deadlines',
+    excerpt: 'Stay informed about the latest developments in the Roundup (glyphosate) litigation...',
+    date: 'Jan 10, 2025',
     readTime: '6 min read',
-    category: 'Claims Help',
-    icon: AlertCircle,
+    category: 'Roundup',
+    icon: Leaf,
+    color: 'bg-emerald-500',
+    content: 'The Roundup (glyphosate) litigation continues to evolve in 2025 with significant settlement developments. Bayer, which acquired Monsanto in 2018, has set aside approximately $16 billion for settlements. Current settlement offers range from $5,000 to over $200,000 depending on the severity of diagnosis, duration of Roundup use, and individual circumstances. To qualify, claimants typically need a diagnosis of non-Hodgkin lymphoma or a related condition, proof of Roundup use for at least one year, and medical records supporting the diagnosis. Filing deadlines vary by state, with some bellwether trials scheduled throughout 2025. Key documents needed include purchase receipts or employer records showing herbicide use, complete medical records with pathology reports, and a physician\'s opinion linking the diagnosis to glyphosate exposure. The settlement program remains open, but claimants are encouraged to file as early as possible as deadlines may tighten.',
+  },
+  {
+    id: 'documentation-tips',
+    title: '10 Critical Documents You Need for Your Mass Tort Claim',
+    excerpt: 'Missing documents is the #1 reason claims get delayed or denied...',
+    date: 'Jan 5, 2025',
+    readTime: '10 min read',
+    category: 'Tips & Guides',
+    icon: ClipboardCheck,
     color: 'bg-amber-500',
-    content: 'Receiving a claim denial can be devastating, but it is important to understand that a denial is not final and does not mean you have no case. Many claims are initially denied due to documentation issues rather than a lack of merit. Here is what you should do.\n\nStep 1: Understand the Reason for Denial. Read the denial letter carefully. The claims administrator is required to explain why your claim was denied. Common reasons include: incomplete medical documentation, insufficient proof of exposure, missed filing deadlines, incorrect forms or signatures, and failure to meet specific eligibility criteria.\n\nStep 2: Gather Additional Evidence. Once you understand the gap, work to fill it. This may involve obtaining additional medical opinions, securing missing records from healthcare providers, gathering more detailed proof of product use, or obtaining expert testimony. Our team can help identify exactly what additional evidence would strengthen your appeal.\n\nStep 3: File a Timely Appeal. Most settlement programs have strict appeal deadlines, often 30 to 90 days from the denial date. Missing this deadline means permanently losing your right to appeal. Mark the deadline on your calendar and begin preparing your appeal immediately.\n\nStep 4: Submit a Detailed Appeal Letter. Your appeal should address each reason for denial point by point, providing new evidence and a clear explanation of why the denial was incorrect. Be specific, factual, and professional.\n\nStep 5: Consider Legal Representation. For complex denials or appeals involving significant compensation, having an attorney review your case can dramatically improve your chances. Our network of experienced mass tort attorneys specializes in claim appeals and has a strong track record of reversing denials.\n\nRemember, persistence pays off. Our data shows that claims with professional assistance on appeal have a significantly higher approval rate than those filed without support.',
+    content: 'Documentation is the backbone of any successful mass tort claim. Here are the 10 critical documents you need: (1) Government-issued photo ID — verify your identity; (2) Proof of residence during the relevant time period — utility bills, lease agreements, or tax returns; (3) Complete medical records — diagnosis reports, treatment records, and prescription histories from all providers; (4) Proof of exposure — purchase receipts, employment records, or service records showing product use or environmental exposure; (5) Physician\'s opinion letter — a written statement from your doctor linking your condition to the exposure; (6) Timeline documentation — a chronological account connecting exposure to diagnosis; (7) Financial impact records — tax returns, pay stubs, or employer statements showing lost wages; (8) Personal impact statement — a detailed account of how your condition affects daily life; (9) Insurance records — documentation of medical expenses covered and out-of-pocket costs; (10) Prior claim records — any previous claims or appeals related to your condition. Organize all documents chronologically and keep copies of everything you submit.',
   },
 ];
 
@@ -2405,14 +2514,27 @@ function ContactSection() {
 
           <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.2 } } }} className="lg:col-span-2 space-y-6">
             <Card className="border-0 shadow-md overflow-hidden bg-white dark:bg-gray-800/50 dark:border-gray-700">
-              <div className="bg-navy/5 dark:bg-gray-900 h-48 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-8 h-8 text-gold mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-navy dark:text-white">123 Justice Avenue</p>
-                  <p className="text-xs text-muted-foreground dark:text-gray-400">Washington, DC 20001</p>
-                </div>
+              <div className="rounded-t-lg overflow-hidden">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3105.0!2d-77.02!3d38.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDU0JzAwLjAiTiA3N8KwMDEnMTIuMCJX!5e0!3m2!1sen!2sus!4v1"
+                  width="100%"
+                  height="200"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="ClaimGuard Pro Office Location"
+                />
               </div>
               <CardContent className="p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><MapPin className="w-5 h-5 text-gold" /></div>
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Office Address</p>
+                    <p className="text-sm font-medium text-navy dark:text-gray-200">123 Justice Avenue</p>
+                    <p className="text-sm text-muted-foreground dark:text-gray-400">Washington, DC 20001</p>
+                  </div>
+                </div>
                 {[
                   { icon: Phone, label: 'Call Us', value: '(800) 555-0199', href: 'tel:8005550199' },
                   { icon: Mail, label: 'Email', value: 'info@claimguardpro.com', href: 'mailto:info@claimguardpro.com' },
@@ -3021,6 +3143,8 @@ function AdminPanel() {
     firstName: '', lastName: '', email: '', phone: '', trackingId: '',
     claimType: '', status: 'Pending', description: '',
   });
+  const [selectedClaimIds, setSelectedClaimIds] = useState<Set<string>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState('');
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -3232,6 +3356,47 @@ function AdminPanel() {
 
   const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
 
+  const handleBulkStatusUpdate = async () => {
+    if (selectedClaimIds.size === 0 || !bulkStatus) return;
+    try {
+      const results = await Promise.all(
+        Array.from(selectedClaimIds).map(async (id) => {
+          const res = await fetch(`/api/admin/claims/${id}`, {
+            ...ADMIN_HEADERS, method: 'PUT',
+            headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: bulkStatus }),
+          });
+          return res.ok;
+        })
+      );
+      const successCount = results.filter(Boolean).length;
+      toast.success(`Updated ${successCount} claim(s) to ${bulkStatus}.`);
+      setSelectedClaimIds(new Set());
+      setBulkStatus('');
+      fetchClaims();
+      fetchDashboard();
+    } catch {
+      toast.error('Bulk update failed.');
+    }
+  };
+
+  const toggleClaimSelection = (id: string) => {
+    setSelectedClaimIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAllClaims = () => {
+    if (selectedClaimIds.size === filteredClaims.length) {
+      setSelectedClaimIds(new Set());
+    } else {
+      setSelectedClaimIds(new Set(filteredClaims.map(c => (c as Record<string, unknown>).id as string)));
+    }
+  };
+
   return (
     <>
       {/* PIN Dialog */}
@@ -3351,18 +3516,31 @@ function AdminPanel() {
                           <CardHeader><CardTitle className="text-base">Claims by Status</CardTitle></CardHeader>
                           <CardContent>
                             <div className="space-y-3">
-                              {Object.entries(((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.byStatus ?? {}).map(([status, count]) => (
-                                <div key={status} className="flex items-center gap-3">
-                                  <Badge className={`${getStatusColor(status)} w-36 justify-center`}>{status}</Badge>
-                                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                                    <div
-                                      className="h-3 rounded-full bg-[#1B2A4A]"
-                                      style={{ width: `${(((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.total ?? 1) > 0 ? Math.round(((count as number) / ((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.total ?? 1)) * 100 : 0}%` }}
-                                    />
+                              {Object.entries(((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.byStatus ?? {}).map(([status, count]) => {
+                                const total = ((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.total ?? 1;
+                                const pct = Math.round(((count as number) / total) * 100);
+                                const barColors: Record<string, string> = {
+                                  'Pending': 'bg-yellow-400',
+                                  'Under Review': 'bg-blue-400',
+                                  'Approved': 'bg-emerald-400',
+                                  'Denied': 'bg-red-400',
+                                  'Correction Needed': 'bg-amber-400',
+                                };
+                                return (
+                                  <div key={status} className="space-y-1">
+                                    <div className="flex items-center justify-between text-sm">
+                                      <Badge className={`${getStatusColor(status)} text-xs`}>{status}</Badge>
+                                      <span className="text-muted-foreground text-xs">{count as number} ({pct}%)</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                      <div
+                                        className={`h-3 rounded-full transition-all duration-500 ${barColors[status] || 'bg-[#1B2A4A]'}`}
+                                        style={{ width: `${pct}%` }}
+                                      />
+                                    </div>
                                   </div>
-                                  <span className="text-sm font-semibold w-8 text-right">{count as number}</span>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </CardContent>
                         </Card>
@@ -3383,7 +3561,25 @@ function AdminPanel() {
                             className="pl-9"
                           />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
+                          {selectedClaimIds.size > 0 && (
+                            <div className="flex gap-2 items-center">
+                              <span className="text-xs text-muted-foreground">{selectedClaimIds.size} selected</span>
+                              <Select value={bulkStatus} onValueChange={setBulkStatus}>
+                                <SelectTrigger className="w-[160px] h-8 text-xs">
+                                  <SelectValue placeholder="Bulk status..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {CLAIM_STATUSES.map(s => (
+                                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button variant="outline" size="sm" className="text-xs h-8" onClick={handleBulkStatusUpdate} disabled={!bulkStatus}>
+                                <RefreshCw className="w-3 h-3 mr-1" /> Apply
+                              </Button>
+                            </div>
+                          )}
                           <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/claims?export=csv'; }}>
                             <Download className="w-4 h-4 mr-1" /> Export CSV
                           </Button>
@@ -3397,6 +3593,15 @@ function AdminPanel() {
                         <Table>
                           <TableHeader>
                             <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                              <TableHead className="w-10">
+                                <input
+                                  type="checkbox"
+                                  checked={filteredClaims.length > 0 && selectedClaimIds.size === filteredClaims.length}
+                                  onChange={toggleAllClaims}
+                                  className="rounded border-gray-300"
+                                  aria-label="Select all claims"
+                                />
+                              </TableHead>
                               <TableHead>Tracking ID</TableHead>
                               <TableHead>Claimant</TableHead>
                               <TableHead>Status</TableHead>
@@ -3411,6 +3616,15 @@ function AdminPanel() {
                               const claimant = c.claimant as Record<string, unknown> | undefined;
                               return (
                                 <TableRow key={c.id as string} className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                                  <TableCell>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedClaimIds.has(c.id as string)}
+                                      onChange={() => toggleClaimSelection(c.id as string)}
+                                      className="rounded border-gray-300"
+                                      aria-label={`Select claim ${c.trackingId as string}`}
+                                    />
+                                  </TableCell>
                                   <TableCell className="font-mono font-semibold text-[#1B2A4A] dark:text-[#C5A55A]">{c.trackingId as string}</TableCell>
                                   <TableCell>{claimant ? `${claimant.firstName} ${claimant.lastName}` : 'N/A'}</TableCell>
                                   <TableCell>
@@ -3428,7 +3642,7 @@ function AdminPanel() {
                             })}
                             {filteredClaims.length === 0 && (
                               <TableRow>
-                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No claims found</TableCell>
+                                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No claims found</TableCell>
                               </TableRow>
                             )}
                           </TableBody>
@@ -3439,6 +3653,11 @@ function AdminPanel() {
 
                   {/* Claimants Tab */}
                   <TabsContent value="claimants">
+                    <div className="flex justify-end mb-4">
+                      <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/claimants?export=csv'; }}>
+                        <Download className="w-4 h-4 mr-1" /> Export CSV
+                      </Button>
+                    </div>
                     <div className="border rounded-lg overflow-hidden">
                       <Table>
                         <TableHeader>
@@ -3757,6 +3976,342 @@ function AdminPanel() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   COMPONENT: SPLASH SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+
+function SplashScreen() {
+  const [visible, setVisible] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  useEffect(() => {
+    const seen = sessionStorage.getItem('claimguard-splash-seen');
+    if (!seen) {
+      const showTimer = setTimeout(() => setVisible(true), 0);
+      const fadeTimer = setTimeout(() => {
+        setFadeOut(true);
+        sessionStorage.setItem('claimguard-splash-seen', 'true');
+      }, 2000);
+      const hideTimer = setTimeout(() => setVisible(false), 2500);
+      return () => { clearTimeout(showTimer); clearTimeout(fadeTimer); clearTimeout(hideTimer); };
+    }
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className={`splash-screen ${fadeOut ? 'fade-out' : ''}`} aria-hidden="true">
+      <div className="splash-icon">
+        <div className="w-16 h-16 rounded-2xl bg-gold flex items-center justify-center mb-4">
+          <Shield className="w-9 h-9 text-white" />
+        </div>
+      </div>
+      <h2 className="text-white text-xl font-bold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+        Claim<span className="text-gold">Guard</span> Pro
+      </h2>
+      <p className="text-white/50 text-sm mt-2">Loading...</p>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT: SOCIAL PROOF NOTIFICATION
+   ═══════════════════════════════════════════════════════════════ */
+
+function SocialProofNotification() {
+  const [current, setCurrent] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    if (dismissed) return;
+    const showTimer = setTimeout(() => {
+      setVisible(true);
+      const interval = setInterval(() => {
+        setCurrent(prev => (prev + 1) % SOCIAL_PROOF_DATA.length);
+        setVisible(true);
+      }, 15000 + Math.random() * 5000);
+      return () => clearInterval(interval);
+    }, 10000);
+    return () => clearTimeout(showTimer);
+  }, [dismissed]);
+
+  useEffect(() => {
+    if (!visible || dismissed) return;
+    const hideTimer = setTimeout(() => setVisible(false), 5000);
+    return () => clearTimeout(hideTimer);
+  }, [visible, current, dismissed]);
+
+  const data = SOCIAL_PROOF_DATA[current];
+
+  if (dismissed || !data) return null;
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, x: -80, y: 20 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          exit={{ opacity: 0, x: -80, y: 20 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="social-proof-notification"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 p-4 relative">
+            <button
+              onClick={() => setDismissed(true)}
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              aria-label="Dismiss notification"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div className="pr-6">
+                <p className="text-sm text-navy dark:text-gray-100">
+                  <span className="font-semibold">{data.name}</span> from {data.location}
+                </p>
+                <p className="text-xs text-muted-foreground dark:text-gray-400 mt-0.5">{data.action}</p>
+                <p className="text-[10px] text-muted-foreground/60 dark:text-gray-500 mt-1">{data.time}</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT: EXIT INTENT POPUP
+   ═══════════════════════════════════════════════════════════════ */
+
+function ExitIntentPopup() {
+  const [visible, setVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const shown = sessionStorage.getItem('claimguard-exit-shown');
+    if (shown) return;
+
+    const handler = (e: MouseEvent) => {
+      if (e.clientY < 10) {
+        setVisible(true);
+        sessionStorage.setItem('claimguard-exit-shown', 'true');
+        document.removeEventListener('mouseout', handler);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      document.addEventListener('mouseout', handler);
+    }, 15000);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mouseout', handler);
+    };
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (!email) return;
+    try {
+      await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, claimType: 'exit-intent', updates: true, deadlines: true, tips: true }),
+      });
+      setSubmitted(true);
+      setTimeout(() => setVisible(false), 2000);
+    } catch {
+      // silent
+    }
+  }, [email]);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="exit-intent-popup"
+          onClick={() => setVisible(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-[#1B2A4A] p-6 text-center relative">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C5A55A] via-[#D4B97A] to-[#C5A55A]" />
+              <div className="w-14 h-14 rounded-full bg-[#C5A55A]/20 flex items-center justify-center mx-auto mb-3">
+                <Shield className="w-7 h-7 text-[#C5A55A]" />
+              </div>
+              <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                Wait! Don&apos;t Leave Yet
+              </h3>
+              <p className="text-white/70 text-sm mt-1">Get a Free Case Evaluation Worth $500</p>
+            </div>
+            <div className="p-6">
+              {submitted ? (
+                <div className="text-center py-4">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+                  <p className="font-semibold text-navy dark:text-gray-100">You&apos;re in!</p>
+                  <p className="text-sm text-muted-foreground mt-1">We&apos;ll reach out shortly with your free evaluation.</p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground dark:text-gray-400 mb-4">
+                    Enter your email and our team will provide a complimentary case evaluation — no strings attached.
+                  </p>
+                  <div className="space-y-3">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    />
+                    <Button
+                      onClick={handleSubmit}
+                      className="w-full bg-[#C5A55A] hover:bg-[#A88A3F] text-white font-semibold"
+                    >
+                      Get My Free Evaluation
+                    </Button>
+                  </div>
+                  <button
+                    onClick={() => setVisible(false)}
+                    className="block mx-auto mt-4 text-xs text-muted-foreground hover:text-navy dark:hover:text-gray-300 transition-colors underline"
+                  >
+                    No thanks, I&apos;ll handle it alone
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: REFERRAL / AMBASSADOR CTA
+   ═══════════════════════════════════════════════════════════════ */
+
+function ReferralSection() {
+  const { ref, inView } = useInView(0.1);
+  const [form, setForm] = useState({
+    referrerName: '', referrerEmail: '', friendName: '', friendEmail: '', claimType: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = useCallback(async (e: FormEvent) => {
+    e.preventDefault();
+    if (!form.referrerName || !form.referrerEmail || !form.friendName || !form.friendEmail) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+        setForm({ referrerName: '', referrerEmail: '', friendName: '', friendEmail: '', claimType: '' });
+      } else {
+        toast.error(data.error || 'Please try again.');
+      }
+    } catch {
+      toast.error('Failed to submit referral.');
+    } finally {
+      setLoading(false);
+    }
+  }, [form]);
+
+  return (
+    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Referral Program</Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Help Others Get the <span className="gradient-text-gold">Compensation</span> They Deserve
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Refer a friend or family member and help them navigate their mass tort claim.</p>
+        </motion.div>
+
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }}>
+          <Card className="border-0 shadow-lg bg-[#F4F1EB] dark:bg-gray-800/50 dark:border-gray-700">
+            <CardContent className="p-6 md:p-8">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="ref-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Your Name *</Label>
+                    <Input id="ref-name" value={form.referrerName} onChange={(e) => setForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Jane Smith" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                  </div>
+                  <div>
+                    <Label htmlFor="ref-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Your Email *</Label>
+                    <Input id="ref-email" type="email" value={form.referrerEmail} onChange={(e) => setForm(f => ({ ...f, referrerEmail: e.target.value }))} placeholder="jane@example.com" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="friend-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Friend&apos;s Name *</Label>
+                    <Input id="friend-name" value={form.friendName} onChange={(e) => setForm(f => ({ ...f, friendName: e.target.value }))} placeholder="John Doe" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                  </div>
+                  <div>
+                    <Label htmlFor="friend-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Friend&apos;s Email *</Label>
+                    <Input id="friend-email" type="email" value={form.friendEmail} onChange={(e) => setForm(f => ({ ...f, friendEmail: e.target.value }))} placeholder="john@example.com" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="ref-claim-type" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Friend&apos;s Claim Type</Label>
+                  <Select value={form.claimType} onValueChange={(v) => setForm(f => ({ ...f, claimType: v }))}>
+                    <SelectTrigger id="ref-claim-type" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                      <SelectValue placeholder="Select a claim type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Other'].map(ct => (
+                        <SelectItem key={ct} value={ct}>{ct}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button type="submit" disabled={loading} className="w-full bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white font-semibold h-12 text-base">
+                  {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Sending...</> : <><Send className="w-5 h-5 mr-2" />Send Referral</>}
+                </Button>
+              </form>
+
+              <div className="flex flex-wrap justify-center gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                {[
+                  { icon: Lock, label: '100% Confidential' },
+                  { icon: CheckCircle2, label: 'No Obligation' },
+                  { icon: DollarSign, label: 'Free for Both Parties' },
+                ].map(badge => (
+                  <div key={badge.label} className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400">
+                    <badge.icon className="w-4 h-4 text-gold" />
+                    <span>{badge.label}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    MAIN PAGE COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 
@@ -3766,8 +4321,10 @@ export default function HomePage() {
       <a href="#hero" className="skip-to-content">
         Skip to main content
       </a>
+      <SplashScreen />
       <main id="main-content" className="min-h-screen flex flex-col">
-        <div className="scroll-progress-bar" id="scroll-progress-bar" />
+        <div className="scroll-progress-bar" id="scroll-progress-bar" role="status" aria-label="Page scroll progress" />
+        <div aria-live="polite" className="sr-only" id="sr-announcer" />
         <CountdownBanner />
         <Navbar />
         <HeroSection />
@@ -3785,13 +4342,16 @@ export default function HomePage() {
         <FAQSection />
         <CaseStudiesSection />
         <NewsletterSection />
+        <ReferralSection />
         <AboutSection />
         <ContactSection />
         <Footer />
-        <LiveChatWidget />
-        <BackToTopButton />
-        <CookieConsentBanner />
       </main>
+      <LiveChatWidget />
+      <BackToTopButton />
+      <CookieConsentBanner />
+      <SocialProofNotification />
+      <ExitIntentPopup />
     </>
   );
 }

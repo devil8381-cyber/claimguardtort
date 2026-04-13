@@ -597,9 +597,93 @@ body {
   animation: checkmark-draw 0.5s ease forwards;
 }
 
+/* ─── Focus Visible ─── */
+*:focus-visible {
+  outline: 2px solid #C5A55A;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scroll-progress-bar { display: none; }
+}
+
+/* ─── Splash Screen ─── */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #1B2A4A;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+.splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+.splash-screen .splash-icon {
+  animation: splash-pulse 1.5s ease-in-out infinite;
+}
+@keyframes splash-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.8; }
+}
+
+/* ─── Social Proof Notification ─── */
+.social-proof-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9998;
+  max-width: 320px;
+}
+
+/* ─── Exit Intent Popup ─── */
+.exit-intent-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
 /* ─── Print-friendly dialogs ─── */
 @media print {
-  .no-print {
+  .no-print, nav, .cookie-banner-enter, .chat-widget-enter,
+  .scroll-progress-bar, .back-to-top, .social-proof-notification,
+  .exit-intent-popup, .splash-screen {
     display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .card-gradient-border::before {
+    display: none;
+  }
+
+  @page {
+    margin: 2cm;
+    size: A4;
   }
 }
