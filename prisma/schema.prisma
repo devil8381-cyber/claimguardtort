@@ -1,84 +1,24 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
 model Claimant {
-  id         String    @id @default(cuid())
-  trackingId String?   @unique
+  id         String   @id @default(uuid())
+  trackingId String   @unique
   firstName  String
   lastName   String
   email      String
   phone      String?
   claimType  String?
-  status     String    @default("Submitted")
+  status     String   @default("Submitted")
   state      String?
   filedDate  String?
   notes      String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  claims     Claim[]
-  messages   ContactMessage[]
-
-  @@index([trackingId])
-  @@index([status])
-  @@index([claimType])
-}
-
-model Claim {
-  id          String         @id @default(cuid())
-  trackingId  String         @unique
-  status      String         @default("Pending")
-  claimType   String?
-  description String?
-  filedDate   DateTime?
-  lastUpdated DateTime       @default(now())
-  notes       String?
-  nextSteps   String?
-  claimantId  String
-  claimant    Claimant       @relation(fields: [claimantId], references: [id], onDelete: Cascade)
-  history     ClaimHistory[]
-
-  @@index([status])
-}
-
-model ClaimHistory {
-  id      String   @id @default(cuid())
-  status  String
-  notes   String?
-  date    DateTime @default(now())
-  claimId String
-  claim   Claim    @relation(fields: [claimId], references: [id], onDelete: Cascade)
-}
-
-model ContactMessage {
-  id        String    @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  claimId   String?
-  message   String
-  fileName  String?
-  fileSize  String?
-  read      Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  claimantId String?
-  claimant   Claimant? @relation(fields: [claimantId], references: [id], onDelete: Cascade)
-
-  @@index([read])
-  @@index([createdAt])
-}
-
-model Newsletter {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  claimType String?
-  updates   Boolean  @default(true)
-  deadlines Boolean  @default(true)
-  tips      Boolean  @default(true)
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

@@ -339,11 +339,6 @@ html.dark {
   from { width: 0; }
 }
 
-@keyframes badge-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 @keyframes chat-pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
@@ -389,7 +384,7 @@ html.dark {
 }
 
 .animate-badge-scroll {
-  animation: badge-scroll 20s linear infinite;
+  animation: marquee 20s linear infinite;
 }
 
 .animate-chat-pulse {

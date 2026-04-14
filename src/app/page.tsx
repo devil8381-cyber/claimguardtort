@@ -56,6 +56,7 @@ import {
   Eye,
   FileSignature,
   UserCheck,
+  UserPlus,
   HeadphonesIcon,
   Scale,
   Award,
@@ -409,133 +410,113 @@ const SP_FIRST_NAMES = [
 const SP_LAST_INITIALS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
 
 const SP_CITIES = [
-  { city: 'Houston', st: 'TX' },{ city: 'Phoenix', st: 'AZ' },{ city: 'San Antonio', st: 'TX' },
-  { city: 'San Diego', st: 'CA' },{ city: 'Dallas', st: 'TX' },{ city: 'San Jose', st: 'CA' },
-  { city: 'Austin', st: 'TX' },{ city: 'Jacksonville', st: 'FL' },{ city: 'Fort Worth', st: 'TX' },
-  { city: 'Columbus', st: 'OH' },{ city: 'Charlotte', st: 'NC' },{ city: 'San Francisco', st: 'CA' },
-  { city: 'Indianapolis', st: 'IN' },{ city: 'Seattle', st: 'WA' },{ city: 'Denver', st: 'CO' },
-  { city: 'Washington', st: 'DC' },{ city: 'Nashville', st: 'TN' },{ city: 'Oklahoma City', st: 'OK' },
-  { city: 'El Paso', st: 'TX' },{ city: 'Boston', st: 'MA' },{ city: 'Portland', st: 'OR' },
-  { city: 'Las Vegas', st: 'NV' },{ city: 'Memphis', st: 'TN' },{ city: 'Louisville', st: 'KY' },
-  { city: 'Baltimore', st: 'MD' },{ city: 'Milwaukee', st: 'WI' },{ city: 'Albuquerque', st: 'NM' },
-  { city: 'Tucson', st: 'AZ' },{ city: 'Fresno', st: 'CA' },{ city: 'Sacramento', st: 'CA' },
-  { city: 'Mesa', st: 'AZ' },{ city: 'Atlanta', st: 'GA' },{ city: 'Kansas City', st: 'MO' },
-  { city: 'Colorado Springs', st: 'CO' },{ city: 'Raleigh', st: 'NC' },{ city: 'Omaha', st: 'NE' },
-  { city: 'Miami', st: 'FL' },{ city: 'Long Beach', st: 'CA' },{ city: 'Virginia Beach', st: 'VA' },
-  { city: 'Oakland', st: 'CA' },{ city: 'Minneapolis', st: 'MN' },{ city: 'Tulsa', st: 'OK' },
-  { city: 'Arlington', st: 'TX' },{ city: 'Tampa', st: 'FL' },{ city: 'New Orleans', st: 'LA' },
-  { city: 'Wichita', st: 'KS' },{ city: 'Cleveland', st: 'OH' },{ city: 'Pittsburgh', st: 'PA' },
-  { city: 'Cincinnati', st: 'OH' },{ city: 'St. Louis', st: 'MO' },{ city: 'Salt Lake City', st: 'UT' },
-  { city: 'Huntsville', st: 'AL' },{ city: 'Boise', st: 'ID' },{ city: 'Greenville', st: 'SC' },
-  { city: 'Knoxville', st: 'TN' },{ city: 'Chattanooga', st: 'TN' },{ city: 'Mobile', st: 'AL' },
-  { city: 'Savannah', st: 'GA' },{ city: 'Richmond', st: 'VA' },{ city: 'Spokane', st: 'WA' },
-  { city: 'Reno', st: 'NV' },{ city: 'Biloxi', st: 'MS' },{ city: 'Charleston', st: 'SC' },
-  { city: 'Columbia', st: 'SC' },{ city: 'Montgomery', st: 'AL' },{ city: 'Jackson', st: 'MS' },
-  { city: 'Little Rock', st: 'AR' },{ city: 'Dayton', st: 'OH' },{ city: 'Wilmington', st: 'DE' },
-  { city: 'Harrisburg', st: 'PA' },{ city: 'Hartford', st: 'CT' },{ city: 'Providence', st: 'RI' },
-  { city: 'Des Moines', st: 'IA' },{ city: 'Madison', st: 'WI' },{ city: 'Lansing', st: 'MI' },
-  { city: 'Cheyenne', st: 'WY' },{ city: 'Bismarck', st: 'ND' },{ city: 'Helena', st: 'MT' },
-  { city: 'Pocatello', st: 'ID' },{ city: 'Salem', st: 'OR' },{ city: 'Olympia', st: 'WA' },
-  { city: 'Carson City', st: 'NV' },{ city: 'Springfield', st: 'IL' },{ city: 'Jefferson City', st: 'MO' },
-  { city: 'Annapolis', st: 'MD' },{ city: 'Trenton', st: 'NJ' },{ city: 'Dover', st: 'DE' },
-  { city: 'Concord', st: 'NH' },{ city: 'Augusta', st: 'ME' },{ city: 'Montpelier', st: 'VT' },
-  { city: 'Albany', st: 'NY' },{ city: 'Scranton', st: 'PA' },{ city: 'Pierre', st: 'SD' },
-  { city: 'Frankfort', st: 'KY' },{ city: 'Topeka', st: 'KS' },{ city: 'Santa Fe', st: 'NM' },
-  { city: 'Scottsdale', st: 'AZ' },{ city: 'Tallahassee', st: 'FL' },{ city: 'Atlanta', st: 'GA' },
-  { city: 'Honolulu', st: 'HI' },{ city: 'Anchorage', st: 'AK' },{ city: 'Fairbanks', st: 'AK' },
-  { city: 'Burlington', st: 'VT' },{ city: 'Portland', st: 'ME' },{ city: 'Manchester', st: 'NH' },
-  { city: 'New Haven', st: 'CT' },{ city: 'Newark', st: 'NJ' },{ city: 'Buffalo', st: 'NY' },
-  { city: 'Rochester', st: 'NY' },{ city: 'Syracuse', st: 'NY' },{ city: 'Yonkers', st: 'NY' },
-  { city: 'Erie', st: 'PA' },{ city: 'Allentown', st: 'PA' },{ city: 'Reading', st: 'PA' },
-  { city: 'Scranton', st: 'PA' },{ city: 'Lancaster', st: 'PA' },{ city: 'York', st: 'PA' },
-  { city: 'Birmingham', st: 'AL' },{ city: 'Grand Rapids', st: 'MI' },{ city: 'Warren', st: 'MI' },
-  { city: 'Sterling Heights', st: 'MI' },{ city: 'Ann Arbor', st: 'MI' },{ city: 'Lansing', st: 'MI' },
-  { city: 'Flint', st: 'MI' },{ city: 'Detroit', st: 'MI' },{ city: 'Columbus', st: 'GA' },
-  { city: 'Savannah', st: 'GA' },{ city: 'Macon', st: 'GA' },{ city: 'Athens', st: 'GA' },
-  { city: 'Gainesville', st: 'FL' },{ city: 'Orlando', st: 'FL' },{ city: 'Tampa', st: 'FL' },
-  { city: 'St. Petersburg', st: 'FL' },{ city: 'Jacksonville', st: 'FL' },{ city: 'Fort Myers', st: 'FL' },
-  { city: 'Naples', st: 'FL' },{ city: 'Pensacola', st: 'FL' },{ city: 'Tallahassee', st: 'FL' },
-  { city: 'New Orleans', st: 'LA' },{ city: 'Baton Rouge', st: 'LA' },{ city: 'Shreveport', st: 'LA' },
-  { city: 'Lafayette', st: 'LA' },{ city: 'Lake Charles', st: 'LA' },{ city: 'Biloxi', st: 'MS' },
-  { city: 'Gulfport', st: 'MS' },{ city: 'Jackson', st: 'MS' },{ city: 'Mobile', st: 'AL' },
-  { city: 'Montgomery', st: 'AL' },{ city: 'Birmingham', st: 'AL' },{ city: 'Huntsville', st: 'AL' },
-  { city: 'Memphis', st: 'TN' },{ city: 'Nashville', st: 'TN' },{ city: 'Knoxville', st: 'TN' },
-  { city: 'Chattanooga', st: 'TN' },{ city: 'Louisville', st: 'KY' },{ city: 'Lexington', st: 'KY' },
-  { city: 'Bowling Green', st: 'KY' },{ city: 'Owensboro', st: 'KY' },{ city: 'Indianapolis', st: 'IN' },
-  { city: 'Fort Wayne', st: 'IN' },{ city: 'Evansville', st: 'IN' },{ city: 'South Bend', st: 'IN' },
-  { city: 'Carmel', st: 'IN' },{ city: 'Cincinnati', st: 'OH' },{ city: 'Columbus', st: 'OH' },
-  { city: 'Cleveland', st: 'OH' },{ city: 'Dayton', st: 'OH' },{ city: 'Toledo', st: 'OH' },
-  { city: 'Akron', st: 'OH' },{ city: 'Canton', st: 'OH' },{ city: 'Parma', st: 'OH' },
-  { city: 'Youngstown', st: 'OH' },{ city: 'Chicago', st: 'IL' },{ city: 'Aurora', st: 'IL' },
-  { city: 'Rockford', st: 'IL' },{ city: 'Joliet', st: 'IL' },{ city: 'Naperville', st: 'IL' },
-  { city: 'Springfield', st: 'IL' },{ city: 'Peoria', st: 'IL' },{ city: 'Milwaukee', st: 'WI' },
-  { city: 'Madison', st: 'WI' },{ city: 'Green Bay', st: 'WI' },{ city: 'Kenosha', st: 'WI' },
-  { city: 'Racine', st: 'WI' },{ city: 'Minneapolis', st: 'MN' },{ city: 'St. Paul', st: 'MN' },
-  { city: 'Rochester', st: 'MN' },{ city: 'Duluth', st: 'MN' },{ city: 'Bloomington', st: 'MN' },
-  { city: 'Brooklyn Park', st: 'MN' },{ city: 'Plymouth', st: 'MN' },{ city: 'Maple Grove', st: 'MN' },
-  { city: 'Sioux Falls', st: 'SD' },{ city: 'Rapid City', st: 'SD' },{ city: 'Fargo', st: 'ND' },
-  { city: 'Bismarck', st: 'ND' },{ city: 'Omaha', st: 'NE' },{ city: 'Lincoln', st: 'NE' },
-  { city: 'Bellevue', st: 'NE' },{ city: 'Grand Island', st: 'NE' },{ city: 'Wichita', st: 'KS' },
-  { city: 'Overland Park', st: 'KS' },{ city: 'Kansas City', st: 'KS' },{ city: 'Olathe', st: 'KS' },
-  { city: 'Topeka', st: 'KS' },{ city: 'Lawrence', st: 'KS' },{ city: 'Oklahoma City', st: 'OK' },
-  { city: 'Tulsa', st: 'OK' },{ city: 'Norman', st: 'OK' },{ city: 'Broken Arrow', st: 'OK' },
-  { city: 'Edmond', st: 'OK' },{ city: 'Dallas', st: 'TX' },{ city: 'Houston', st: 'TX' },
-  { city: 'San Antonio', st: 'TX' },{ city: 'Austin', st: 'TX' },{ city: 'Fort Worth', st: 'TX' },
-  { city: 'El Paso', st: 'TX' },{ city: 'Arlington', st: 'TX' },{ city: 'Corpus Christi', st: 'TX' },
-  { city: 'Laredo', st: 'TX' },{ city: 'Lubbock', st: 'TX' },{ city: 'Irving', st: 'TX' },
-  { city: 'Plano', st: 'TX' },{ city: 'Garland', st: 'TX' },{ city: 'Frisco', st: 'TX' },
-  { city: 'McKinney', st: 'TX' },{ city: 'McAllen', st: 'TX' },{ city: 'Round Rock', st: 'TX' },
-  { city: 'George Town', st: 'TX' },{ city: 'Sugar Land', st: 'TX' },{ city: 'Conroe', st: 'TX' },
-  { city: 'Midland', st: 'TX' },{ city: 'Odessa', st: 'TX' },{ city: 'Abilene', st: 'TX' },
-  { city: 'Temple', st: 'TX' },{ city: 'Waco', st: 'TX' },{ city: 'Killeen', st: 'TX' },
-  { city: 'College Station', st: 'TX' },{ city: 'Longview', st: 'TX' },{ city: 'Tyler', st: 'TX' },
-  { city: 'Beaumont', st: 'TX' },{ city: 'Port Arthur', st: 'TX' },{ city: 'Brownsville', st: 'TX' },
-  { city: 'Harlingen', st: 'TX' },{ city: 'Laredo', st: 'TX' },{ city: 'Eagle Pass', st: 'TX' },
-  { city: 'Del Rio', st: 'TX' },{ city: 'Uvalde', st: 'TX' },{ city: 'San Angelo', st: 'TX' },
-  { city: 'Abilene', st: 'TX' },{ city: 'Sweetwater', st: 'TX' },{ city: 'Big Spring', st: 'TX' },
-  { city: 'Fort Davis', st: 'TX' },{ city: 'Marfa', st: 'TX' },{ city: 'Alpine', st: 'TX' },
-  { city: 'El Paso', st: 'TX' },{ city: 'Las Cruces', st: 'NM' },{ city: 'Santa Fe', st: 'NM' },
-  { city: 'Albuquerque', st: 'NM' },{ city: 'Rio Rancho', st: 'NM' },{ city: 'Roswell', st: 'NM' },
-  { city: 'Farmington', st: 'NM' },{ city: 'Clovis', st: 'NM' },{ city: 'Hobbs', st: 'NM' },
-  { city: 'Denver', st: 'CO' },{ city: 'Colorado Springs', st: 'CO' },{ city: 'Aurora', st: 'CO' },
-  { city: 'Fort Collins', st: 'CO' },{ city: 'Lakewood', st: 'CO' },{ city: 'Thornton', st: 'CO' },
-  { city: 'Arvada', st: 'CO' },{ city: 'Westminster', st: 'CO' },{ city: 'Pueblo', st: 'CO' },
-  { city: 'Boulder', st: 'CO' },{ city: 'Greeley', st: 'CO' },{ city: 'Longmont', st: 'CO' },
-  { city: 'Castle Rock', st: 'CO' },{ city: 'Grand Junction', st: 'CO' },{ city: 'Durango', st: 'CO' },
-  { city: 'Salt Lake City', st: 'UT' },{ city: 'West Valley City', st: 'UT' },{ city: 'Provo', st: 'UT' },
-  { city: 'West Jordan', st: 'UT' },{ city: 'Orem', st: 'UT' },{ city: 'Ogden', st: 'UT' },
-  { city: 'St. George', st: 'UT' },{ city: 'Layton', st: 'UT' },{ city: 'Logan', st: 'UT' },
-  { city: 'Coeur d\'Alene', st: 'ID' },{ city: 'Meridian', st: 'ID' },{ city: 'Nampa', st: 'ID' },
-  { city: 'Idaho Falls', st: 'ID' },{ city: 'Caldwell', st: 'ID' },{ city: 'Pocatello', st: 'ID' },
-  { city: 'Twin Falls', st: 'ID' },{ city: 'Lewiston', st: 'ID' },{ city: 'Coeur d\'Alene', st: 'ID' },
-  { city: 'Billings', st: 'MT' },{ city: 'Missoula', st: 'MT' },{ city: 'Great Falls', st: 'MT' },
-  { city: 'Bozeman', st: 'MT' },{ city: 'Butte', st: 'MT' },{ city: 'Helena', st: 'MT' },
-  { city: 'Cheyenne', st: 'WY' },{ city: 'Casper', st: 'WY' },{ city: 'Laramie', st: 'WY' },
-  { city: 'Gillette', st: 'WY' },{ city: 'Rock Springs', st: 'WY' },{ city: 'Sheridan', st: 'WY' },
-  { city: 'Reno', st: 'NV' },{ city: 'Henderson', st: 'NV' },{ city: 'North Las Vegas', st: 'NV' },
-  { city: 'Sparks', st: 'NV' },{ city: 'Carson City', st: 'NV' },{ city: 'Elko', st: 'NV' },
-  { city: 'Fernley', st: 'NV' },{ city: 'Mesquite', st: 'NV' },{ city: 'Peoria', st: 'AZ' },
-  { city: 'Tucson', st: 'AZ' },{ city: 'Mesa', st: 'AZ' },{ city: 'Chandler', st: 'AZ' },
-  { city: 'Scottsdale', st: 'AZ' },{ city: 'Glendale', st: 'AZ' },{ city: 'Gilbert', st: 'AZ' },
-  { city: 'Peoria', st: 'AZ' },{ city: 'Surprise', st: 'AZ' },{ city: 'Yuma', st: 'AZ' },
-  { city: 'Flagstaff', st: 'AZ' },{ city: 'Lake Havasu City', st: 'AZ' },{ city: 'Sedona', st: 'AZ' },
-  { city: 'Prescott', st: 'AZ' },{ city: 'Sierra Vista', st: 'AZ' },{ city: 'Bullhead City', st: 'AZ' },
-  { city: 'Nogales', st: 'AZ' },{ city: 'Douglas', st: 'AZ' },{ city: 'Los Angeles', st: 'CA' },
-  { city: 'San Diego', st: 'CA' },{ city: 'San Jose', st: 'CA' },{ city: 'San Francisco', st: 'CA' },
-  { city: 'Fresno', st: 'CA' },{ city: 'Sacramento', st: 'CA' },{ city: 'Long Beach', st: 'CA' },
-  { city: 'Oakland', st: 'CA' },{ city: 'Bakersfield', st: 'CA' },{ city: 'Anaheim', st: 'CA' },
-  { city: 'Santa Ana', st: 'CA' },{ city: 'Riverside', st: 'CA' },{ city: 'Stockton', st: 'CA' },
-  { city: 'Irvine', st: 'CA' },{ city: 'Chula Vista', st: 'CA' },{ city: 'Fremont', st: 'CA' },
-  { city: 'San Bernardino', st: 'CA' },{ city: 'Modesto', st: 'CA' },{ city: 'Fontana', st: 'CA' },
-  { city: 'Oxnard', st: 'CA' },{ city: 'Moreno Valley', st: 'CA' },{ city: 'Huntington Beach', st: 'CA' },
-  { city: 'Glendale', st: 'CA' },{ city: 'Santa Clarita', st: 'CA' },{ city: 'Garden Grove', st: 'CA' },
-  { city: 'Santa Rosa', st: 'CA' },{ city: 'Pomona', st: 'CA' },{ city: 'Ontario', st: 'CA' },
-  { city: 'Lancaster', st: 'CA' },{ city: 'Palmdale', st: 'CA' },{ city: 'Pasadena', st: 'CA' },
-  { city: 'Fullerton', st: 'CA' },{ city: 'Orange', st: 'CA' },{ city: 'Hayward', st: 'CA' },
-  { city: 'Escondido', st: 'CA' },{ city: 'Sunnyvale', st: 'CA' },{ city: 'Torrance', st: 'CA' },
-  { city: 'Sandy Springs', st: 'GA' },{ city: 'Roswell', st: 'GA' },{ city: 'Johns Creek', st: 'GA' },
-  { city: 'Alpharetta', st: 'GA' },{ city: 'Marietta', st: 'GA' },{ city: 'Smyrna', st: 'GA' },
+  { city: 'Houston', st: 'TX' },  { city: 'Phoenix', st: 'AZ' },  { city: 'San Antonio', st: 'TX' },
+  { city: 'San Diego', st: 'CA' },  { city: 'Dallas', st: 'TX' },  { city: 'San Jose', st: 'CA' },
+  { city: 'Austin', st: 'TX' },  { city: 'Jacksonville', st: 'FL' },  { city: 'Fort Worth', st: 'TX' },
+  { city: 'Columbus', st: 'OH' },  { city: 'Charlotte', st: 'NC' },  { city: 'San Francisco', st: 'CA' },
+  { city: 'Indianapolis', st: 'IN' },  { city: 'Seattle', st: 'WA' },  { city: 'Denver', st: 'CO' },
+  { city: 'Washington', st: 'DC' },  { city: 'Nashville', st: 'TN' },  { city: 'Oklahoma City', st: 'OK' },
+  { city: 'El Paso', st: 'TX' },  { city: 'Boston', st: 'MA' },  { city: 'Portland', st: 'OR' },
+  { city: 'Las Vegas', st: 'NV' },  { city: 'Memphis', st: 'TN' },  { city: 'Louisville', st: 'KY' },
+  { city: 'Baltimore', st: 'MD' },  { city: 'Milwaukee', st: 'WI' },  { city: 'Albuquerque', st: 'NM' },
+  { city: 'Tucson', st: 'AZ' },  { city: 'Fresno', st: 'CA' },  { city: 'Sacramento', st: 'CA' },
+  { city: 'Mesa', st: 'AZ' },  { city: 'Atlanta', st: 'GA' },  { city: 'Kansas City', st: 'MO' },
+  { city: 'Colorado Springs', st: 'CO' },  { city: 'Raleigh', st: 'NC' },  { city: 'Omaha', st: 'NE' },
+  { city: 'Miami', st: 'FL' },  { city: 'Long Beach', st: 'CA' },  { city: 'Virginia Beach', st: 'VA' },
+  { city: 'Oakland', st: 'CA' },  { city: 'Minneapolis', st: 'MN' },  { city: 'Tulsa', st: 'OK' },
+  { city: 'Arlington', st: 'TX' },  { city: 'Tampa', st: 'FL' },  { city: 'New Orleans', st: 'LA' },
+  { city: 'Wichita', st: 'KS' },  { city: 'Cleveland', st: 'OH' },  { city: 'Pittsburgh', st: 'PA' },
+  { city: 'Cincinnati', st: 'OH' },  { city: 'St. Louis', st: 'MO' },  { city: 'Salt Lake City', st: 'UT' },
+  { city: 'Huntsville', st: 'AL' },  { city: 'Boise', st: 'ID' },  { city: 'Greenville', st: 'SC' },
+  { city: 'Knoxville', st: 'TN' },  { city: 'Chattanooga', st: 'TN' },  { city: 'Mobile', st: 'AL' },
+  { city: 'Savannah', st: 'GA' },  { city: 'Richmond', st: 'VA' },  { city: 'Spokane', st: 'WA' },
+  { city: 'Reno', st: 'NV' },  { city: 'Biloxi', st: 'MS' },  { city: 'Charleston', st: 'SC' },
+  { city: 'Columbia', st: 'SC' },  { city: 'Montgomery', st: 'AL' },  { city: 'Jackson', st: 'MS' },
+  { city: 'Little Rock', st: 'AR' },  { city: 'Dayton', st: 'OH' },  { city: 'Wilmington', st: 'DE' },
+  { city: 'Harrisburg', st: 'PA' },  { city: 'Hartford', st: 'CT' },  { city: 'Providence', st: 'RI' },
+  { city: 'Des Moines', st: 'IA' },  { city: 'Madison', st: 'WI' },  { city: 'Lansing', st: 'MI' },
+  { city: 'Cheyenne', st: 'WY' },  { city: 'Bismarck', st: 'ND' },  { city: 'Helena', st: 'MT' },
+  { city: 'Pocatello', st: 'ID' },  { city: 'Salem', st: 'OR' },  { city: 'Olympia', st: 'WA' },
+  { city: 'Carson City', st: 'NV' },  { city: 'Springfield', st: 'IL' },  { city: 'Jefferson City', st: 'MO' },
+  { city: 'Annapolis', st: 'MD' },  { city: 'Trenton', st: 'NJ' },  { city: 'Dover', st: 'DE' },
+  { city: 'Concord', st: 'NH' },  { city: 'Augusta', st: 'ME' },  { city: 'Montpelier', st: 'VT' },
+  { city: 'Albany', st: 'NY' },  { city: 'Scranton', st: 'PA' },  { city: 'Pierre', st: 'SD' },
+  { city: 'Frankfort', st: 'KY' },  { city: 'Topeka', st: 'KS' },  { city: 'Santa Fe', st: 'NM' },
+  { city: 'Scottsdale', st: 'AZ' },  { city: 'Tallahassee', st: 'FL' },  { city: 'Honolulu', st: 'HI' },
+  { city: 'Anchorage', st: 'AK' },  { city: 'Fairbanks', st: 'AK' },  { city: 'Burlington', st: 'VT' },
+  { city: 'Portland', st: 'ME' },  { city: 'Manchester', st: 'NH' },  { city: 'New Haven', st: 'CT' },
+  { city: 'Newark', st: 'NJ' },  { city: 'Buffalo', st: 'NY' },  { city: 'Rochester', st: 'NY' },
+  { city: 'Syracuse', st: 'NY' },  { city: 'Yonkers', st: 'NY' },  { city: 'Erie', st: 'PA' },
+  { city: 'Allentown', st: 'PA' },  { city: 'Reading', st: 'PA' },  { city: 'Lancaster', st: 'PA' },
+  { city: 'York', st: 'PA' },  { city: 'Birmingham', st: 'AL' },  { city: 'Grand Rapids', st: 'MI' },
+  { city: 'Warren', st: 'MI' },  { city: 'Sterling Heights', st: 'MI' },  { city: 'Ann Arbor', st: 'MI' },
+  { city: 'Flint', st: 'MI' },  { city: 'Detroit', st: 'MI' },  { city: 'Columbus', st: 'GA' },
+  { city: 'Macon', st: 'GA' },  { city: 'Athens', st: 'GA' },  { city: 'Gainesville', st: 'FL' },
+  { city: 'Orlando', st: 'FL' },  { city: 'St. Petersburg', st: 'FL' },  { city: 'Fort Myers', st: 'FL' },
+  { city: 'Naples', st: 'FL' },  { city: 'Pensacola', st: 'FL' },  { city: 'Baton Rouge', st: 'LA' },
+  { city: 'Shreveport', st: 'LA' },  { city: 'Lafayette', st: 'LA' },  { city: 'Lake Charles', st: 'LA' },
+  { city: 'Gulfport', st: 'MS' },  { city: 'Lexington', st: 'KY' },  { city: 'Bowling Green', st: 'KY' },
+  { city: 'Owensboro', st: 'KY' },  { city: 'Fort Wayne', st: 'IN' },  { city: 'Evansville', st: 'IN' },
+  { city: 'South Bend', st: 'IN' },  { city: 'Carmel', st: 'IN' },  { city: 'Toledo', st: 'OH' },
+  { city: 'Akron', st: 'OH' },  { city: 'Canton', st: 'OH' },  { city: 'Parma', st: 'OH' },
+  { city: 'Youngstown', st: 'OH' },  { city: 'Chicago', st: 'IL' },  { city: 'Aurora', st: 'IL' },
+  { city: 'Rockford', st: 'IL' },  { city: 'Joliet', st: 'IL' },  { city: 'Naperville', st: 'IL' },
+  { city: 'Peoria', st: 'IL' },  { city: 'Green Bay', st: 'WI' },  { city: 'Kenosha', st: 'WI' },
+  { city: 'Racine', st: 'WI' },  { city: 'St. Paul', st: 'MN' },  { city: 'Rochester', st: 'MN' },
+  { city: 'Duluth', st: 'MN' },  { city: 'Bloomington', st: 'MN' },  { city: 'Brooklyn Park', st: 'MN' },
+  { city: 'Plymouth', st: 'MN' },  { city: 'Maple Grove', st: 'MN' },  { city: 'Sioux Falls', st: 'SD' },
+  { city: 'Rapid City', st: 'SD' },  { city: 'Fargo', st: 'ND' },  { city: 'Lincoln', st: 'NE' },
+  { city: 'Bellevue', st: 'NE' },  { city: 'Grand Island', st: 'NE' },  { city: 'Overland Park', st: 'KS' },
+  { city: 'Kansas City', st: 'KS' },  { city: 'Olathe', st: 'KS' },  { city: 'Lawrence', st: 'KS' },
+  { city: 'Norman', st: 'OK' },  { city: 'Broken Arrow', st: 'OK' },  { city: 'Edmond', st: 'OK' },
+  { city: 'Corpus Christi', st: 'TX' },  { city: 'Laredo', st: 'TX' },  { city: 'Lubbock', st: 'TX' },
+  { city: 'Irving', st: 'TX' },  { city: 'Plano', st: 'TX' },  { city: 'Garland', st: 'TX' },
+  { city: 'Frisco', st: 'TX' },  { city: 'McKinney', st: 'TX' },  { city: 'McAllen', st: 'TX' },
+  { city: 'Round Rock', st: 'TX' },  { city: 'George Town', st: 'TX' },  { city: 'Sugar Land', st: 'TX' },
+  { city: 'Conroe', st: 'TX' },  { city: 'Midland', st: 'TX' },  { city: 'Odessa', st: 'TX' },
+  { city: 'Abilene', st: 'TX' },  { city: 'Temple', st: 'TX' },  { city: 'Waco', st: 'TX' },
+  { city: 'Killeen', st: 'TX' },  { city: 'College Station', st: 'TX' },  { city: 'Longview', st: 'TX' },
+  { city: 'Tyler', st: 'TX' },  { city: 'Beaumont', st: 'TX' },  { city: 'Port Arthur', st: 'TX' },
+  { city: 'Brownsville', st: 'TX' },  { city: 'Harlingen', st: 'TX' },  { city: 'Eagle Pass', st: 'TX' },
+  { city: 'Del Rio', st: 'TX' },  { city: 'Uvalde', st: 'TX' },  { city: 'San Angelo', st: 'TX' },
+  { city: 'Sweetwater', st: 'TX' },  { city: 'Big Spring', st: 'TX' },  { city: 'Fort Davis', st: 'TX' },
+  { city: 'Marfa', st: 'TX' },  { city: 'Alpine', st: 'TX' },  { city: 'Las Cruces', st: 'NM' },
+  { city: 'Rio Rancho', st: 'NM' },  { city: 'Roswell', st: 'NM' },  { city: 'Farmington', st: 'NM' },
+  { city: 'Clovis', st: 'NM' },  { city: 'Hobbs', st: 'NM' },  { city: 'Aurora', st: 'CO' },
+  { city: 'Fort Collins', st: 'CO' },  { city: 'Lakewood', st: 'CO' },  { city: 'Thornton', st: 'CO' },
+  { city: 'Arvada', st: 'CO' },  { city: 'Westminster', st: 'CO' },  { city: 'Pueblo', st: 'CO' },
+  { city: 'Boulder', st: 'CO' },  { city: 'Greeley', st: 'CO' },  { city: 'Longmont', st: 'CO' },
+  { city: 'Castle Rock', st: 'CO' },  { city: 'Grand Junction', st: 'CO' },  { city: 'Durango', st: 'CO' },
+  { city: 'West Valley City', st: 'UT' },  { city: 'Provo', st: 'UT' },  { city: 'West Jordan', st: 'UT' },
+  { city: 'Orem', st: 'UT' },  { city: 'Ogden', st: 'UT' },  { city: 'St. George', st: 'UT' },
+  { city: 'Layton', st: 'UT' },  { city: 'Logan', st: 'UT' },  { city: 'Meridian', st: 'ID' },
+  { city: 'Nampa', st: 'ID' },  { city: 'Idaho Falls', st: 'ID' },  { city: 'Caldwell', st: 'ID' },
+  { city: 'Twin Falls', st: 'ID' },  { city: 'Lewiston', st: 'ID' },  { city: 'Billings', st: 'MT' },
+  { city: 'Missoula', st: 'MT' },  { city: 'Great Falls', st: 'MT' },  { city: 'Bozeman', st: 'MT' },
+  { city: 'Butte', st: 'MT' },  { city: 'Casper', st: 'WY' },  { city: 'Laramie', st: 'WY' },
+  { city: 'Gillette', st: 'WY' },  { city: 'Rock Springs', st: 'WY' },  { city: 'Sheridan', st: 'WY' },
+  { city: 'Henderson', st: 'NV' },  { city: 'North Las Vegas', st: 'NV' },  { city: 'Sparks', st: 'NV' },
+  { city: 'Elko', st: 'NV' },  { city: 'Fernley', st: 'NV' },  { city: 'Mesquite', st: 'NV' },
+  { city: 'Peoria', st: 'AZ' },  { city: 'Chandler', st: 'AZ' },  { city: 'Glendale', st: 'AZ' },
+  { city: 'Gilbert', st: 'AZ' },  { city: 'Surprise', st: 'AZ' },  { city: 'Yuma', st: 'AZ' },
+  { city: 'Flagstaff', st: 'AZ' },  { city: 'Lake Havasu City', st: 'AZ' },  { city: 'Sedona', st: 'AZ' },
+  { city: 'Prescott', st: 'AZ' },  { city: 'Sierra Vista', st: 'AZ' },  { city: 'Bullhead City', st: 'AZ' },
+  { city: 'Nogales', st: 'AZ' },  { city: 'Douglas', st: 'AZ' },  { city: 'Los Angeles', st: 'CA' },
+  { city: 'Bakersfield', st: 'CA' },  { city: 'Anaheim', st: 'CA' },  { city: 'Santa Ana', st: 'CA' },
+  { city: 'Riverside', st: 'CA' },  { city: 'Stockton', st: 'CA' },  { city: 'Irvine', st: 'CA' },
+  { city: 'Chula Vista', st: 'CA' },  { city: 'Fremont', st: 'CA' },  { city: 'San Bernardino', st: 'CA' },
+  { city: 'Modesto', st: 'CA' },  { city: 'Fontana', st: 'CA' },  { city: 'Oxnard', st: 'CA' },
+  { city: 'Moreno Valley', st: 'CA' },  { city: 'Huntington Beach', st: 'CA' },  { city: 'Glendale', st: 'CA' },
+  { city: 'Santa Clarita', st: 'CA' },  { city: 'Garden Grove', st: 'CA' },  { city: 'Santa Rosa', st: 'CA' },
+  { city: 'Pomona', st: 'CA' },  { city: 'Ontario', st: 'CA' },  { city: 'Lancaster', st: 'CA' },
+  { city: 'Palmdale', st: 'CA' },  { city: 'Pasadena', st: 'CA' },  { city: 'Fullerton', st: 'CA' },
+  { city: 'Orange', st: 'CA' },  { city: 'Hayward', st: 'CA' },  { city: 'Escondido', st: 'CA' },
+  { city: 'Sunnyvale', st: 'CA' },  { city: 'Torrance', st: 'CA' },  { city: 'Sandy Springs', st: 'GA' },
+  { city: 'Roswell', st: 'GA' },  { city: 'Johns Creek', st: 'GA' },  { city: 'Alpharetta', st: 'GA' },
+  { city: 'Marietta', st: 'GA' },  { city: 'Smyrna', st: 'GA' },
 ];
+
+
 
 const SP_ACTIONS = [
   'just filed a claim',
@@ -5609,7 +5590,7 @@ interface AdminStats {
 
 function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'upload'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'add' | 'upload'>('dashboard');
   const [authKey, setAuthKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -5640,6 +5621,13 @@ function AdminPanel() {
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<ClaimantRecord | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Manual Add state
+  const [manualForm, setManualForm] = useState({
+    trackingId: '', firstName: '', lastName: '', email: '',
+    phone: '', claimType: '', status: 'Submitted', state: '', filedDate: '', notes: '',
+  });
+  const [addingClaimant, setAddingClaimant] = useState(false);
 
   // Hash detection + keyboard shortcut
   useEffect(() => {
@@ -5798,6 +5786,38 @@ function AdminPanel() {
     window.open('/api/admin/export?format=sample', '_blank');
   }, []);
 
+  const handleManualAdd = useCallback(async () => {
+    if (!manualForm.trackingId || !manualForm.firstName || !manualForm.lastName || !manualForm.email) {
+      toast.error('Missing required fields', { description: 'Tracking ID, First Name, Last Name, and Email are required.' });
+      return;
+    }
+    setAddingClaimant(true);
+    try {
+      const res = await fetch('/api/admin/claimants', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(manualForm),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error('Failed to add claimant', { description: data.error });
+      } else {
+        toast.success('Claimant added!', { description: `${manualForm.firstName} ${manualForm.lastName} (${manualForm.trackingId})` });
+        setManualForm({ trackingId: '', firstName: '', lastName: '', email: '', phone: '', claimType: '', status: 'Submitted', state: '', filedDate: '', notes: '' });
+        fetchClaimants(1);
+        fetchStats();
+        setActiveTab('claimants');
+      }
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setAddingClaimant(false);
+    }
+  }, [manualForm, fetchClaimants, fetchStats]);
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -5913,6 +5933,15 @@ function AdminPanel() {
                 >
                   <Database className="w-4 h-4" />
                   <span className="hidden sm:inline">Claimants</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('add')}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === 'add' ? 'text-emerald-400 border-emerald-400' : 'text-gray-400 border-transparent hover:text-gray-200'
+                  }`}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Add Claimant</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('upload')}
@@ -6201,6 +6230,154 @@ function AdminPanel() {
                             </div>
                           </div>
                         )}
+                      </div>
+                    )}
+
+                    {/* Add Claimant Tab */}
+                    {activeTab === 'add' && (
+                      <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                            <UserPlus className="w-5 h-5 text-emerald-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">Add New Claimant</h3>
+                            <p className="text-xs text-gray-400">Manually add a claimant to the tracking database</p>
+                          </div>
+                        </div>
+
+                        <Card className="bg-gray-800/50 border-gray-700 p-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Tracking ID <span className="text-red-400">*</span></Label>
+                              <Input
+                                placeholder="CLM-2024-001"
+                                value={manualForm.trackingId}
+                                onChange={(e) => setManualForm(f => ({ ...f, trackingId: e.target.value.toUpperCase() }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">First Name <span className="text-red-400">*</span></Label>
+                              <Input
+                                placeholder="John"
+                                value={manualForm.firstName}
+                                onChange={(e) => setManualForm(f => ({ ...f, firstName: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Last Name <span className="text-red-400">*</span></Label>
+                              <Input
+                                placeholder="Doe"
+                                value={manualForm.lastName}
+                                onChange={(e) => setManualForm(f => ({ ...f, lastName: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Email <span className="text-red-400">*</span></Label>
+                              <Input
+                                type="email"
+                                placeholder="john@example.com"
+                                value={manualForm.email}
+                                onChange={(e) => setManualForm(f => ({ ...f, email: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Phone</Label>
+                              <Input
+                                placeholder="555-123-4567"
+                                value={manualForm.phone}
+                                onChange={(e) => setManualForm(f => ({ ...f, phone: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Claim Type</Label>
+                              <Select value={manualForm.claimType} onValueChange={(v) => setManualForm(f => ({ ...f, claimType: v }))}>
+                                <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
+                                  <SelectValue placeholder="Select case type" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-800 border-gray-700">
+                                  {CASE_TYPES.map(ct => (
+                                    <SelectItem key={ct} value={ct} className="text-gray-200">{ct}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Status</Label>
+                              <Select value={manualForm.status} onValueChange={(v) => setManualForm(f => ({ ...f, status: v }))}>
+                                <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-800 border-gray-700">
+                                  {VALID_STATUSES.map(s => (
+                                    <SelectItem key={s} value={s} className="text-gray-200">{s}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">State</Label>
+                              <Input
+                                placeholder="PA"
+                                maxLength={2}
+                                value={manualForm.state}
+                                onChange={(e) => setManualForm(f => ({ ...f, state: e.target.value.toUpperCase() }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Filed Date</Label>
+                              <Input
+                                type="date"
+                                value={manualForm.filedDate}
+                                onChange={(e) => setManualForm(f => ({ ...f, filedDate: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white"
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-4">
+                            <Label className="text-sm text-gray-300 mb-1 block">Notes</Label>
+                            <Textarea
+                              placeholder="Additional notes about this claimant..."
+                              value={manualForm.notes}
+                              onChange={(e) => setManualForm(f => ({ ...f, notes: e.target.value }))}
+                              className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500 min-h-[80px]"
+                            />
+                          </div>
+                          <div className="mt-6 flex gap-3">
+                            <Button
+                              onClick={handleManualAdd}
+                              disabled={addingClaimant}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex-1 sm:flex-none"
+                            >
+                              {addingClaimant ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Adding...</> : <><Plus className="w-4 h-4 mr-2" />Add Claimant</>}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setManualForm({ trackingId: '', firstName: '', lastName: '', email: '', phone: '', claimType: '', status: 'Submitted', state: '', filedDate: '', notes: '' })}
+                              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                            >
+                              Clear Form
+                            </Button>
+                          </div>
+                        </Card>
+
+                        <Card className="bg-blue-500/5 border-blue-500/20 p-4">
+                          <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" /> Quick Tips
+                          </h4>
+                          <ul className="text-xs text-gray-400 space-y-1 list-disc list-inside">
+                            <li>Tracking ID must be unique — use formats like CLM-2024-001</li>
+                            <li>Fields marked with <span className="text-red-400">*</span> are required</li>
+                            <li>For bulk additions, use the &quot;Upload CSV&quot; tab instead</li>
+                            <li>Download a sample CSV to see the expected format</li>
+                          </ul>
+                        </Card>
                       </div>
                     )}
 
