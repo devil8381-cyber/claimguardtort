@@ -34,3 +34,26 @@ Stage Summary:
 - All API routes secured with Bearer token auth
 - CSV upload supports flexible header names (trackingId/tracking_id/id, firstName/first_name/fname, etc.)
 - All bugs fixed, lint clean
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Fix dropdowns, add admin settings, full bug audit, production polish
+
+Work Log:
+- Diagnosed dropdown bug: Admin panel modal at z-[100], Radix Select portals render at z-50, dropdowns invisible behind admin panel
+- Added z-[200] to all 4 SelectContent elements inside AdminPanel (status filter, claim type, status, edit status)
+- Created /api/admin/settings/route.ts with GET/PUT endpoints, JSON file persistence in data/company-settings.json
+- Added Settings tab in admin panel with company contact fields (Company Name, Phone, Email, Privacy Email, Legal Email, Address)
+- Created CompanySettingsContext with createContext/useContext for global dynamic contact info
+- Converted PRIVACY_POLICY_TEXT and TERMS_OF_SERVICE_TEXT from static constants to functions accepting dynamic settings
+- Updated Navbar, ContactSection, Footer, CookieConsentBanner to use dynamic settings from context
+- Verified daily stats rotation working correctly (date-seeded pseudo-random)
+- Lint clean - zero errors, zero warnings
+
+Stage Summary:
+- All dropdowns now work in admin panel (z-index fix)
+- Company settings manageable from admin panel without code changes
+- All contact info across website is dynamic and controllable from admin
+- Daily stats already implemented and working
+- Production ready with clean lint

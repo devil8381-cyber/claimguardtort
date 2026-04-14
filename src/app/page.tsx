@@ -123,7 +123,32 @@ import {
   XCircle,
   DownloadCloud,
   FileSpreadsheet,
+  Settings,
 } from 'lucide-react';
+import { createContext, useContext } from 'react';
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPANY SETTINGS CONTEXT
+   ═══════════════════════════════════════════════════════════════ */
+
+const DEFAULT_COMPANY_SETTINGS = {
+  companyName: 'ClaimGuard Pro',
+  phone: '(484) 968-1529',
+  phoneHref: 'tel:4849681529',
+  email: 'info@claimguardpro.com',
+  emailHref: 'mailto:info@claimguardpro.com',
+  address: '1429 Walnut St, 14th Floor, Philadelphia, PA 19102',
+  privacyEmail: 'privacy@claimguardpro.com',
+  legalEmail: 'legal@claimguardpro.com',
+};
+
+type CompanySettings = typeof DEFAULT_COMPANY_SETTINGS;
+
+const CompanySettingsContext = createContext<CompanySettings>(DEFAULT_COMPANY_SETTINGS);
+
+function useCompanySettings() {
+  return useContext(CompanySettingsContext);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS & DATA
@@ -280,7 +305,8 @@ const COMPARISON_DATA = [
   { feature: 'Data Security', us: { label: '256-bit encryption, HIPAA compliant', has: true }, others: { label: 'Standard security', has: false } },
 ];
 
-const PRIVACY_POLICY_TEXT = `Privacy Policy for ClaimGuard Pro
+function getPrivacyPolicyText(s: CompanySettings) {
+  return `Privacy Policy for ${s.companyName}
 
 Last Updated: January 2025
 
@@ -338,32 +364,34 @@ You have the right to:
 - Opt out of marketing communications
 - Request a copy of your data in a portable format
 
-To exercise any of these rights, please contact us at privacy@claimguardpro.com.
+To exercise any of these rights, please contact us at ${s.privacyEmail}.
 
 7. Contact
 
 If you have questions about this Privacy Policy, please contact us at:
-Email: privacy@claimguardpro.com
-Phone: (484) 968-1529
-Address: 1429 Walnut St, 14th Floor, Philadelphia, PA 19102`;
+Email: ${s.privacyEmail}
+Phone: ${s.phone}
+Address: ${s.address}`;
+}
 
-const TERMS_OF_SERVICE_TEXT = `Terms of Service for ClaimGuard Pro
+function getTermsOfServiceText(s: CompanySettings) {
+  return `Terms of Service for ${s.companyName}
 
 Last Updated: January 2025
 
 1. Services
 
-ClaimGuard Pro provides mass tort claim assistance services including claim tracking, document correction support, eligibility assessment, and referral to qualified legal professionals. Our services are designed to assist claimants in navigating the complex mass tort claims process.
+${s.companyName} provides mass tort claim assistance services including claim tracking, document correction support, eligibility assessment, and referral to qualified legal professionals. Our services are designed to assist claimants in navigating the complex mass tort claims process.
 
 2. Important Disclaimers
 
-ClaimGuard Pro is NOT a law firm and does not provide legal advice. The information on this website is for general informational purposes only. Nothing on this website should be construed as legal advice or create an attorney-client relationship.
+${s.companyName} is NOT a law firm and does not provide legal advice. The information on this website is for general informational purposes only. Nothing on this website should be construed as legal advice or create an attorney-client relationship.
 
 Prior results described on this website do not guarantee a similar outcome for any individual case. Case results depend on many factors unique to each claim.
 
 3. Limitations of Liability
 
-To the maximum extent permitted by law, ClaimGuard Pro shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of our services or website. Our total liability shall not exceed the value of services provided to you.
+To the maximum extent permitted by law, ${s.companyName} shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of our services or website. Our total liability shall not exceed the value of services provided to you.
 
 4. User Responsibilities
 
@@ -376,11 +404,11 @@ You agree to:
 
 5. Indemnification
 
-You agree to indemnify and hold harmless ClaimGuard Pro, its officers, directors, employees, and agents from and against any claims, damages, losses, or expenses arising from your use of our services or your violation of these Terms.
+You agree to indemnify and hold harmless ${s.companyName}, its officers, directors, employees, and agents from and against any claims, damages, losses, or expenses arising from your use of our services or your violation of these Terms.
 
 6. Intellectual Property
 
-All content on this website, including text, graphics, logos, and software, is the property of ClaimGuard Pro and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works without our written permission.
+All content on this website, including text, graphics, logos, and software, is the property of ${s.companyName} and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works without our written permission.
 
 7. Governing Law
 
@@ -393,9 +421,10 @@ We reserve the right to modify these Terms at any time. We will notify you of ma
 9. Contact
 
 For questions about these Terms, contact us at:
-Email: legal@claimguardpro.com
-Phone: (484) 968-1529
-Address: 1429 Walnut St, 14th Floor, Philadelphia, PA 19102`;
+Email: ${s.legalEmail}
+Phone: ${s.phone}
+Address: ${s.address}`;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    SOCIAL PROOF GENERATOR — ~10,000+ Unique Combinations
@@ -1024,6 +1053,7 @@ const Navbar = memo(function Navbar() {
   const [countdownDismissed, setCountdownDismissed] = useState(false);
   const activeSection = useScrollSpy();
   const { locale, setLocale } = useLanguage();
+  const cs = useCompanySettings();
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setCountdownDismissed(sessionStorage.getItem('claimguard-countdown-dismissed') === 'true'));
@@ -1137,8 +1167,8 @@ const Navbar = memo(function Navbar() {
                     </button>
                   </ScrollArea>
                   <div className="p-4 border-t border-border">
-                    <a href="tel:4849681529" className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
-                      <Phone className="w-4 h-4 text-gold" />(484) 968-1529
+                    <a href={cs.phoneHref} className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
+                      <Phone className="w-4 h-4 text-gold" />{cs.phone}
                     </a>
                     <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">{t('nav.getStarted')}</Button>
                   </div>
@@ -4390,6 +4420,7 @@ interface UploadedFile { file: File; id: string; }
 function ContactSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
+  const cs = useCompanySettings();
   const [form, setForm] = useState({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -4612,13 +4643,12 @@ function ContactSection() {
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><MapPin className="w-5 h-5 text-gold" /></div>
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('contact.officeAddress')}</p>
-                    <p className="text-sm font-medium text-navy dark:text-gray-200">1429 Walnut St, 14th Floor</p>
-                    <p className="text-sm text-muted-foreground dark:text-gray-400">Philadelphia, PA 19102</p>
+                    <p className="text-sm font-medium text-navy dark:text-gray-200" dangerouslySetInnerHTML={{ __html: cs.address.replace(/, /g, ',<br/>') }} />
                   </div>
                 </div>
                 {[
-                  { icon: Phone, label: t('contact.callUs'), value: '(484) 968-1529', href: 'tel:4849681529' },
-                  { icon: Mail, label: 'Email', value: 'info@claimguardpro.com', href: 'mailto:info@claimguardpro.com' },
+                  { icon: Phone, label: t('contact.callUs'), value: cs.phone, href: cs.phoneHref },
+                  { icon: Mail, label: 'Email', value: cs.email, href: cs.emailHref },
                   { icon: Clock, label: t('contact.officeHours'), value: 'Mon-Fri: 8AM-8PM EST\nSat: 9AM-5PM EST', href: '' },
                 ].map((item) => (
                   <div key={item.label} className="flex items-start gap-3">
@@ -4653,8 +4683,8 @@ function ContactSection() {
                 <HeadphonesIcon className="w-8 h-8 text-gold mx-auto mb-3" />
                 <h4 className="font-bold text-lg mb-1">{t('contact.needHelp')}</h4>
                 <p className="text-white/60 text-sm mb-4">{t('contact.specialistsStandingBy')}</p>
-                <a href="tel:4849681529" className="block w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3 rounded-lg transition-colors mb-3"><Phone className="w-4 h-4 inline mr-2" />(484) 968-1529</a>
-                <a href="mailto:info@claimguardpro.com" className="block w-full bg-white/10 hover:bg-white/15 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"><Mail className="w-4 h-4 inline mr-2" />info@claimguardpro.com</a>
+                <a href={cs.phoneHref} className="block w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3 rounded-lg transition-colors mb-3"><Phone className="w-4 h-4 inline mr-2" />{cs.phone}</a>
+                <a href={cs.emailHref} className="block w-full bg-white/10 hover:bg-white/15 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"><Mail className="w-4 h-4 inline mr-2" />{cs.email}</a>
               </CardContent>
             </Card>
 
@@ -4705,6 +4735,7 @@ function ContactSection() {
 
 function Footer() {
   const { t } = useLanguage();
+  const cs = useCompanySettings();
   const scrollTo = useCallback((id: string) => {
     document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
   }, []);
@@ -4770,9 +4801,9 @@ function Footer() {
             <div>
               <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">{t('footer.contact')}</h4>
               <div className="space-y-3">
-                <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50">1429 Walnut St, 14th Floor<br />Philadelphia, PA 19102</span></div>
-                <a href="tel:4849681529" className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Phone className="w-4 h-4 text-gold" />(484) 968-1529</a>
-                <a href="mailto:info@claimguardpro.com" className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Mail className="w-4 h-4 text-gold" />info@claimguardpro.com</a>
+                <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50" dangerouslySetInnerHTML={{ __html: cs.address.replace(/, /g, ',<br />') }} /></div>
+                <a href={cs.phoneHref} className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Phone className="w-4 h-4 text-gold" />{cs.phone}</a>
+                <a href={cs.emailHref} className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Mail className="w-4 h-4 text-gold" />{cs.email}</a>
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
                 {['BBB A+', 'HIPAA', 'NATA'].map(badge => (
@@ -4802,7 +4833,7 @@ function Footer() {
         <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader><DialogTitle className="text-navy dark:text-white">{t('footer.privacyTitle')}</DialogTitle><DialogDescription className="text-muted-foreground dark:text-gray-400">{t('footer.lastUpdated')}</DialogDescription></DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
-            <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{PRIVACY_POLICY_TEXT}</div>
+            <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{getPrivacyPolicyText(cs)}</div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
@@ -4811,7 +4842,7 @@ function Footer() {
         <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader><DialogTitle className="text-navy dark:text-white">{t('footer.termsTitle')}</DialogTitle><DialogDescription className="text-muted-foreground dark:text-gray-400">{t('footer.lastUpdated')}</DialogDescription></DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
-            <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{TERMS_OF_SERVICE_TEXT}</div>
+            <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{getTermsOfServiceText(cs)}</div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
@@ -5061,6 +5092,7 @@ const BackToTopButton = memo(function BackToTopButton() {
 
 function CookieConsentBanner() {
   const { t } = useLanguage();
+  const cs = useCompanySettings();
   const [visible, setVisible] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -5169,14 +5201,14 @@ function CookieConsentBanner() {
           <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
             <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
               <DialogHeader><DialogTitle className="text-navy dark:text-white">Privacy Policy</DialogTitle></DialogHeader>
-              <ScrollArea className="max-h-[60vh] pr-4"><div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{PRIVACY_POLICY_TEXT}</div></ScrollArea>
+              <ScrollArea className="max-h-[60vh] pr-4"><div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{getPrivacyPolicyText(cs)}</div></ScrollArea>
             </DialogContent>
           </Dialog>
 
           <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
             <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
               <DialogHeader><DialogTitle className="text-navy dark:text-white">Terms of Service</DialogTitle></DialogHeader>
-              <ScrollArea className="max-h-[60vh] pr-4"><div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{TERMS_OF_SERVICE_TEXT}</div></ScrollArea>
+              <ScrollArea className="max-h-[60vh] pr-4"><div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{getTermsOfServiceText(cs)}</div></ScrollArea>
             </DialogContent>
           </Dialog>
         </motion.div>
@@ -5726,7 +5758,7 @@ interface AdminStats {
 
 function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'add' | 'upload'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'add' | 'upload' | 'settings'>('dashboard');
   const [authKey, setAuthKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -5768,6 +5800,33 @@ function AdminPanel() {
     phone: '', claimType: '', status: 'Submitted', state: '', filedDate: '', notes: '',
   });
   const [addingClaimant, setAddingClaimant] = useState(false);
+
+  // Company Settings state
+  const [companySettings, setCompanySettings] = useState({
+    companyName: 'ClaimGuard Pro',
+    phone: '(484) 968-1529',
+    email: 'info@claimguardpro.com',
+    address: '1429 Walnut St, 14th Floor, Philadelphia, PA 19102',
+    privacyEmail: 'privacy@claimguardpro.com',
+    legalEmail: 'legal@claimguardpro.com',
+  });
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setCompanySettings({
+          companyName: data.companyName || 'ClaimGuard Pro',
+          phone: data.phone || '(484) 968-1529',
+          email: data.email || 'info@claimguardpro.com',
+          address: data.address || '1429 Walnut St, 14th Floor, Philadelphia, PA 19102',
+          privacyEmail: data.privacyEmail || 'privacy@claimguardpro.com',
+          legalEmail: data.legalEmail || 'legal@claimguardpro.com',
+        });
+      }
+    } catch { /* use defaults */ }
+  }, []);
 
   // Hash detection + keyboard shortcut
   useEffect(() => {
@@ -5811,10 +5870,11 @@ function AdminPanel() {
     if (authKey === ADMIN_AUTH_TOKEN) {
       setIsAuthenticated(true);
       setAuthError('');
+      fetchSettings();
     } else {
       setAuthError('Invalid admin key');
     }
-  }, [authKey]);
+  }, [authKey, fetchSettings]);
 
   const fetchClaimants = useCallback(async (page = 1) => {
     setLoadingClaimants(true);
@@ -6098,6 +6158,15 @@ function AdminPanel() {
                   <FileUp className="w-4 h-4" />
                   <span className="hidden sm:inline">Upload CSV</span>
                 </button>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === 'settings' ? 'text-[#C5A059] border-[#C5A059]' : 'text-gray-400 border-transparent hover:text-gray-200'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="hidden sm:inline">Settings</span>
+                </button>
 
                 {/* Spacer then Quick Actions */}
                 <div className="ml-auto flex items-center gap-1 shrink-0 pl-2 border-l border-gray-800">
@@ -6238,7 +6307,7 @@ function AdminPanel() {
                               <Filter className="w-4 h-4 text-gray-500 mr-2" />
                               <SelectValue placeholder="All Statuses" />
                             </SelectTrigger>
-                            <SelectContent className="bg-gray-800 border-gray-700">
+                            <SelectContent className="z-[200] bg-gray-800 border-gray-700">
                               <SelectItem value="all">All Statuses</SelectItem>
                               {VALID_STATUSES.map(s => (
                                 <SelectItem key={s} value={s}>{s}</SelectItem>
@@ -6457,7 +6526,7 @@ function AdminPanel() {
                                 <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
                                   <SelectValue placeholder="Select case type..." />
                                 </SelectTrigger>
-                                <SelectContent className="bg-gray-800 border-gray-700 max-h-[300px]">
+                                <SelectContent className="z-[200] bg-gray-800 border-gray-700 max-h-[300px]">
                                   {CASE_TYPES.map(ct => (
                                     <SelectItem key={ct} value={ct} className="text-gray-200">{ct}</SelectItem>
                                   ))}
@@ -6473,7 +6542,7 @@ function AdminPanel() {
                                 <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-gray-800 border-gray-700 max-h-[300px]">
+                                <SelectContent className="z-[200] bg-gray-800 border-gray-700 max-h-[300px]">
                                   {VALID_STATUSES.map(s => (
                                     <SelectItem key={s} value={s} className="text-gray-200">
                                       <span className="flex items-center gap-2">
@@ -6724,6 +6793,96 @@ function AdminPanel() {
                         </div>
                       </div>
                     )}
+
+                    {/* Settings Tab */}
+                    {activeTab === 'settings' && (
+                      <div className="space-y-6 max-w-2xl">
+                        <div>
+                          <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-1">
+                            <Settings className="w-5 h-5 text-[#C5A059]" />
+                            Company Settings
+                          </h3>
+                          <p className="text-sm text-gray-400">Manage your company contact information displayed across the website.</p>
+                        </div>
+
+                        <Card className="bg-gray-800/50 border-gray-700 p-6 space-y-5">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Company Name</Label>
+                              <Input
+                                value={companySettings.companyName}
+                                onChange={(e) => setCompanySettings(s => ({ ...s, companyName: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Phone Number</Label>
+                              <Input
+                                value={companySettings.phone}
+                                onChange={(e) => setCompanySettings(s => ({ ...s, phone: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Email Address</Label>
+                              <Input
+                                value={companySettings.email}
+                                onChange={(e) => setCompanySettings(s => ({ ...s, email: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Privacy Email</Label>
+                              <Input
+                                value={companySettings.privacyEmail}
+                                onChange={(e) => setCompanySettings(s => ({ ...s, privacyEmail: e.target.value }))}
+                                className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label className="text-sm text-gray-300 mb-1 block">Legal Email</Label>
+                            <Input
+                              value={companySettings.legalEmail}
+                              onChange={(e) => setCompanySettings(s => ({ ...s, legalEmail: e.target.value }))}
+                              className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm text-gray-300 mb-1 block">Physical Address</Label>
+                            <Textarea
+                              value={companySettings.address}
+                              onChange={(e) => setCompanySettings(s => ({ ...s, address: e.target.value }))}
+                              className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
+                              rows={3}
+                            />
+                          </div>
+                          <div className="pt-2">
+                            <Button
+                              onClick={async () => {
+                                try {
+                                  const res = await fetch('/api/admin/settings', {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(companySettings),
+                                  });
+                                  if (res.ok) {
+                                    toast.success('Settings saved successfully');
+                                  } else {
+                                    toast.error('Failed to save settings');
+                                  }
+                                } catch {
+                                  toast.error('Network error while saving');
+                                }
+                              }}
+                              className="bg-[#C5A059] hover:bg-[#b08d4e] text-white font-semibold"
+                            >
+                              Save Settings
+                            </Button>
+                          </div>
+                        </Card>
+                      </div>
+                    )}
                   </div>
                 </ScrollArea>
               </div>
@@ -6789,7 +6948,7 @@ function AdminPanel() {
                     <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="z-[200] bg-gray-800 border-gray-700">
                       {VALID_STATUSES.map(s => (
                         <SelectItem key={s} value={s} className="text-gray-200">
                           <span className="flex items-center gap-2">
@@ -6842,6 +7001,21 @@ function AdminPanel() {
    ═══════════════════════════════════════════════════════════════ */
 
 export default function HomePage() {
+  const [companySettings, setCompanySettings] = useState<CompanySettings>(DEFAULT_COMPANY_SETTINGS);
+
+  // Fetch company settings on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/settings');
+        if (res.ok) {
+          const data = await res.json();
+          setCompanySettings(data);
+        }
+      } catch { /* use defaults */ }
+    })();
+  }, []);
+
   // BUG 3 FIX: Drive scroll progress bar
   useEffect(() => {
     const bar = document.getElementById('scroll-progress-bar');
@@ -6865,6 +7039,7 @@ export default function HomePage() {
   }, []);
 
   return (
+    <CompanySettingsContext.Provider value={companySettings}>
     <>
       <a href="#hero" className="skip-to-content">
         Skip to main content
@@ -6917,5 +7092,6 @@ export default function HomePage() {
         <MobileNavItems />
       </nav>
     </>
+    </CompanySettingsContext.Provider>
   );
 }
