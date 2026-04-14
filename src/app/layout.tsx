@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://claimguardpro.com'),
+  metadataBase: new URL('https://claimguardpro.com'), // TODO: Update domain after choosing new name
   alternates: {
     canonical: '/',
   },
@@ -74,14 +75,14 @@ const jsonLd = {
       logo: "https://claimguardpro.com/logo.png",
       description:
         "ClaimGuard Pro helps claimants in mass tort class action lawsuits track their claims, correct documentation issues, and maximize their compensation.",
-      telephone: "(800) 555-0199",
+      telephone: "(484) 968-1529",
       email: "info@claimguardpro.com",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "123 Justice Avenue",
-        addressLocality: "Washington",
-        addressRegion: "DC",
-        postalCode: "20001",
+        streetAddress: "1429 Walnut St, 14th Floor",
+        addressLocality: "Philadelphia",
+        addressRegion: "PA",
+        postalCode: "19102",
         addressCountry: "US",
       },
       areaServed: "US",
@@ -93,7 +94,7 @@ const jsonLd = {
       description:
         "Mass tort claim tracking, document correction, eligibility assessment, and settlement maximization.",
       url: "https://claimguardpro.com",
-      telephone: "(800) 555-0199",
+      telephone: "(484) 968-1529",
       priceRange: "Free",
       areaServed: "US",
       hasOfferCatalog: {
@@ -245,9 +246,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Google Analytics - eslint-disable-next-line @next/next/next-script-for-ga */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX" />
-        <script
+        {/* Google Analytics */}
+        <Script id="gtag-init" async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX" />
+        <Script
+          id="gtag-config"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];

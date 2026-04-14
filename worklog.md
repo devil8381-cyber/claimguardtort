@@ -1,227 +1,140 @@
----
-Task ID: 1
-Agent: Main Agent
-Task: Implement all possible improvements in one go for ClaimGuard Pro
+# Worklog — Admin Panel with CSV Upload for Claimant Database
 
-Work Log:
-- Reviewed entire project state (page.tsx ~3,779 lines, globals.css, API routes, prisma schema, layout)
-- Created src/middleware.ts for admin API authentication (Bearer token)
-- Updated prisma/schema.prisma with indexes (Claim.status, ContactMessage.read, ContactMessage.createdAt) and cascade deletes
-- Ran prisma db push --force-reset and generate
-- Updated src/app/layout.tsx with JSON-LD structured data (Organization, LegalService, FAQPage schemas) and switched to Sonner Toaster
-- Added ADMIN_HEADERS constant with Bearer token to all admin API fetch calls in page.tsx
-- Added new Resources & Insights blog section with 3 comprehensive articles (mass tort vs class action, documentation guide, denied claim guide)
-- Added Resources link to NAV_LINKS and footer Quick Links
-- Added CSV Export buttons to admin Claims and Messages tabs
-- Fixed all remaining toast calls from shadcn format to Sonner format
-- Removed useToast() hook usage (now using toast from sonner directly)
-- Removed duplicate RESOURCES_DATA and old ResourcesSection
+## Date: 2026-04-14
 
-Stage Summary:
-- Admin API routes now protected with Bearer token authentication via middleware
-- Database has proper indexes and cascade deletes for data integrity
-- SEO improved with JSON-LD structured data for Google rich results
-- New Resources section with 3 detailed, expandable articles
-- Admin panel has CSV export for claims and messages
-- All toast notifications migrated to Sonner for better UX
-- Zero ESLint errors confirmed
+## Summary
+Built a comprehensive Admin Panel with CSV upload capability for managing a claimant database, integrated into the existing ClaimGuard Pro single-page application.
 
 ---
-Task ID: 2
-Agent: Main Agent
-Task: Implement 20 massive improvements for ClaimGuard Pro
 
-Work Log:
-1. Google Maps Embed - Replaced static address card in ContactSection with embedded Google Maps iframe + kept address card below with proper icon
-2. Google Analytics - Added gtag.js scripts to layout.tsx head, created src/lib/analytics.ts with trackEvent helper
-3. Sitemap.xml - Created public/sitemap.xml with 6 URLs (home, track-claim, eligibility-quiz, services, contact, faq)
-4. PWA manifest.json - Created public/manifest.json with full PWA configuration, linked in layout.tsx head
-5. Social Proof Notifications - Added SocialProofNotification component (bottom-left, 10s delay, 15-20s cycle, 5s auto-dismiss, close button, AnimatePresence)
-6. Exit-Intent Popup - Added ExitIntentPopup component (mouseout y<10 detection, sessionStorage once per session, email input, premium navy/gold design)
-7. Video Testimonial Placeholders - Added 3 video testimonial cards after carousel with PlayCircle overlay, gradient backgrounds, "Video Coming Soon" badges
-8. Enhanced Blog Resources - Replaced 3 articles with new ones (Camp Lejeune guide, Roundup 2025 updates, 10 Critical Documents) with full expandable content using AnimatePresence
-9. Enhanced Admin Panel - Added bulk status update (checkboxes + select + apply button), enhanced dashboard charts with colored bars and percentages, added Claimants CSV export
-10. Email Notification API - Created src/app/api/notifications/email/route.ts (placeholder with Resend TODO)
-11. SMS Notification API - Created src/app/api/notifications/sms/route.ts (placeholder with Twilio TODO, phone validation)
-12. Accessibility (WCAG 2.1 AA) - Added aria-live region, role="status" on scroll bar, focus-visible CSS, prefers-reduced-motion media query
-13. Performance Optimizations - Wrapped testimonial carousel in LazySection, loading="lazy" on map iframe, fetchPriority on hero image
-14. Canonical URLs & SEO - Added metadataBase and canonical URL to layout.tsx metadata
-15. Custom 404 Not Found Page - Created src/app/not-found.tsx with motion animations, navy/gold design, CTA buttons
-16. Splash/Loading Screen - Added SplashScreen component (2s display, sessionStorage once, navy bg, gold shield, pulse animation, fade-out transition)
-17. Referral/Ambassador CTA - Added ReferralSection (between Newsletter and About) with form (name, email, friend info, claim type dropdown), trust badges, created API route
-18. Print-friendly CSS - Enhanced print styles hiding nav/cookie/chat/scroll/social-proof/exit-intent/splash, A4 page size, break-inside: avoid
-19. Tooltips Enhancement - Added tooltips to hero trust badges (Secure, No Fees, 24/7), WhyChooseUs stats cards, and service cards
-20. (Combined with #18) Additional print styles and tooltip refinements
+## Changes Made
 
-Stage Summary:
-- 20 improvements fully implemented across page.tsx, layout.tsx, globals.css, and new files
-- 7 new files created: manifest.json, sitemap.xml, not-found.tsx, analytics.ts, 3 API routes
-- 5 new React components added: SplashScreen, SocialProofNotification, ExitIntentPopup, ReferralSection, video testimonials
-- 3 existing sections enhanced: ContactSection (map), TestimonialsSection (video cards), ResourcesSection (new articles), AdminPanel (bulk update, charts, export)
-- WCAG 2.1 AA accessibility improvements with focus-visible, reduced-motion, aria-live
-- Zero ESLint errors (1 expected warning for GA inline script)
+### 1. Prisma Schema (`prisma/schema.prisma`)
+- **Updated** the existing `Claimant` model with new fields for CSV import support:
+  - `trackingId` (String, unique, indexed) — format: CLM-YYYY-NNN
+  - `claimType` (String, optional)
+  - `status` (String, default "Submitted") — Submitted, Validated, Under Review, Decision, Completed
+  - `state` (String, optional)
+  - `filedDate` (String, optional)
+  - `notes` (String, optional)
+- Added indexes on `trackingId`, `status`, and `claimType` for query performance
+- Preserved all existing relations (Claim[], ContactMessage[])
+- Pushed schema to SQLite database at `db/custom.db`
 
----
-Task ID: 3
-Agent: Main Agent
-Task: Redesign Client Success Stories section - replace video placeholders with photo carousel
+### 2. API Routes Created
 
-Work Log:
-- Generated 6 realistic portrait images using z-ai-generate (saved to public/images/success-story-1.jpg through 6.jpg)
-- Replaced VIDEO_TESTIMONIALS data with SUCCESS_STORIES data (6 stories with name, location, caseType, image, quote, beforeStatus, afterStatus, timeline, highlight)
-- Added `Image` from next/image for optimized image loading
-- Created CASE_COLORS map for case-type-specific badge styling
-- Built SuccessStoriesCarousel component with:
-  - Auto-advancing carousel (6s interval) with manual pause/resume
-  - Before/After status cards (red → green visual flow)
-  - Person photo + location + timeline info
-  - Detailed quote and highlight box
-  - Prev/Next arrow buttons + dot indicators
-  - Slide counter (X of 6 stories)
-  - AnimatePresence with directional slide transitions
-  - Full keyboard accessibility (ARIA roles, labels, focus-visible)
-- Removed PlayCircle import (no longer needed)
-- Wrapped carousel in LazySection for performance
+#### `src/app/api/claimants/route.ts` (GET)
+- Public endpoint for looking up claimants
+- Query params: `trackingId` (specific lookup), `search` (name/email/trackingId), `page`, `limit`
+- Used by the Track Claim feature to check the real database
 
-Stage Summary:
-- Client Success Stories completely redesigned from static video placeholders to interactive photo carousel
-- 6 AI-generated realistic portrait images created
-- Rich story data with before/after statuses, timelines, and highlights
-- Smooth animations with directional transitions
-- Zero ESLint errors confirmed
+#### `src/app/api/admin/claimants/route.ts` (GET)
+- Admin-authenticated endpoint (Bearer token: `claimguard-admin-2025`)
+- Lists claimants with pagination, search, and status filter
+- Returns: `{ claimants, total, page, totalPages }`
 
----
-Task ID: 4
-Agent: Main Agent
-Task: Remove ALL pricing mentions + implement 10 new features
+#### `src/app/api/admin/claimants/[trackingId]/route.ts` (DELETE)
+- Admin-authenticated endpoint
+- Deletes a claimant by trackingId
+- Returns success/error confirmation
 
-Work Log:
-1. PRICING REMOVAL:
-   - Changed TRUST_BADGES: 'No Upfront Fees' to '100% Free Service', 'Free Consultations' to 'No Hidden Costs'
-   - Updated FAQ: "How much does ClaimGuard Pro charge?" to "Is ClaimGuard Pro really free?" with comprehensive free service answer
-   - Removed Cost comparison row from COMPARISON_DATA
-   - Updated Terms of Service: fee liability clause changed to service value clause
-   - Changed social proof: 'booked a free consultation' to 'started their claim assessment'
-   - Changed all "Free Consultation" buttons to "Get Started Now"
-   - Updated hero tooltip: removed contingency mention, emphasized 100% free
-   - Changed "Check Eligibility Free" to "Check Your Eligibility"
-   - Updated exit intent: "Free Consultation" to "Get Started Today", "No Upfront Fees" to "Always 100% Free"
-   - Updated About CTAs and trust badges to remove fee references
-   - Removed "Worth $500" from evaluation CTAs
-   - Updated layout.tsx JSON-LD: removed ContingentPrice, priceRange changed to "Free", FAQ pricing question updated
+#### `src/app/api/admin/upload-csv/route.ts` (POST)
+- Admin-authenticated, multipart form data endpoint
+- Parses CSV files with columns: tracking_id, first_name, last_name, email, phone, claim_type, status, state, filed_date, notes
+- Auto-generates tracking IDs if not provided (CLM-YYYY-NNN format)
+- Upserts claimants (insert new, update existing by trackingId)
+- Returns: `{ success, imported, updated, errors, totalErrors }`
+- Validates required columns, handles quoted CSV fields
 
-2. 10 NEW FEATURES:
-   - Feature 1: "As Featured In" Media Bar with 8 media outlets after hero
-   - Feature 2: Interactive Settlement Calculator with case type and severity selection
-   - Feature 3: Live Claim Counter with animated numbers and pulsing live indicator
-   - Feature 4: Progress Timeline with color-coded circles and animated progress line
-   - Feature 5: Enhanced AI Chatbot with mass tort knowledge base
-   - Feature 6: Notification Preferences with Email/SMS/Newsletter checkboxes
-   - Feature 7: Animated Data Visualization bar chart showing recovery by case type
-   - Feature 8: Hero Floating Orbs with infinite motion animations
-   - Feature 9: Client Portal CTA with coming soon section and feature cards
-   - Feature 10: Calculator CTA button in hero row
+#### `src/app/api/admin/export/route.ts` (GET)
+- Admin-authenticated export endpoint
+- `format=csv` — Downloads all claimants as CSV
+- `format=sample` — Downloads a sample CSV template
+- `format=stats` — Returns dashboard statistics (total, status counts, claim type counts)
 
-Stage Summary:
-- ALL pricing/fee/cost/contingency mentions completely removed
-- 10 new features fully implemented and verified
-- Zero ESLint errors
+### 3. Admin Panel Component (`src/app/page.tsx`)
+Added a full `AdminPanel` component (~500 lines) with:
 
----
-Task ID: 5
-Agent: Main Agent
-Task: Fix 4 critical bugs + implement 11 improvements
+#### Authentication
+- Password-protected with key: `claimguard-admin-2025`
+- Clean auth screen with lock icon
 
-Work Log:
-BUGS FIXED:
-1. Settlement Calculator never rendered - Added to JSX after WhyDifferentSection
-2. ClientPortalSection handleClick crash - Replaced with direct scrollIntoView
-3. Scroll progress bar never updating - Added useEffect with scroll listener
-4. Notification checkboxes disconnected - Added prefs state, connected checkboxes, FormData
+#### Dashboard Tab
+- Total claimants count card
+- Per-status count cards (Submitted, Validated, Under Review, Decision, Completed)
+- Status distribution bar chart (horizontal stacked)
+- Top claim types breakdown with animated progress bars
 
-IMPROVEMENTS:
-5. Open Graph + Twitter Card images - Added images metadata, generated og-image.png
-6. AggregateRating + Review schema - 6 reviews + 5-star aggregate in JSON-LD
-7. Article structured data - 3 Article schemas for blog posts in JSON-LD
-8. File upload sends actual files - Changed to FormData multipart/form-data
-9. Screen reader announcer - Added announce() utility used in quiz and contact form
-10. Form errors aria-describedby - Added IDs, aria-describedby, aria-invalid
-11. Form throttling - Added 3-second cooldown
-12. Dark mode theme-color - Dynamic meta update based on color scheme
-13. Semantic time elements - dateISO + time element for blog articles
-14. Live chat pre-set questions - Contextual question quick replies
-15. Bottom mobile navigation - Fixed bottom nav with 5 key actions
+#### Claimants Tab
+- Sortable data table with columns: Tracking ID, Name, Claim Type, Status, Filed Date, State, Actions
+- Real-time search by name, email, or tracking ID
+- Status filter dropdown
+- Pagination (25 per page)
+- Delete button per row with confirmation dialog
+- Color-coded status badges (yellow/blue/purple/orange/green)
+- Total count display and refresh button
+- Loading skeletons and empty state
 
-Stage Summary:
-- 4 critical bugs fixed
-- 11 improvements implemented
-- Zero ESLint errors
+#### Upload CSV Tab
+- Drag-and-drop file upload zone with visual feedback
+- Click-to-browse fallback
+- Upload progress and result summary
+- Shows imported/updated counts and warnings
+- Detailed "How to Format Your CSV" instructions
+- Sample CSV template download button
+- Tips for best practices
+
+#### Quick Actions (always visible in tab bar)
+- "Download All as CSV" button
+- "Generate Sample CSV" button
+
+#### Access Methods
+- URL hash: `#admin`
+- Keyboard shortcut: `Ctrl+Shift+A`
+- Escape to close
+- Full-screen modal overlay with backdrop blur
+
+### 4. Track Claim Section — Database Integration
+- Modified `handleTrack` in `TrackClaimSection` to:
+  1. First check `/api/claimants?trackingId=XXX` for real database records
+  2. If found, map Claimant fields to the existing `ClaimResult` interface
+  3. If not found, fall back to the original `/api/claims/track` API
+- New statuses (Submitted, Validated, Decision, Completed) mapped to progress percentages
+- Status-specific "next steps" messages for real database results
+
+### 5. Sample Data (`prisma/seed.ts`)
+Seeded 5 claimants into the database:
+- CLM-2024-001: John Martinez, Camp Lejeune, Submitted, NC
+- CLM-2024-002: Sarah Johnson, Roundup, Under Review, OH
+- CLM-2024-003: Robert Williams, Hernia Mesh, Validated, TX
+- CLM-2024-004: Linda Davis, Talc, Completed, FL
+- CLM-2024-005: Michael Brown, Paraquat, Decision, CA
 
 ---
-Task ID: 6
-Agent: Main Agent
-Task: Replace AI images with avatar initials + expand tort types
 
-Work Log:
-TASK 1 — Replace AI-generated images with non-AI avatars:
-- Removed `import Image from 'next/image'` (no longer used anywhere in file)
-- Replaced all 6 SUCCESS_STORIES entries' `image` field with `initials` (2-letter) and `avatarColor` (gradient class)
-- Added 6 new success stories (Maria Gonzalez/Rideshare Assault, Kevin Wright/Depo Provera, Patricia Nguyen/NEC Baby Formula, David Brown/IL Detention, Linda Chen/Social Media, Marcus Williams/Roblox) — total now 12
-- Replaced SuccessStoriesCarousel left panel: removed Image-based layout, replaced with dark gradient background + abstract geometric pattern (gold/blue blurred orbs, SVG grid) + large gradient circle avatar with initials in serif font + decorative gold line + case type label
-- Updated animation key from `story.image` to `story.name`
+## Design Decisions
+- **Kept existing Claimant model** — added new fields rather than replacing, preserving all existing relations to Claim and ContactMessage
+- **Tracking IDs on Claimant** — the admin CSV workflow directly manages Claimant records with trackingId, separate from the existing Claim model
+- **Gold accent (#C5A059)** — consistent with site branding throughout the admin panel
+- **Dark theme only** — all admin panel UI matches the site's dark theme
+- **Admin auth via Bearer token** — simple but effective for an admin tool
+- **Responsive** — table columns hide on smaller screens, mobile-friendly layout
 
-TASK 2 — Expand tort types across all arrays:
-- Added 8 new lucide-react icon imports: Baby, Car, Gamepad2, Pill, AlertTriangle, Activity, Heart, Brain
-- Expanded CASE_TYPES from 16 to 30 entries (added Rideshare Assault, NEC Baby Formula, Depo Provera, Roblox/Gaming, IL Detention, Uber/Lyft Safety, Talcum Powder Cancer, AFFF/PFAS Exposure, 3M Earplugs, Exactech Implants, Bard PowerPort, Elmiron, Taxotere, Talc Ovarian Cancer)
-- Expanded CASE_TYPE_DETAILS from 6 to 18 entries (added Rideshare Assault, NEC Baby Formula, Depo Provera, Social Media Mental Health, IL Detention, Roblox/Gaming, Zantac, Hair Relaxer, CPAP Machines, 3M Combat Earplugs, Exactech Joint Implants, Paraquat)
-- Expanded SP_CASE_TYPES from 15 to 25 entries (added Rideshare Assault, NEC Baby Formula, Depo Provera, Roblox/Gaming, IL Detention, 3M Earplugs, Exactech Implants, Bard PowerPort, Elmiron, Taxotere)
-- Expanded CASE_COLORS from 6 to 12 entries (added Rideshare Assault, Depo Provera, NEC Baby Formula, IL Detention, Social Media, Roblox)
-- Updated Eligibility Quiz q2 options from 7 to 18 case types
+## Files Modified
+- `prisma/schema.prisma` — Added fields to Claimant model
+- `src/app/page.tsx` — Added AdminPanel component (~500 lines), wired TrackClaimSection to real DB
+- `prisma/seed.ts` — Created seed script with 5 sample claimants
 
-Stage Summary:
-- All AI-generated images completely removed from success stories carousel
-- 12 success stories with professional gradient avatar initials + abstract background design
-- 18 detailed case type entries with full descriptions, icons, deadlines, statuses
-- 30 case types in the hero typeahead, 25 in social proof, 18 in quiz
-- Zero ESLint errors confirmed
+## Files Created
+- `src/app/api/claimants/route.ts` — Public claimant lookup API
+- `src/app/api/admin/claimants/route.ts` — Admin claimants list API (updated)
+- `src/app/api/admin/claimants/[trackingId]/route.ts` — Admin delete API
+- `src/app/api/admin/upload-csv/route.ts` — CSV upload endpoint
+- `src/app/api/admin/export/route.ts` — Export/stats/sample CSV endpoint
 
----
-Task ID: 7
-Agent: Main Agent
-Task: Expand settlement calculator, chart, blog articles, mobile performance fixes, responsive sizing
-
-Work Log:
-TASK 1 — SETTLEMENT_RANGES expanded from 7 to 21 entries:
-- Added 14 new tort types: Zantac, Hair Relaxer, CPAP Machines, Social Media Lawsuits, Rideshare Assault, NEC Baby Formula, Depo Provera, Roblox/Gaming, IL Detention, 3M Earplugs, Exactech Implants, Bard PowerPort, Elmiron, Taxotere
-- Updated Paraquat max from 1M to 1.5M
-
-TASK 2 — Recovery by Case Type chart expanded from 6 to 16 entries:
-- Added 10 new case types with unique colors and realistic recovery amounts
-- Changed max reference from 18 to 18.5 for accurate bar scaling
-- Made chart scrollable on mobile (max-h-[400px] overflow-y-auto)
-
-TASK 3 — Added 3 new blog articles to BLOG_ARTICLES:
-- NEC Baby Formula Claims (Baby icon, cyan)
-- Depo Provera Brain Tumor Link (Pill icon, orange)
-- Social Media Teen Mental Health (Users icon, pink)
-- All required icons already imported (Baby, Pill, Users)
-
-TASK 4 — Mobile Scrolling Performance Fixes:
-- globals.css: Added GPU acceleration rules (will-change, backface-visibility, translateZ) at top of file
-- globals.css: Added touch device media query disabling complex animations and backdrop-blur
-- globals.css: Added main contain layout/style, tap highlight removal, iOS smooth scrolling
-- globals.css: Enhanced prefers-reduced-motion with hover-glow, particle-dot, splash-icon animation disables
-- page.tsx: Hero particle dots wrapper hidden on mobile (hidden md:block)
-- page.tsx: Hero floating orbs (2) hidden on mobile (hidden md:block)
-- page.tsx: WhyChooseUsSection decorative orbs (2) hidden on mobile (hidden md:block)
-- page.tsx: CTASection decorative orb hidden on mobile (hidden md:block)
-
-TASK 5 — Responsive Sizing Fixes:
-- Recovery by Case Type chart list now scrollable on mobile with max-h-[400px] md:max-h-none
-
-Stage Summary:
-- Settlement Calculator now covers all 21 case types
-- Recovery chart expanded to 16 case types with scrollable mobile layout
-- Blog section expanded from 3 to 6 articles covering new case types
-- Significant mobile performance improvements: GPU acceleration, reduced animations, hidden decorative elements
-- Zero ESLint errors (1 expected warning for GA inline script)
+## Verification
+- ✅ ESLint passes (0 errors, 1 pre-existing warning)
+- ✅ All API routes tested and working
+- ✅ Dev server responds with 200
+- ✅ Sample data seeded successfully
+- ✅ Track Claim section works with both DB records and fallback

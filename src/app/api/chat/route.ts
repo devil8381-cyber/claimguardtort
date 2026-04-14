@@ -12,7 +12,7 @@ Key information:
 - Services: claim tracking, document correction, eligibility assessment, personalized support, legal strategy consultation, settlement maximization
 - Important: Filing deadlines are STRICT and vary by case type. Encourage users to check deadlines urgently.
 
-Always be empathetic, helpful, and accurate. Never promise specific outcomes. Encourage users to use Track My Claim or contact a specialist at (800) 555-0199.`;
+Always be empathetic, helpful, and accurate. Never promise specific outcomes. Encourage users to use Track My Claim or contact a specialist at (484) 968-1529.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     const completion = await zai.chat.completions.create({ messages });
     const reply =
       completion.choices[0]?.message?.content ||
-      "I'm sorry, I couldn't process your request. Please call (800) 555-0199 for immediate assistance.";
+      "I'm sorry, I couldn't process your request. Please call (484) 968-1529 for immediate assistance.";
 
     return NextResponse.json({
       success: true,
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'I encountered an issue processing your message. Please try again or call (800) 555-0199 for immediate assistance.',
+          'I encountered an issue processing your message. Please try again or call (484) 968-1529 for immediate assistance.',
       },
       { status: 500 }
     );

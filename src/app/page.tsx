@@ -111,6 +111,16 @@ import {
   FileDown,
   HandHeart,
   Calculator,
+  FileUp,
+  Database,
+  ChevronRight as ChevronRightIcon,
+  UsersRound,
+  CircleDot,
+  Filter,
+  SortAsc,
+  XCircle,
+  DownloadCloud,
+  FileSpreadsheet,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -323,8 +333,8 @@ To exercise any of these rights, please contact us at privacy@claimguardpro.com.
 
 If you have questions about this Privacy Policy, please contact us at:
 Email: privacy@claimguardpro.com
-Phone: (800) 555-0199
-Address: 123 Justice Avenue, Washington, DC 20001`;
+Phone: (484) 968-1529
+Address: 1429 Walnut St, 14th Floor, Philadelphia, PA 19102`;
 
 const TERMS_OF_SERVICE_TEXT = `Terms of Service for ClaimGuard Pro
 
@@ -373,8 +383,8 @@ We reserve the right to modify these Terms at any time. We will notify you of ma
 
 For questions about these Terms, contact us at:
 Email: legal@claimguardpro.com
-Phone: (800) 555-0199
-Address: 123 Justice Avenue, Washington, DC 20001`;
+Phone: (484) 968-1529
+Address: 1429 Walnut St, 14th Floor, Philadelphia, PA 19102`;
 
 /* ═══════════════════════════════════════════════════════════════
    SOCIAL PROOF GENERATOR — ~10,000+ Unique Combinations
@@ -1136,8 +1146,8 @@ const Navbar = memo(function Navbar() {
                     </button>
                   </ScrollArea>
                   <div className="p-4 border-t border-border">
-                    <a href="tel:8005550199" className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
-                      <Phone className="w-4 h-4 text-gold" />(800) 555-0199
+                    <a href="tel:4849681529" className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
+                      <Phone className="w-4 h-4 text-gold" />(484) 968-1529
                     </a>
                     <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">{t('nav.getStarted')}</Button>
                   </div>
@@ -2574,6 +2584,39 @@ function TrackClaimSection() {
     if (!trimmed) { setError(t('track.error')); return; }
     setLoading(true); setError(''); setResult(null);
     try {
+      // First check the real claimant database
+      const dbRes = await fetch(`/api/claimants?trackingId=${encodeURIComponent(trimmed)}`);
+      const dbData = await dbRes.json();
+
+      if (dbRes.ok && dbData.claimants && dbData.claimants.length > 0) {
+        const c = dbData.claimants[0];
+        // Map Claimant fields to ClaimResult format
+        const statusProgressMap: Record<string, number> = {
+          'Submitted': 15,
+          'Validated': 35,
+          'Under Review': 55,
+          'Decision': 80,
+          'Completed': 100,
+        };
+        setResult({
+          trackingId: c.trackingId || trimmed,
+          status: c.status || 'Submitted',
+          claimType: c.claimType,
+          description: null,
+          filedDate: c.filedDate,
+          lastUpdated: c.updatedAt,
+          notes: c.notes,
+          nextSteps: c.status === 'Completed' ? 'Your claim has been resolved.' : c.status === 'Under Review' ? 'Your claim is being reviewed.' : null,
+          progress: statusProgressMap[c.status] || 10,
+          claimant: { firstName: c.firstName, lastName: c.lastName },
+          history: [{ status: c.status, notes: c.notes, date: c.updatedAt }],
+        });
+        toast.success(t('track.found'), { description: t('track.foundDesc').replace('{id}', c.trackingId || trimmed) });
+        setLoading(false);
+        return;
+      }
+
+      // Fallback to existing claims/track API
       const res = await fetch('/api/claims/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trackingId: trimmed }) });
       const data = await res.json();
       if (!res.ok) {
@@ -2587,7 +2630,7 @@ function TrackClaimSection() {
       setError(t('track.networkErrorDesc').replace('.', ''));
       toast.error(t('track.networkError'), { description: t('track.networkErrorDesc') });
     } finally { setLoading(false); }
-  }, [trackingId, toast]);
+  }, [trackingId, toast, t]);
 
   const downloadPDF = useCallback(async () => {
     if (!result) return;
@@ -4559,12 +4602,12 @@ function ContactSection() {
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><MapPin className="w-5 h-5 text-gold" /></div>
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('contact.officeAddress')}</p>
-                    <p className="text-sm font-medium text-navy dark:text-gray-200">123 Justice Avenue</p>
-                    <p className="text-sm text-muted-foreground dark:text-gray-400">Washington, DC 20001</p>
+                    <p className="text-sm font-medium text-navy dark:text-gray-200">1429 Walnut St, 14th Floor</p>
+                    <p className="text-sm text-muted-foreground dark:text-gray-400">Philadelphia, PA 19102</p>
                   </div>
                 </div>
                 {[
-                  { icon: Phone, label: t('contact.callUs'), value: '(800) 555-0199', href: 'tel:8005550199' },
+                  { icon: Phone, label: t('contact.callUs'), value: '(484) 968-1529', href: 'tel:4849681529' },
                   { icon: Mail, label: 'Email', value: 'info@claimguardpro.com', href: 'mailto:info@claimguardpro.com' },
                   { icon: Clock, label: t('contact.officeHours'), value: 'Mon-Fri: 8AM-8PM EST\nSat: 9AM-5PM EST', href: '' },
                 ].map((item) => (
@@ -4600,7 +4643,7 @@ function ContactSection() {
                 <HeadphonesIcon className="w-8 h-8 text-gold mx-auto mb-3" />
                 <h4 className="font-bold text-lg mb-1">{t('contact.needHelp')}</h4>
                 <p className="text-white/60 text-sm mb-4">{t('contact.specialistsStandingBy')}</p>
-                <a href="tel:8005550199" className="block w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3 rounded-lg transition-colors mb-3"><Phone className="w-4 h-4 inline mr-2" />(800) 555-0199</a>
+                <a href="tel:4849681529" className="block w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3 rounded-lg transition-colors mb-3"><Phone className="w-4 h-4 inline mr-2" />(484) 968-1529</a>
                 <a href="mailto:info@claimguardpro.com" className="block w-full bg-white/10 hover:bg-white/15 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"><Mail className="w-4 h-4 inline mr-2" />info@claimguardpro.com</a>
               </CardContent>
             </Card>
@@ -4717,8 +4760,8 @@ function Footer() {
             <div>
               <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">{t('footer.contact')}</h4>
               <div className="space-y-3">
-                <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50">123 Justice Avenue<br />Washington, DC 20001</span></div>
-                <a href="tel:8005550199" className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Phone className="w-4 h-4 text-gold" />(800) 555-0199</a>
+                <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50">1429 Walnut St, 14th Floor<br />Philadelphia, PA 19102</span></div>
+                <a href="tel:4849681529" className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Phone className="w-4 h-4 text-gold" />(484) 968-1529</a>
                 <a href="mailto:info@claimguardpro.com" className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Mail className="w-4 h-4 text-gold" />info@claimguardpro.com</a>
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
@@ -5519,6 +5562,849 @@ function MobileNavItems() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   ADMIN PANEL — CSV Upload & Claimant Management
+   ═══════════════════════════════════════════════════════════════ */
+
+const ADMIN_AUTH_TOKEN = 'claimguard-admin-2025';
+
+const STATUS_COLORS: Record<string, string> = {
+  'Submitted': 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
+  'Validated': 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  'Under Review': 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  'Decision': 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  'Completed': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+};
+
+const STATUS_DOT_COLORS: Record<string, string> = {
+  'Submitted': 'bg-yellow-400',
+  'Validated': 'bg-blue-400',
+  'Under Review': 'bg-purple-400',
+  'Decision': 'bg-orange-400',
+  'Completed': 'bg-emerald-400',
+};
+
+const VALID_STATUSES = ['Submitted', 'Validated', 'Under Review', 'Decision', 'Completed'];
+
+interface ClaimantRecord {
+  id: string;
+  trackingId: string | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  claimType: string | null;
+  status: string;
+  state: string | null;
+  filedDate: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface AdminStats {
+  total: number;
+  statusCounts: Record<string, number>;
+  claimTypeCounts: Record<string, number>;
+}
+
+function AdminPanel() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'upload'>('dashboard');
+  const [authKey, setAuthKey] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Claimants state
+  const [claimants, setClaimants] = useState<ClaimantRecord[]>([]);
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loadingClaimants, setLoadingClaimants] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
+  // CSV Upload state
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{
+    success: boolean;
+    imported: number;
+    updated: number;
+    errors: string[];
+    totalErrors: number;
+  } | null>(null);
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<ClaimantRecord | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // Hash detection + keyboard shortcut
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#admin') {
+        setIsOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        setIsOpen(prev => !prev);
+      }
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+        window.location.hash = '';
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+
+    return () => {
+      window.removeEventListener('hashchange', checkHash);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [isOpen]);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  const handleAuth = useCallback(() => {
+    if (authKey === ADMIN_AUTH_TOKEN) {
+      setIsAuthenticated(true);
+      setAuthError('');
+    } else {
+      setAuthError('Invalid admin key');
+    }
+  }, [authKey]);
+
+  const fetchClaimants = useCallback(async (page = 1) => {
+    setLoadingClaimants(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('page', String(page));
+      params.set('limit', '25');
+      if (searchQuery) params.set('search', searchQuery);
+      if (statusFilter !== 'all') params.set('status', statusFilter);
+
+      const res = await fetch(`/api/admin/claimants?${params.toString()}`, {
+        headers: { 'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}` },
+      });
+      const data = await res.json();
+      setClaimants(data.claimants || []);
+      setTotalPages(data.totalPages || 1);
+      setTotalCount(data.total || 0);
+      setCurrentPage(data.page || 1);
+    } catch {
+      toast.error('Failed to load claimants');
+    } finally {
+      setLoadingClaimants(false);
+    }
+  }, [searchQuery, statusFilter]);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/export?format=stats', {
+        headers: { 'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}` },
+      });
+      const data = await res.json();
+      setStats(data);
+    } catch {
+      // Silent fail for stats
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && isOpen) {
+      fetchClaimants(1);
+      fetchStats();
+    }
+  }, [isAuthenticated, isOpen, fetchClaimants, fetchStats]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchClaimants(1);
+    }
+  }, [searchQuery, statusFilter, isAuthenticated, fetchClaimants]);
+
+  const handleUpload = useCallback(async () => {
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadResult(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+      const res = await fetch('/api/admin/upload-csv', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error('Upload failed', { description: data.error });
+        setUploadResult({ success: false, imported: 0, updated: 0, errors: [data.error], totalErrors: 1 });
+      } else {
+        setUploadResult(data);
+        toast.success('CSV processed', { description: `Imported: ${data.imported}, Updated: ${data.updated}` });
+        setUploadFile(null);
+        fetchClaimants(1);
+        fetchStats();
+      }
+    } catch {
+      toast.error('Upload error', { description: 'Network error' });
+    } finally {
+      setUploading(false);
+    }
+  }, [uploadFile, fetchClaimants, fetchStats]);
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/claimants/${deleteTarget.trackingId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}` },
+      });
+      if (res.ok) {
+        toast.success('Claimant deleted', { description: `${deleteTarget.trackingId} has been removed` });
+        fetchClaimants(currentPage);
+        fetchStats();
+      } else {
+        toast.error('Delete failed');
+      }
+    } catch {
+      toast.error('Delete error');
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
+  }, [deleteTarget, currentPage, fetchClaimants, fetchStats]);
+
+  const handleDownloadExport = useCallback(() => {
+    window.open('/api/admin/export?format=csv', '_blank');
+  }, []);
+
+  const handleDownloadSample = useCallback(() => {
+    window.open('/api/admin/export?format=sample', '_blank');
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      setUploadFile(file);
+      setUploadResult(null);
+    } else {
+      toast.error('Please drop a .csv file');
+    }
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    window.location.hash = '';
+  }, []);
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4"
+        onClick={handleClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-6xl h-[90vh] bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-800 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/20 flex items-center justify-center">
+                <LayoutDashboard className="w-5 h-5 text-[#C5A059]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Admin Panel</h2>
+                <p className="text-xs text-gray-500">Claimant Database Management</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-[10px] text-gray-500 border-gray-700 hidden sm:flex">
+                Ctrl+Shift+A to toggle
+              </Badge>
+              <Button variant="ghost" size="icon" onClick={handleClose} className="text-gray-400 hover:text-white hover:bg-gray-800">
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+
+          {!isAuthenticated ? (
+            /* Auth Screen */
+            <div className="flex-1 flex items-center justify-center p-6">
+              <div className="w-full max-w-sm space-y-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 flex items-center justify-center mx-auto mb-4">
+                    <Lock className="w-8 h-8 text-[#C5A059]" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Admin Access Required</h3>
+                  <p className="text-sm text-gray-400 mt-2">Enter your admin key to continue</p>
+                </div>
+                <div className="space-y-3">
+                  <Input
+                    type="password"
+                    placeholder="Enter admin key..."
+                    value={authKey}
+                    onChange={(e) => { setAuthKey(e.target.value); setAuthError(''); }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+                    className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+                  />
+                  {authError && <p className="text-xs text-red-400">{authError}</p>}
+                  <Button onClick={handleAuth} className="w-full bg-[#C5A059] hover:bg-[#b08d4e] text-white font-semibold">
+                    Authenticate
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Tab Navigation */}
+              <div className="flex items-center gap-1 px-4 sm:px-6 border-b border-gray-800 shrink-0">
+                <button
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === 'dashboard' ? 'text-[#C5A059] border-[#C5A059]' : 'text-gray-400 border-transparent hover:text-gray-200'
+                  }`}
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('claimants')}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === 'claimants' ? 'text-[#C5A059] border-[#C5A059]' : 'text-gray-400 border-transparent hover:text-gray-200'
+                  }`}
+                >
+                  <Database className="w-4 h-4" />
+                  <span className="hidden sm:inline">Claimants</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('upload')}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === 'upload' ? 'text-[#C5A059] border-[#C5A059]' : 'text-gray-400 border-transparent hover:text-gray-200'
+                  }`}
+                >
+                  <FileUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upload CSV</span>
+                </button>
+
+                {/* Quick Actions - right aligned */}
+                <div className="ml-auto flex items-center gap-1">
+                  <Button variant="ghost" size="sm" onClick={handleDownloadSample} className="text-gray-400 hover:text-[#C5A059] hover:bg-gray-800 text-xs gap-1.5 h-8">
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Sample CSV</span>
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleDownloadExport} className="text-gray-400 hover:text-[#C5A059] hover:bg-gray-800 text-xs gap-1.5 h-8">
+                    <DownloadCloud className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Export All</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Tab Content */}
+              <div className="flex-1 overflow-y-auto">
+                <ScrollArea className="h-full">
+                  <div className="p-4 sm:p-6">
+                    {/* Dashboard Tab */}
+                    {activeTab === 'dashboard' && stats && (
+                      <div className="space-y-6">
+                        {/* Stats Cards */}
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                          <Card className="bg-gray-800/50 border-gray-700 p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-[#C5A059]/20 flex items-center justify-center">
+                                <UsersRound className="w-5 h-5 text-[#C5A059]" />
+                              </div>
+                              <div>
+                                <p className="text-2xl font-bold text-white">{stats.total}</p>
+                                <p className="text-xs text-gray-400">Total Claimants</p>
+                              </div>
+                            </div>
+                          </Card>
+
+                          {VALID_STATUSES.map(status => (
+                            <Card key={status} className="bg-gray-800/50 border-gray-700 p-4">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                  status === 'Submitted' ? 'bg-yellow-500/15' :
+                                  status === 'Validated' ? 'bg-blue-500/15' :
+                                  status === 'Under Review' ? 'bg-purple-500/15' :
+                                  status === 'Decision' ? 'bg-orange-500/15' :
+                                  'bg-emerald-500/15'
+                                }`}>
+                                  <CircleDot className={`w-5 h-5 ${
+                                    status === 'Submitted' ? 'text-yellow-400' :
+                                    status === 'Validated' ? 'text-blue-400' :
+                                    status === 'Under Review' ? 'text-purple-400' :
+                                    status === 'Decision' ? 'text-orange-400' :
+                                    'text-emerald-400'
+                                  }`} />
+                                </div>
+                                <div>
+                                  <p className="text-2xl font-bold text-white">{stats.statusCounts[status] || 0}</p>
+                                  <p className="text-xs text-gray-400">{status}</p>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+
+                        {/* Status Distribution Bar */}
+                        <Card className="bg-gray-800/50 border-gray-700 p-4">
+                          <h3 className="text-sm font-semibold text-white mb-3">Status Distribution</h3>
+                          <div className="w-full h-6 rounded-full bg-gray-700 overflow-hidden flex">
+                            {VALID_STATUSES.map(status => {
+                              const count = stats.statusCounts[status] || 0;
+                              const pct = stats.total > 0 ? (count / stats.total) * 100 : 0;
+                              if (pct === 0) return null;
+                              return (
+                                <div
+                                  key={status}
+                                  className={`h-full transition-all duration-500 ${
+                                    status === 'Submitted' ? 'bg-yellow-500' :
+                                    status === 'Validated' ? 'bg-blue-500' :
+                                    status === 'Under Review' ? 'bg-purple-500' :
+                                    status === 'Decision' ? 'bg-orange-500' :
+                                    'bg-emerald-500'
+                                  }`}
+                                  style={{ width: `${pct}%` }}
+                                  title={`${status}: ${count} (${pct.toFixed(1)}%)`}
+                                />
+                              );
+                            })}
+                          </div>
+                          <div className="flex flex-wrap gap-3 mt-3">
+                            {VALID_STATUSES.map(status => {
+                              const count = stats.statusCounts[status] || 0;
+                              const pct = stats.total > 0 ? ((count / stats.total) * 100).toFixed(1) : '0';
+                              return (
+                                <div key={status} className="flex items-center gap-1.5 text-xs text-gray-400">
+                                  <div className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT_COLORS[status]}`} />
+                                  <span>{status}: {count} ({pct}%)</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </Card>
+
+                        {/* Claim Type Breakdown */}
+                        {Object.keys(stats.claimTypeCounts).length > 0 && (
+                          <Card className="bg-gray-800/50 border-gray-700 p-4">
+                            <h3 className="text-sm font-semibold text-white mb-3">Top Claim Types</h3>
+                            <div className="space-y-3">
+                              {Object.entries(stats.claimTypeCounts).map(([type, count]) => {
+                                const pct = stats.total > 0 ? (count / stats.total) * 100 : 0;
+                                return (
+                                  <div key={type} className="space-y-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-sm text-gray-300">{type}</span>
+                                      <span className="text-xs text-gray-500">{count} claimants</span>
+                                    </div>
+                                    <div className="w-full h-2 rounded-full bg-gray-700 overflow-hidden">
+                                      <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${pct}%` }}
+                                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                                        className="h-full bg-[#C5A059] rounded-full"
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </Card>
+                        )}
+                      </div>
+                    )}
+
+                    {activeTab === 'dashboard' && !stats && (
+                      <div className="flex items-center justify-center py-20">
+                        <Loader2 className="w-8 h-8 animate-spin text-[#C5A059]" />
+                      </div>
+                    )}
+
+                    {/* Claimants Tab */}
+                    {activeTab === 'claimants' && (
+                      <div className="space-y-4">
+                        {/* Search & Filter Bar */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                            <Input
+                              placeholder="Search by name, email, or tracking ID..."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+                            />
+                          </div>
+                          <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger className="w-full sm:w-44 bg-gray-800 border-gray-700 text-white">
+                              <Filter className="w-4 h-4 text-gray-500 mr-2" />
+                              <SelectValue placeholder="All Statuses" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-800 border-gray-700">
+                              <SelectItem value="all">All Statuses</SelectItem>
+                              {VALID_STATUSES.map(s => (
+                                <SelectItem key={s} value={s}>{s}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Results Count */}
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-gray-500">{totalCount} claimant{totalCount !== 1 ? 's' : ''} found</p>
+                          <Button variant="ghost" size="sm" onClick={() => fetchClaimants(currentPage)} className="text-gray-400 hover:text-white text-xs gap-1 h-7">
+                            <RefreshCw className="w-3 h-3" /> Refresh
+                          </Button>
+                        </div>
+
+                        {/* Table */}
+                        <div className="border border-gray-700 rounded-xl overflow-hidden">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow className="border-gray-700 hover:bg-gray-800/50">
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Tracking ID</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Name</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Claim Type</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Filed Date</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">State</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider text-right">Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {loadingClaimants ? (
+                                  Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i} className="border-gray-700/50">
+                                      {Array.from({ length: 7 }).map((_, j) => (
+                                        <TableCell key={j} className="py-3">
+                                          <Skeleton className="h-4 w-20 bg-gray-800" />
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  ))
+                                ) : claimants.length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={7} className="py-12 text-center">
+                                      <Database className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                                      <p className="text-gray-500 text-sm">No claimants found</p>
+                                      <p className="text-gray-600 text-xs mt-1">Try a different search or upload a CSV file</p>
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  claimants.map((c) => (
+                                    <TableRow key={c.id} className="border-gray-700/50 hover:bg-gray-800/30">
+                                      <TableCell className="py-3">
+                                        <code className="text-xs font-mono text-[#C5A059] bg-[#C5A059]/10 px-1.5 py-0.5 rounded">
+                                          {c.trackingId || '—'}
+                                        </code>
+                                      </TableCell>
+                                      <TableCell className="py-3">
+                                        <div>
+                                          <p className="text-sm font-medium text-white">{c.firstName} {c.lastName}</p>
+                                          <p className="text-xs text-gray-500 truncate max-w-[160px]">{c.email}</p>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="py-3 hidden md:table-cell">
+                                        <span className="text-sm text-gray-300">{c.claimType || '—'}</span>
+                                      </TableCell>
+                                      <TableCell className="py-3">
+                                        <Badge variant="outline" className={`text-[10px] font-semibold border ${STATUS_COLORS[c.status] || STATUS_COLORS['Submitted']}`}>
+                                          {c.status}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell className="py-3 hidden lg:table-cell">
+                                        <span className="text-xs text-gray-400">{c.filedDate || '—'}</span>
+                                      </TableCell>
+                                      <TableCell className="py-3 hidden lg:table-cell">
+                                        <span className="text-xs text-gray-400">{c.state || '—'}</span>
+                                      </TableCell>
+                                      <TableCell className="py-3 text-right">
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => setDeleteTarget(c)}
+                                          className="text-gray-500 hover:text-red-400 hover:bg-red-400/10 h-8 w-8"
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-gray-500">Page {currentPage} of {totalPages}</p>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => fetchClaimants(Math.max(1, currentPage - 1))}
+                                disabled={currentPage <= 1}
+                                className="text-gray-400 hover:text-white h-8"
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => fetchClaimants(Math.min(totalPages, currentPage + 1))}
+                                disabled={currentPage >= totalPages}
+                                className="text-gray-400 hover:text-white h-8"
+                              >
+                                <ChevronRightIcon className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Upload Tab */}
+                    {activeTab === 'upload' && (
+                      <div className="max-w-2xl mx-auto space-y-6">
+                        {/* Drag and Drop Zone */}
+                        <div
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                          onClick={() => fileInputRef.current?.click()}
+                          className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-200 ${
+                            isDragging
+                              ? 'border-[#C5A059] bg-[#C5A059]/5 scale-[1.02]'
+                              : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/30'
+                          }`}
+                        >
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) { setUploadFile(file); setUploadResult(null); }
+                            }}
+                            className="hidden"
+                          />
+                          <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center transition-colors ${
+                            isDragging ? 'bg-[#C5A059]/20' : 'bg-gray-800'
+                          }`}>
+                            <FileUp className={`w-8 h-8 ${isDragging ? 'text-[#C5A059]' : 'text-gray-500'}`} />
+                          </div>
+                          {uploadFile ? (
+                            <div>
+                              <p className="text-sm font-medium text-white">{uploadFile.name}</p>
+                              <p className="text-xs text-gray-500 mt-1">{(uploadFile.size / 1024).toFixed(1)} KB</p>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setUploadFile(null); setUploadResult(null); }}
+                                className="mt-2 text-xs text-red-400 hover:text-red-300 underline"
+                              >
+                                Remove file
+                              </button>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-sm font-medium text-white">Drop your CSV file here or click to browse</p>
+                              <p className="text-xs text-gray-500 mt-1">Only .csv files are accepted</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Upload Button */}
+                        {uploadFile && (
+                          <Button
+                            onClick={handleUpload}
+                            disabled={uploading}
+                            className="w-full bg-[#C5A059] hover:bg-[#b08d4e] text-white font-semibold h-12"
+                          >
+                            {uploading ? (
+                              <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Processing CSV...</>
+                            ) : (
+                              <><FileUp className="w-5 h-5 mr-2" />Upload & Import Claimants</>
+                            )}
+                          </Button>
+                        )}
+
+                        {/* Upload Result */}
+                        {uploadResult && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={`rounded-xl border p-4 ${
+                              uploadResult.success
+                                ? 'bg-emerald-900/20 border-emerald-800'
+                                : 'bg-red-900/20 border-red-800'
+                            }`}
+                          >
+                            {uploadResult.success ? (
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                                  <p className="text-sm font-semibold text-emerald-300">Import Complete</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mt-3">
+                                  <div className="bg-emerald-900/30 rounded-lg p-3">
+                                    <p className="text-xl font-bold text-emerald-300">{uploadResult.imported}</p>
+                                    <p className="text-xs text-emerald-400">New Import{uploadResult.imported !== 1 ? 's' : ''}</p>
+                                  </div>
+                                  <div className="bg-blue-900/30 rounded-lg p-3">
+                                    <p className="text-xl font-bold text-blue-300">{uploadResult.updated}</p>
+                                    <p className="text-xs text-blue-400">Update{uploadResult.updated !== 1 ? 's' : ''}</p>
+                                  </div>
+                                </div>
+                                {uploadResult.errors.length > 0 && (
+                                  <div className="mt-3">
+                                    <p className="text-xs font-semibold text-amber-400 mb-1">
+                                      {uploadResult.totalErrors} warning{uploadResult.totalErrors !== 1 ? 's' : ''}
+                                    </p>
+                                    <div className="max-h-32 overflow-y-auto space-y-1">
+                                      {uploadResult.errors.map((err, i) => (
+                                        <p key={i} className="text-xs text-amber-300/80">{err}</p>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex items-start gap-2">
+                                <XCircle className="w-5 h-5 text-red-400 mt-0.5 shrink-0" />
+                                <div>
+                                  <p className="text-sm font-semibold text-red-300">Upload Failed</p>
+                                  {uploadResult.errors.map((err, i) => (
+                                    <p key={i} className="text-xs text-red-400 mt-1">{err}</p>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+
+                        {/* CSV Format Instructions */}
+                        <Card className="bg-gray-800/50 border-gray-700 p-4">
+                          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-[#C5A059]" />
+                            How to Format Your CSV
+                          </h3>
+                          <div className="space-y-2 text-xs text-gray-400">
+                            <p>Your CSV file must have these column headers in the first row:</p>
+                            <div className="bg-gray-900 rounded-lg p-3 font-mono text-[11px] overflow-x-auto">
+                              tracking_id, first_name, last_name, email, phone, claim_type, status, state, filed_date, notes
+                            </div>
+                            <div className="mt-3 space-y-1.5">
+                              <p className="text-gray-300 font-medium">Required columns:</p>
+                              <ul className="list-disc list-inside space-y-0.5 ml-1">
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">first_name</code> — Claimant first name</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">last_name</code> — Claimant last name</li>
+                              </ul>
+                              <p className="text-gray-300 font-medium mt-2">Optional columns:</p>
+                              <ul className="list-disc list-inside space-y-0.5 ml-1">
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">tracking_id</code> — Auto-generated if empty (format: CLM-YYYY-NNN)</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">email</code> — Email address</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">phone</code> — Phone number</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">claim_type</code> — Type of claim (e.g., Camp Lejeune, Roundup)</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">status</code> — Submitted, Validated, Under Review, Decision, or Completed</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">state</code> — US state abbreviation</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">filed_date</code> — Date in ISO format (YYYY-MM-DD)</li>
+                                <li><code className="text-[#C5A059] bg-[#C5A059]/10 px-1 rounded">notes</code> — Additional notes</li>
+                              </ul>
+                            </div>
+                            <div className="mt-3 p-3 bg-amber-900/20 border border-amber-800/50 rounded-lg">
+                              <p className="text-amber-300 font-medium">💡 Tips:</p>
+                              <ul className="list-disc list-inside mt-1 space-y-0.5 text-amber-200/70">
+                                <li>If a tracking ID already exists, the record will be updated instead of creating a duplicate</li>
+                                <li>Empty tracking IDs will be auto-generated sequentially</li>
+                                <li>Invalid status values default to &quot;Submitted&quot;</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+
+                        {/* Sample Download */}
+                        <div className="text-center">
+                          <Button variant="outline" onClick={handleDownloadSample} className="border-gray-700 text-gray-300 hover:text-[#C5A059] hover:border-[#C5A059] text-xs gap-2">
+                            <FileSpreadsheet className="w-4 h-4" />
+                            Download Sample CSV Template
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </motion.div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Claimant</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Are you sure you want to delete <span className="text-white font-semibold">{deleteTarget?.firstName} {deleteTarget?.lastName}</span> ({deleteTarget?.trackingId})? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Deleting...</> : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </AnimatePresence>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    MAIN PAGE COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 
@@ -5588,6 +6474,7 @@ export default function HomePage() {
       </main>
       <LiveChatWidget />
       <BackToTopButton />
+      <AdminPanel />
       <CookieConsentBanner />
       <SocialProofNotification />
       <ExitIntentPopup />

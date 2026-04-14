@@ -602,8 +602,8 @@ const en: Record<string, string> = {
   'chat.quickReply1': 'What if my claim is denied?',
   'chat.quickReply2': 'What documents do I need?',
   'chat.quickReply3': 'Is this really free?',
-  'chat.fallback': 'Thank you for your message. A specialist will respond shortly. For immediate help, call (800) 555-0199.',
-  'chat.error': "I'm sorry, I'm having trouble connecting. Please try again or call us at (800) 555-0199 for immediate assistance.",
+  'chat.fallback': 'Thank you for your message. A specialist will respond shortly. For immediate help, call (484) 968-1529.',
+  'chat.error': "I'm sorry, I'm having trouble connecting. Please try again or call us at (484) 968-1529 for immediate assistance.",
 
   // COOKIE CONSENT
   'cookie.title': 'We value your privacy',
@@ -1298,8 +1298,8 @@ const es: Record<string, string> = {
   'chat.quickReply1': '¿Qué pasa si mi reclamo es denegado?',
   'chat.quickReply2': '¿Qué documentos necesito?',
   'chat.quickReply3': '¿Es realmente gratis?',
-  'chat.fallback': 'Gracias por su mensaje. Un especialista responderá en breve. Para ayuda inmediata, llame al (800) 555-0199.',
-  'chat.error': 'Lo siento, estoy teniendo problemas de conexión. Por favor intente de nuevo o llámenos al (800) 555-0199 para asistencia inmediata.',
+  'chat.fallback': 'Gracias por su mensaje. Un especialista responderá en breve. Para ayuda inmediata, llame al (484) 968-1529.',
+  'chat.error': 'Lo siento, estoy teniendo problemas de conexión. Por favor intente de nuevo o llámenos al (484) 968-1529 para asistencia inmediata.',
 
   // COOKIE CONSENT
   'cookie.title': 'Valoramos su Privacidad',

@@ -8,15 +8,25 @@ datasource db {
 }
 
 model Claimant {
-  id        String          @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String
-  phone     String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  claims    Claim[]
-  messages  ContactMessage[]
+  id         String    @id @default(cuid())
+  trackingId String?   @unique
+  firstName  String
+  lastName   String
+  email      String
+  phone      String?
+  claimType  String?
+  status     String    @default("Submitted")
+  state      String?
+  filedDate  String?
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  claims     Claim[]
+  messages   ContactMessage[]
+
+  @@index([trackingId])
+  @@index([status])
+  @@index([claimType])
 }
 
 model Claim {
