@@ -1380,25 +1380,130 @@ function HeroSection() {
    SECTION: TRUSTED BY / LOGO MARQUEE
    ═══════════════════════════════════════════════════════════════ */
 
+const LAW_FIRMS = [
+  { name: 'Motley Rice LLC', location: 'Charleston, SC', specialty: 'Environmental & Toxic Torts', years: 15, cases: '5,000+' },
+  { name: 'Weitz & Luxenberg', location: 'New York, NY', specialty: 'Pharmaceutical Mass Torts', years: 18, cases: '8,000+' },
+  { name: 'Lieff Cabraser', location: 'San Francisco, CA', specialty: 'Consumer Protection & MDL', years: 16, cases: '3,500+' },
+  { name: 'Simmons Hanly Conroy', location: 'Alton, IL', specialty: 'Asbestos & Environmental', years: 20, cases: '10,000+' },
+  { name: 'Levin Papantonio', location: 'Pensacola, FL', specialty: 'Pharmaceutical Litigation', years: 17, cases: '6,000+' },
+  { name: 'Beasley Allen', location: 'Montgomery, AL', specialty: 'Personal Injury & Torts', years: 15, cases: '4,200+' },
+  { name: 'Napoli Shkolnik', location: 'New York, NY', specialty: 'Environmental Exposure', years: 14, cases: '3,800+' },
+  { name: 'Parker Waichman', location: 'New York, NY', specialty: 'Medical Device Litigation', years: 16, cases: '5,500+' },
+  { name: 'Baum Hedlund Aristei', location: 'Los Angeles, CA', specialty: 'Pharmaceutical & Aviation', years: 15, cases: '2,800+' },
+  { name: 'Kraftson Cude', location: 'Houston, TX', specialty: 'Industrial & Toxic Exposure', years: 13, cases: '1,900+' },
+  { name: 'Saiontz & Kirk', location: 'Baltimore, MD', specialty: 'Medical Device Failure', years: 15, cases: '4,100+' },
+  { name: 'Hagens Berman', location: 'Seattle, WA', specialty: 'Consumer Class Actions', years: 17, cases: '7,200+' },
+];
+
+const TRUST_STATS = [
+  { label: 'Years of Partnership', value: '15+', icon: CalendarDays },
+  { label: 'Law Firms Nationwide', value: '50+', icon: Building2 },
+  { label: 'Cases Co-Managed', value: '62K+', icon: FileText },
+  { label: 'States Covered', value: 'All 50', icon: MapPin },
+];
+
 const TrustedBySection = memo(function TrustedBySection() {
   return (
-    <section className="py-10 bg-[#F4F1EB] dark:bg-gray-950 border-y border-gold/10 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Trusted By Claimants Nationwide</p>
-        <div className="relative overflow-hidden" aria-hidden="true">
-          <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#F4F1EB] dark:from-gray-950 to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#F4F1EB] dark:from-gray-950 to-transparent z-10" />
-          <div className="flex animate-marquee">
-            {[...TRUST_BADGES, ...TRUST_BADGES].map((badge, i) => (
-              <div key={i} className="mx-3 flex-shrink-0 flex items-center justify-center">
-                <span className="inline-flex items-center gap-1.5 bg-navy/5 dark:bg-white/5 border border-navy/10 dark:border-white/10 rounded-full px-4 py-2 text-sm font-medium text-navy/70 dark:text-gray-400 whitespace-nowrap">
-                  <Shield className="w-3.5 h-3.5 text-gold" />
-                  {badge}
-                </span>
-              </div>
+    <section className="relative py-16 md:py-24 bg-gray-950 overflow-hidden">
+      {/* Animated background grid */}
+      <div className="absolute inset-0 opacity-[0.03]" aria-hidden="true">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,215,0,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.3) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+      </div>
+
+      {/* Glow orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-4">
+          <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 rounded-full px-5 py-2 mb-6">
+            <div className="flex -space-x-2">
+              {['bg-blue-500', 'bg-emerald-500', 'bg-purple-500', 'bg-amber-500'].map((c, i) => (
+                <div key={i} className={`w-6 h-6 ${c} rounded-full border-2 border-gray-950 flex items-center justify-center text-[8px] font-bold text-white`}>
+                  {['MR', 'WL', 'LC', 'SH'][i]}
+                </div>
+              ))}
+            </div>
+            <span className="text-gold text-xs font-semibold uppercase tracking-wider">Trusted Partnership</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Trusted by <span className="gradient-text-gold">Top Mass Tort</span> Law Firms
+          </h2>
+          <p className="text-gray-400 text-lg max-w-3xl mx-auto leading-relaxed">
+            For over 15 years, leading plaintiffs&apos; attorneys across the nation have relied on ClaimGuard Pro to streamline their mass tort case management, enhance client outcomes, and maximize settlement recoveries.
+          </p>
+        </motion.div>
+
+        {/* Trust Stats Bar */}
+        <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 mt-10">
+          {TRUST_STATS.map((stat) => (
+            <div key={stat.label} className="text-center p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-gold/30 transition-colors duration-300 group">
+              <stat.icon className="w-5 h-5 text-gold mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
+              <div className="text-gray-500 text-xs uppercase tracking-wider mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Law Firms Grid */}
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {LAW_FIRMS.map((firm, idx) => (
+              <motion.div
+                key={firm.name}
+                variants={fadeInUp}
+                custom={idx}
+                className="group relative rounded-2xl bg-white/[0.04] border border-white/[0.08] p-5 hover:bg-white/[0.07] hover:border-gold/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-gold/5"
+              >
+                {/* Subtle corner glow on hover */}
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gold/0 group-hover:bg-gold/5 rounded-bl-3xl rounded-tr-2xl transition-all duration-300" aria-hidden="true" />
+                <div className="relative">
+                  {/* Firm initial badge */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/20 flex items-center justify-center text-gold text-xs font-bold shrink-0">
+                      {firm.name.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-white truncate group-hover:text-gold-light transition-colors">{firm.name}</h3>
+                      <p className="text-gray-500 text-xs truncate">{firm.location}</p>
+                    </div>
+                  </div>
+
+                  {/* Specialty */}
+                  <p className="text-gray-400 text-xs mb-3 leading-relaxed">{firm.specialty}</p>
+
+                  {/* Bottom stats */}
+                  <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarDays className="w-3 h-3 text-gold/60" />
+                      <span className="text-gray-500 text-[11px]">{firm.years} Years</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <FileText className="w-3 h-3 text-gold/60" />
+                      <span className="text-gray-500 text-[11px]">{firm.cases} Cases</span>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      {[1,2,3,4,5].map(s => (
+                        <Star key={s} className="w-2.5 h-2.5 text-gold fill-gold/80" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
+
+        {/* Bottom trust bar */}
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.4 }} className="mt-12 text-center">
+          <div className="inline-flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-full px-6 py-3">
+            <BadgeCheck className="w-5 h-5 text-gold" />
+            <span className="text-gray-300 text-sm font-medium">Verified partnerships with 50+ plaintiffs&apos; firms across all 50 states</span>
+            <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-gold/60" />
+            <span className="hidden sm:inline text-gold text-sm font-semibold">Since 2009</span>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -3255,6 +3360,78 @@ const BLOG_ARTICLES = [
     icon: Car,
     color: 'bg-indigo-500',
     content: 'Rideshare companies Uber and Lyft face increasing legal liability for inadequate driver background checks, insufficient safety measures, and failure to protect passengers from assault, sexual assault, kidnapping, and other violent crimes. Thousands of incidents have been reported, and both companies have settled numerous lawsuits. Victims may be entitled to compensation from both the individual driver and the rideshare company under theories of negligent hiring, negligent retention, and vicarious liability. If you experienced assault, injury, or a safety failure during a rideshare trip, it is critical to preserve evidence: save your trip receipt with driver details, screenshot any in-app safety reports, seek medical attention immediately, and file a police report. Compensation may cover medical expenses, therapy costs, lost wages, pain and suffering, and punitive damages. Statutes of limitations vary by state, typically ranging from one to three years from the date of the incident.',
+  },
+  {
+    id: 'roblox-gaming-microtransactions',
+    title: 'Roblox and Gaming Lawsuits: Can Parents Recover Unauthorized Charges?',
+    excerpt: 'Children are spending thousands on in-game purchases without parental consent. Here\'s what the law says...',
+    date: 'Apr 14, 2025',
+    dateISO: '2025-04-14',
+    readTime: '8 min read',
+    category: 'Gaming / Roblox',
+    icon: Gamepad2,
+    color: 'bg-red-500',
+    content: 'Gaming platforms like Roblox, Fortnite, and Minecraft face mounting legal scrutiny over manipulative design patterns targeting children. These platforms use virtual currencies, loot boxes, battle passes, and psychological pressure tactics that obscure the real-world cost of in-game purchases, making it difficult for children to understand they are spending actual money. The Federal Trade Commission has received thousands of complaints from parents whose children made unauthorized purchases ranging from hundreds to tens of thousands of dollars. California and several other states have introduced legislation banning loot boxes for minors. Legal claims may proceed under theories of unfair and deceptive trade practices, violations of child privacy laws (COPPA), and consumer protection statutes. Parents who discover unauthorized charges should immediately request refunds from the platform, dispute charges with their credit card company, document all purchases with screenshots, and report the incident to the FTC. Class action lawsuits are currently moving forward against multiple gaming companies.',
+  },
+  {
+    id: 'elmiron-vision-damage',
+    title: 'Elmiron Vision Damage: What Patients Need to Know About Maculopathy Claims',
+    excerpt: 'Long-term Elmiron use has been linked to permanent vision damage. Learn about your legal options...',
+    date: 'Apr 8, 2025',
+    dateISO: '2025-04-08',
+    readTime: '7 min read',
+    category: 'Elmiron',
+    icon: Eye,
+    color: 'bg-yellow-500',
+    content: 'Elmiron (pentosan polysulfate sodium) has been prescribed for decades to treat interstitial cystitis, a chronic bladder condition. However, a 2018 study published in the Journal of Urology and subsequent research by Emory Eye Center revealed that long-term Elmiron use is linked to a unique form of pigmentary maculopathy — a condition that damages the macula (the part of the retina responsible for sharp central vision) and can cause permanent vision loss. Symptoms include difficulty reading, blurred vision, dark spots in the visual field, and difficulty adapting to dim lighting. The damage may continue to progress even after stopping the medication. Manufacturer Janssen Pharmaceuticals (a subsidiary of Johnson & Johnson) did not include warnings about this risk on the Elmiron label until June 2020, despite knowing about the potential connection for years. Patients who took Elmiron for two years or more and developed vision problems may be eligible for compensation. Required documentation includes prescribing records, ophthalmologist evaluations showing macular changes, and visual field test results.',
+  },
+  {
+    id: 'taxotere-permanent-hair-loss',
+    title: 'Taxotere Permanent Hair Loss: Filing a Claim for Chemotherapy Alopecia',
+    excerpt: 'Thousands of breast cancer survivors were never warned that Taxotere could cause permanent baldness...',
+    date: 'Apr 2, 2025',
+    dateISO: '2025-04-02',
+    readTime: '8 min read',
+    category: 'Taxotere',
+    icon: Leaf,
+    color: 'bg-green-500',
+    content: 'Taxotere (docetaxel), manufactured by Sanofi-Aventis, is a chemotherapy drug widely used to treat breast cancer. While temporary hair loss (alopecia) is an expected side effect of most chemotherapy drugs, studies have shown that Taxotere causes permanent, irreversible hair loss at rates significantly higher than alternative treatments like Taxol (paclitaxel). Internal documents revealed that Sanofi knew about the risk of permanent alopecia as early as 2005 but failed to warn patients or physicians in the United States, even though a warning was added to the European label in 2005. Women who lost their hair permanently after Taxotere treatment have successfully brought claims for failure to warn, negligence, and product liability. Compensation may cover the cost of wigs, hair restoration treatments, emotional distress, and loss of enjoyment of life. Thousands of cases are consolidated in multi-district litigation in federal court. Required documentation includes chemotherapy treatment records, photographs showing hair loss, dermatologist evaluations, and evidence of the emotional and psychological impact.',
+  },
+  {
+    id: 'bard-powerport-complications',
+    title: 'Bard PowerPort Complications: Fracture, Migration, and Infection Claims',
+    excerpt: 'Defective Bard PowerPort devices have fractured inside patients\' bodies, causing life-threatening complications...',
+    date: 'Mar 28, 2025',
+    dateISO: '2025-03-28',
+    readTime: '8 min read',
+    category: 'Bard PowerPort',
+    icon: Shield,
+    color: 'bg-red-500',
+    content: 'The Bard PowerPort is an implantable port catheter device used to deliver medications, chemotherapy, and IV fluids directly into the bloodstream. Manufactured by C.R. Bard (now part of Becton Dickinson), these devices have been linked to serious and potentially life-threatening complications. The primary issue involves catheter fractures — the device can crack or break apart inside the body, sending plastic fragments through the bloodstream. This can lead to serious infections, blood clots, pulmonary embolisms, cardiac arrhythmias, and damage to vital organs. Many patients require emergency surgery to remove the fragmented device and repair the damage. Internal company documents suggest that Bard was aware of higher-than-expected failure rates but continued to market the device without adequate warnings. Patients who experienced PowerPort fractures, infections, or other complications requiring surgical intervention may be eligible for significant compensation. Required documentation includes implantation records, medical records documenting complications, CT scans or imaging showing device failure, and surgical reports.',
+  },
+  {
+    id: 'hernia-mesh-failure-lawsuits',
+    title: 'Hernia Mesh Failure: When a Simple Repair Turns Into Years of Pain',
+    excerpt: 'Defective hernia mesh devices have caused chronic pain, infection, and the need for multiple revision surgeries...',
+    date: 'Mar 18, 2025',
+    dateISO: '2025-03-18',
+    readTime: '9 min read',
+    category: 'Hernia Mesh',
+    icon: Shield,
+    color: 'bg-amber-500',
+    content: 'Hernia repair is one of the most common surgical procedures in the United States, with over one million repairs performed annually. Many of these procedures use surgical mesh to reinforce the weakened abdominal wall. However, several manufacturers including Bard Davol, Ethicon (Johnson & Johnson), and Atrium Medical have produced hernia mesh products that have failed at alarming rates, causing severe complications for patients. Common failure modes include mesh shrinkage, adhesion to internal organs, mesh migration from the implantation site, chronic infection resistant to antibiotics, nerve damage causing debilitating pain, and bowel obstruction or perforation. Many patients require multiple revision surgeries, each carrying additional risk and recovery time. Studies have found that certain polypropylene mesh products have complication rates exceeding 20-30%. Hundreds of thousands of lawsuits have been filed, with significant verdicts and settlements. Required documentation includes surgical records, CT scans showing mesh complications, infection culture results, pain management records, and employment records showing lost wages.',
+  },
+  {
+    id: 'paraquat-parkinsons-lawsuits',
+    title: 'Paraquat Parkinson\'s Disease: Agricultural Workers Fight for Justice',
+    excerpt: 'The weed killer Paraquat is banned in dozens of countries but still used widely in the U.S. despite links to Parkinson\'s...',
+    date: 'Mar 10, 2025',
+    dateISO: '2025-03-10',
+    readTime: '8 min read',
+    category: 'Paraquat',
+    icon: Zap,
+    color: 'bg-rose-500',
+    content: 'Paraquat dichloride is one of the most widely used herbicides in the United States, applied to millions of acres of farmland annually despite being banned in over 60 countries including China, the European Union, and Brazil. Licensed applicators — primarily farmers, agricultural workers, and crop dusters — who were exposed to Paraquat have developed Parkinson\'s disease at rates significantly higher than the general population. A major 2011 study by the National Institutes of Health found that individuals with the highest Paraquat exposure were 2.5 times more likely to develop Parkinson\'s disease. The Agricultural Health Study and multiple subsequent meta-analyses have reinforced this connection. Manufacturer Syngenta has faced thousands of lawsuits alleging that the company failed to adequately warn about the Parkinson\'s risk. Multi-district litigation is centralized in federal court in Illinois. Eligible claimants include licensed applicators and agricultural workers who developed Parkinson\'s disease after documented Paraquat exposure. Required documentation includes applicator license records, employment records showing agricultural work, medical records confirming Parkinson\'s diagnosis, and expert medical opinions linking the disease to Paraquat exposure.',
   },
 ];
 
