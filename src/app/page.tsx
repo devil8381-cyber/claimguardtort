@@ -39,6 +39,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { useLanguage } from '@/lib/i18n';
+import { REFILE_REASONS, REFILE_REASONS_COUNT } from '@/lib/refile-reasons';
 import {
   Shield,
   Search,
@@ -5543,6 +5544,103 @@ function MobileNavItems() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   REASON SUGGESTIONS — Smart Autocomplete from 13,000+ Reasons
+   ═══════════════════════════════════════════════════════════════ */
+
+const ReasonSuggestions = memo(function ReasonSuggestions({ query, onSelect }: { query: string; onSelect: (reason: string) => void }) {
+  const [showAll, setShowAll] = useState(false);
+  const { suggestions, totalCount } = useMemo(() => {
+    if (!query || query.length < 2) return { suggestions: [], totalCount: 0 };
+    const q = query.toLowerCase();
+    const words = q.split(/\s+/).filter(Boolean);
+
+    // Score each reason by how many query words match
+    const scored = REFILE_REASONS.map(reason => {
+      const lower = reason.toLowerCase();
+      let score = 0;
+      for (const w of words) {
+        if (lower.includes(w)) score++;
+      }
+      return { reason, score };
+    }).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
+
+    return {
+      suggestions: showAll ? scored.slice(0, 50) : scored.slice(0, 8),
+      totalCount: scored.length,
+    };
+  }, [query, showAll]);
+
+  if (suggestions.length === 0) return null;
+
+  return (
+    <div className="mt-2 border border-gray-700 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800/80 border-b border-gray-700">
+        <span className="text-xs text-gray-400">
+          {showAll ? 'Showing top 50' : `Top ${suggestions.length}`}
+          {totalCount > 8 && !showAll && <span className="text-emerald-400 ml-1"> of {totalCount.toLocaleString()} matches</span>}
+        </span>
+        {totalCount > 8 && (
+          <button onClick={() => setShowAll(!showAll)} className="text-xs text-[#C5A059] hover:text-[#C5A059]/80">
+            {showAll ? 'Show Less' : 'Show More'}
+          </button>
+        )}
+      </div>
+      <div className="max-h-[240px] overflow-y-auto">
+        {suggestions.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => onSelect(s.reason)}
+            className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-800 hover:text-white transition-colors border-b border-gray-800 last:border-b-0 flex items-start gap-2"
+          >
+            <ClipboardCheck className="w-3 h-3 mt-0.5 text-[#C5A059] shrink-0" />
+            <span>{highlightMatch(s.reason, query)}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query) return text;
+  const parts: React.ReactNode[] = [];
+  const q = query.toLowerCase();
+  const words = q.split(/\s+/).filter(Boolean);
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    let firstMatch = remaining.length;
+    let matchedWord = '';
+
+    for (const w of words) {
+      const idx = remaining.toLowerCase().indexOf(w);
+      if (idx !== -1 && idx < firstMatch) {
+        firstMatch = idx;
+        matchedWord = w;
+      }
+    }
+
+    if (firstMatch === remaining.length) {
+      parts.push(<span key={key++}>{remaining}</span>);
+      break;
+    }
+
+    if (firstMatch > 0) {
+      parts.push(<span key={key++}>{remaining.slice(0, firstMatch)}</span>);
+    }
+    parts.push(
+      <span key={key++} className="text-emerald-400 font-medium">
+        {remaining.slice(firstMatch, firstMatch + matchedWord.length)}
+      </span>
+    );
+    remaining = remaining.slice(firstMatch + matchedWord.length);
+  }
+
+  return <>{parts}</>;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    ADMIN PANEL — CSV Upload & Claimant Management
    ═══════════════════════════════════════════════════════════════ */
 
@@ -5554,6 +5652,11 @@ const STATUS_COLORS: Record<string, string> = {
   'Under Review': 'bg-purple-500/15 text-purple-400 border-purple-500/30',
   'Decision': 'bg-orange-500/15 text-orange-400 border-orange-500/30',
   'Completed': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  'File Submitted': 'bg-sky-500/15 text-sky-400 border-sky-500/30',
+  'File Rejected': 'bg-red-500/15 text-red-400 border-red-500/30',
+  'File In Process': 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+  'Waiting for Documents': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  'Missed Attorneys Call': 'bg-rose-500/15 text-rose-400 border-rose-500/30',
 };
 
 const STATUS_DOT_COLORS: Record<string, string> = {
@@ -5562,9 +5665,14 @@ const STATUS_DOT_COLORS: Record<string, string> = {
   'Under Review': 'bg-purple-400',
   'Decision': 'bg-orange-400',
   'Completed': 'bg-emerald-400',
+  'File Submitted': 'bg-sky-400',
+  'File Rejected': 'bg-red-400',
+  'File In Process': 'bg-indigo-400',
+  'Waiting for Documents': 'bg-amber-400',
+  'Missed Attorneys Call': 'bg-rose-400',
 };
 
-const VALID_STATUSES = ['Submitted', 'Validated', 'Under Review', 'Decision', 'Completed'];
+const VALID_STATUSES = ['Submitted', 'Validated', 'Under Review', 'Decision', 'Completed', 'File Submitted', 'File Rejected', 'File In Process', 'Waiting for Documents', 'Missed Attorneys Call'];
 
 interface ClaimantRecord {
   id: string;
@@ -5990,20 +6098,8 @@ function AdminPanel() {
                           {VALID_STATUSES.map(status => (
                             <Card key={status} className="bg-gray-800/50 border-gray-700 p-4">
                               <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                  status === 'Submitted' ? 'bg-yellow-500/15' :
-                                  status === 'Validated' ? 'bg-blue-500/15' :
-                                  status === 'Under Review' ? 'bg-purple-500/15' :
-                                  status === 'Decision' ? 'bg-orange-500/15' :
-                                  'bg-emerald-500/15'
-                                }`}>
-                                  <CircleDot className={`w-5 h-5 ${
-                                    status === 'Submitted' ? 'text-yellow-400' :
-                                    status === 'Validated' ? 'text-blue-400' :
-                                    status === 'Under Review' ? 'text-purple-400' :
-                                    status === 'Decision' ? 'text-orange-400' :
-                                    'text-emerald-400'
-                                  }`} />
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${STATUS_COLORS[status]?.split(' ')[0] || 'bg-gray-500/15'}`}>
+                                  <CircleDot className={`w-5 h-5 ${STATUS_DOT_COLORS[status] || 'text-gray-400'}`} />
                                 </div>
                                 <div>
                                   <p className="text-2xl font-bold text-white">{stats.statusCounts[status] || 0}</p>
@@ -6025,13 +6121,7 @@ function AdminPanel() {
                               return (
                                 <div
                                   key={status}
-                                  className={`h-full transition-all duration-500 ${
-                                    status === 'Submitted' ? 'bg-yellow-500' :
-                                    status === 'Validated' ? 'bg-blue-500' :
-                                    status === 'Under Review' ? 'bg-purple-500' :
-                                    status === 'Decision' ? 'bg-orange-500' :
-                                    'bg-emerald-500'
-                                  }`}
+                                  className={`h-full transition-all duration-500 ${STATUS_DOT_COLORS[status]?.replace('bg-', 'bg-') || 'bg-gray-500'}`}
                                   style={{ width: `${pct}%` }}
                                   title={`${status}: ${count} (${pct.toFixed(1)}%)`}
                                 />
@@ -6235,19 +6325,21 @@ function AdminPanel() {
 
                     {/* Add Claimant Tab */}
                     {activeTab === 'add' && (
-                      <div className="max-w-2xl mx-auto space-y-6">
+                      <div className="max-w-3xl mx-auto space-y-6">
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center">
                             <UserPlus className="w-5 h-5 text-emerald-400" />
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold text-white">Add New Claimant</h3>
-                            <p className="text-xs text-gray-400">Manually add a claimant to the tracking database</p>
+                            <p className="text-xs text-gray-400">Manually add a claimant with detailed case information</p>
                           </div>
                         </div>
 
+                        {/* Section 1: Basic Info */}
                         <Card className="bg-gray-800/50 border-gray-700 p-6">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <h4 className="text-sm font-semibold text-[#C5A059] mb-4 flex items-center gap-2"><Users className="w-4 h-4" /> Claimant Information</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                               <Label className="text-sm text-gray-300 mb-1 block">Tracking ID <span className="text-red-400">*</span></Label>
                               <Input
@@ -6295,32 +6387,6 @@ function AdminPanel() {
                               />
                             </div>
                             <div>
-                              <Label className="text-sm text-gray-300 mb-1 block">Claim Type</Label>
-                              <Select value={manualForm.claimType} onValueChange={(v) => setManualForm(f => ({ ...f, claimType: v }))}>
-                                <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
-                                  <SelectValue placeholder="Select case type" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-gray-800 border-gray-700">
-                                  {CASE_TYPES.map(ct => (
-                                    <SelectItem key={ct} value={ct} className="text-gray-200">{ct}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label className="text-sm text-gray-300 mb-1 block">Status</Label>
-                              <Select value={manualForm.status} onValueChange={(v) => setManualForm(f => ({ ...f, status: v }))}>
-                                <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-gray-800 border-gray-700">
-                                  {VALID_STATUSES.map(s => (
-                                    <SelectItem key={s} value={s} className="text-gray-200">{s}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
                               <Label className="text-sm text-gray-300 mb-1 block">State</Label>
                               <Input
                                 placeholder="PA"
@@ -6329,6 +6395,50 @@ function AdminPanel() {
                                 onChange={(e) => setManualForm(f => ({ ...f, state: e.target.value.toUpperCase() }))}
                                 className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500"
                               />
+                            </div>
+                          </div>
+                        </Card>
+
+                        {/* Section 2: Case Details */}
+                        <Card className="bg-gray-800/50 border-gray-700 p-6">
+                          <h4 className="text-sm font-semibold text-[#C5A059] mb-4 flex items-center gap-2"><FileText className="w-4 h-4" /> Case Details</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Claim Type</Label>
+                              <Select
+                                value={manualForm.claimType || undefined}
+                                onValueChange={(v) => setManualForm(f => ({ ...f, claimType: v }))}
+                              >
+                                <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
+                                  <SelectValue placeholder="Select case type..." />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-800 border-gray-700 max-h-[300px]">
+                                  {CASE_TYPES.map(ct => (
+                                    <SelectItem key={ct} value={ct} className="text-gray-200">{ct}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-sm text-gray-300 mb-1 block">Status</Label>
+                              <Select
+                                value={manualForm.status}
+                                onValueChange={(v) => setManualForm(f => ({ ...f, status: v }))}
+                              >
+                                <SelectTrigger className="bg-gray-900 border-gray-600 text-white">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-800 border-gray-700 max-h-[300px]">
+                                  {VALID_STATUSES.map(s => (
+                                    <SelectItem key={s} value={s} className="text-gray-200">
+                                      <span className="flex items-center gap-2">
+                                        <span className={`w-2 h-2 rounded-full ${STATUS_DOT_COLORS[s] || 'bg-gray-400'}`} />
+                                        {s}
+                                      </span>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div>
                               <Label className="text-sm text-gray-300 mb-1 block">Filed Date</Label>
@@ -6340,33 +6450,53 @@ function AdminPanel() {
                               />
                             </div>
                           </div>
-                          <div className="mt-4">
-                            <Label className="text-sm text-gray-300 mb-1 block">Notes</Label>
-                            <Textarea
-                              placeholder="Additional notes about this claimant..."
-                              value={manualForm.notes}
-                              onChange={(e) => setManualForm(f => ({ ...f, notes: e.target.value }))}
-                              className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500 min-h-[80px]"
-                            />
-                          </div>
-                          <div className="mt-6 flex gap-3">
-                            <Button
-                              onClick={handleManualAdd}
-                              disabled={addingClaimant}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex-1 sm:flex-none"
-                            >
-                              {addingClaimant ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Adding...</> : <><Plus className="w-4 h-4 mr-2" />Add Claimant</>}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              onClick={() => setManualForm({ trackingId: '', firstName: '', lastName: '', email: '', phone: '', claimType: '', status: 'Submitted', state: '', filedDate: '', notes: '' })}
-                              className="border-gray-600 text-gray-300 hover:bg-gray-800"
-                            >
-                              Clear Form
-                            </Button>
-                          </div>
                         </Card>
 
+                        {/* Section 3: Case Reason / Notes with Smart Search */}
+                        <Card className="bg-gray-800/50 border-gray-700 p-6">
+                          <h4 className="text-sm font-semibold text-[#C5A059] mb-1 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" /> Case Reason & Notes
+                          </h4>
+                          <p className="text-xs text-gray-500 mb-4">
+                            Search from <span className="text-emerald-400 font-semibold">{REFILE_REASONS_COUNT.toLocaleString()}+ pre-built reasons</span> or type your own. Start typing to see suggestions.
+                          </p>
+                          <div className="relative">
+                            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-500 pointer-events-none" />
+                            <Textarea
+                              placeholder="Type to search reasons... e.g. 'Camp Lejeune missing', 'Roundup denied', 'hernia mesh revision'..."
+                              value={manualForm.notes}
+                              onChange={(e) => setManualForm(f => ({ ...f, notes: e.target.value }))}
+                              className="bg-gray-900 border-gray-600 text-white placeholder:text-gray-500 min-h-[120px] pl-9"
+                            />
+                          </div>
+                          {/* Smart Suggestions */}
+                          {manualForm.notes.length > 1 && (
+                            <ReasonSuggestions
+                              query={manualForm.notes}
+                              onSelect={(reason: string) => setManualForm(f => ({ ...f, notes: reason }))}
+                            />
+                          )}
+                        </Card>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={handleManualAdd}
+                            disabled={addingClaimant}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex-1 sm:flex-none"
+                          >
+                            {addingClaimant ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Adding...</> : <><Plus className="w-4 h-4 mr-2" />Add Claimant</>}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setManualForm({ trackingId: '', firstName: '', lastName: '', email: '', phone: '', claimType: '', status: 'Submitted', state: '', filedDate: '', notes: '' })}
+                            className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                          >
+                            Clear Form
+                          </Button>
+                        </div>
+
+                        {/* Quick Tips */}
                         <Card className="bg-blue-500/5 border-blue-500/20 p-4">
                           <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
                             <Sparkles className="w-4 h-4" /> Quick Tips
@@ -6374,8 +6504,9 @@ function AdminPanel() {
                           <ul className="text-xs text-gray-400 space-y-1 list-disc list-inside">
                             <li>Tracking ID must be unique — use formats like CLM-2024-001</li>
                             <li>Fields marked with <span className="text-red-400">*</span> are required</li>
+                            <li>Use the Case Reason search to pick from {REFILE_REASONS_COUNT.toLocaleString()}+ pre-built refile reasons</li>
+                            <li>Status includes 10 stages: from File Submitted through Missed Attorneys Call</li>
                             <li>For bulk additions, use the &quot;Upload CSV&quot; tab instead</li>
-                            <li>Download a sample CSV to see the expected format</li>
                           </ul>
                         </Card>
                       </div>
