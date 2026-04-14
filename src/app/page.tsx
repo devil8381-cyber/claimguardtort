@@ -121,6 +121,8 @@ import {
   DownloadCloud,
   FileSpreadsheet,
   Settings,
+  ImageIcon,
+  Pencil,
 } from 'lucide-react';
 import { createContext, useContext } from 'react';
 
@@ -145,6 +147,24 @@ const CompanySettingsContext = createContext<CompanySettings>(DEFAULT_COMPANY_SE
 
 function useCompanySettings() {
   return useContext(CompanySettingsContext);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MEDIA CONTEXT — Dynamic images & videos from DB
+   ═══════════════════════════════════════════════════════════════ */
+
+type MediaEntry = { url: string; alt: string; title: string; mediaType: string; category: string; sortOrder: number };
+const defaultMediaMap: Record<string, MediaEntry> = {};
+const MediaMapContext = createContext<Record<string, MediaEntry>>(defaultMediaMap);
+
+function useMedia(key: string, fallback: string): string {
+  const map = useContext(MediaMapContext);
+  return map[key]?.url || fallback;
+}
+
+function useMediaEntry(key: string): MediaEntry | undefined {
+  const map = useContext(MediaMapContext);
+  return map[key];
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -251,12 +271,12 @@ const CASE_STUDIES = [
 ];
 
 const TEAM_MEMBERS = [
-  { name: 'Sarah Mitchell', role: 'Founder & Lead Attorney', color: 'bg-blue-500', initials: 'SM', photo: '/team/sarah.jpg', bio: 'Former government attorney with 20+ years of mass tort litigation experience.' },
-  { name: 'David Chen', role: 'Senior Claims Analyst', color: 'bg-emerald-500', initials: 'DC', photo: '/team/david.jpg', bio: 'Expert in claims processing and document analysis. Extensive experience reviewing mass tort claims.' },
-  { name: 'Jessica Rodriguez', role: 'Client Relations Director', color: 'bg-purple-500', initials: 'JR', photo: '/team/jessica.jpg', bio: 'Passionate advocate for claimants\' rights. Manages our 24/7 support team.' },
-  { name: 'Michael Thompson', role: 'Document Specialist', color: 'bg-amber-500', initials: 'MT', photo: '/team/michael.jpg', bio: 'Detail-oriented paralegal specializing in document correction. High success rate in claim corrections.' },
-  { name: 'Emily Watson', role: 'Legal Strategy Advisor', color: 'bg-rose-500', initials: 'EW', photo: '/team/emily.jpg', bio: 'Skilled attorney specializing in settlement negotiation. Helped clients recover substantial compensation.' },
-  { name: 'Marcus Johnson', role: 'Technology Director', color: 'bg-teal-500', initials: 'MJ', photo: '/team/marcus.jpg', bio: 'Built our proprietary claim tracking system. Ensures reliable platform performance.' },
+  { name: 'Sarah Mitchell', role: 'Founder & Lead Attorney', color: 'bg-blue-500', initials: 'SM', photo: '/team/sarah.jpg', mediaKey: 'team-sarah', bio: 'Former government attorney with 20+ years of mass tort litigation experience.' },
+  { name: 'David Chen', role: 'Senior Claims Analyst', color: 'bg-emerald-500', initials: 'DC', photo: '/team/david.jpg', mediaKey: 'team-david', bio: 'Expert in claims processing and document analysis. Extensive experience reviewing mass tort claims.' },
+  { name: 'Jessica Rodriguez', role: 'Client Relations Director', color: 'bg-purple-500', initials: 'JR', photo: '/team/jessica.jpg', mediaKey: 'team-jessica', bio: 'Passionate advocate for claimants\' rights. Manages our 24/7 support team.' },
+  { name: 'Michael Thompson', role: 'Document Specialist', color: 'bg-amber-500', initials: 'MT', photo: '/team/michael.jpg', mediaKey: 'team-michael', bio: 'Detail-oriented paralegal specializing in document correction. High success rate in claim corrections.' },
+  { name: 'Emily Watson', role: 'Legal Strategy Advisor', color: 'bg-rose-500', initials: 'EW', photo: '/team/emily.jpg', mediaKey: 'team-emily', bio: 'Skilled attorney specializing in settlement negotiation. Helped clients recover substantial compensation.' },
+  { name: 'Marcus Johnson', role: 'Technology Director', color: 'bg-teal-500', initials: 'MJ', photo: '/team/marcus.jpg', mediaKey: 'team-marcus', bio: 'Built our proprietary claim tracking system. Ensures reliable platform performance.' },
 ];
 
 const PIPELINE_STAGES = ['Submitted', 'Validated', 'Under Review', 'Decision', 'Completed'];
@@ -695,6 +715,7 @@ const SUCCESS_STORIES = [
     caseType: 'Camp Lejeune',
     initials: 'AT',
     image: '/images/success-story-1.jpg',
+    mediaKey: 'success-story-1',
     avatarColor: 'from-blue-500 to-blue-700',
     quote: 'When I received the denial letter, I felt completely defeated. After 22 years of military service, dealing with kidney disease felt like a second battle I wasn\'t prepared for. ClaimGuard Pro stepped in and fought alongside me when I had nothing left to give.',
     beforeStatus: 'Denied',
@@ -708,6 +729,7 @@ const SUCCESS_STORIES = [
     caseType: 'Roundup',
     initials: 'GP',
     image: '/images/success-story-2.jpg',
+    mediaKey: 'success-story-2',
     avatarColor: 'from-emerald-500 to-emerald-700',
     quote: 'Three years of going in circles with paperwork and phone calls. I almost gave up entirely. Their team took over and had everything sorted within months. I only wish I had found them sooner.',
     beforeStatus: 'Correction Needed',
@@ -721,6 +743,7 @@ const SUCCESS_STORIES = [
     caseType: 'Talcum Powder',
     initials: 'SL',
     image: '/images/success-story-3.jpg',
+    mediaKey: 'success-story-3',
     avatarColor: 'from-purple-500 to-purple-700',
     quote: 'The document specialist caught a critical error in my pathology report submission that I never would have found on my own. That single correction saved my entire claim from being dismissed.',
     beforeStatus: 'Pending (14 months)',
@@ -734,6 +757,7 @@ const SUCCESS_STORIES = [
     caseType: 'Hernia Mesh',
     initials: 'RM',
     image: '/images/success-story-4.jpg',
+    mediaKey: 'success-story-4',
     avatarColor: 'from-amber-500 to-amber-700',
     quote: 'After my hernia mesh failed and caused a second surgery, I didn\'t know where to turn. ClaimGuard Pro connected me with the right attorney and helped build a strong case for additional compensation.',
     beforeStatus: 'Not Yet Filed',
@@ -747,6 +771,7 @@ const SUCCESS_STORIES = [
     caseType: 'Paraquat',
     initials: 'DK',
     image: '/images/success-story-5.jpg',
+    mediaKey: 'success-story-5',
     avatarColor: 'from-rose-500 to-rose-700',
     quote: 'Watching my husband struggle with Parkinson\'s after decades of farming was heartbreaking. ClaimGuard Pro helped us understand our options and navigate the claims process with compassion and expertise.',
     beforeStatus: 'Under Review',
@@ -760,6 +785,7 @@ const SUCCESS_STORIES = [
     caseType: 'Firefighting Foam',
     initials: 'JC',
     image: '/images/success-story-6.jpg',
+    mediaKey: 'success-story-6',
     avatarColor: 'from-teal-500 to-teal-700',
     quote: 'As a firefighter for 18 years, I was exposed to AFFF regularly. When I was diagnosed with thyroid cancer, ClaimGuard Pro helped me file and track my claim through every stage of the process.',
     beforeStatus: 'Pending',
@@ -1338,6 +1364,7 @@ function HeroSection() {
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 500], [0, 150]);
   const { t, locale } = useLanguage();
+  const heroBg = useMedia('hero-bg', '/hero-bg.png');
   const headlines = useMemo(() => [t('hero.headline0'), t('hero.headline1'), t('hero.headline2'), t('hero.headline3')], [locale, t]);
 
   useEffect(() => {
@@ -1366,7 +1393,7 @@ function HeroSection() {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y: bgY }}>
-        <img src="/hero-bg.png" alt="" className="w-full h-full object-cover" fetchPriority="high" aria-hidden="true" />
+        <img src={heroBg} alt="" className="w-full h-full object-cover" fetchPriority="high" aria-hidden="true" />
         <div className="hero-gradient absolute inset-0" />
       </motion.div>
 
@@ -2282,6 +2309,7 @@ function SuccessStoriesCarousel() {
   }, [totalSlides, stopAutoPlay, startAutoPlay]);
 
   const story = SUCCESS_STORIES[activeIndex];
+  const storyImg = useMedia(story?.mediaKey || '', story?.image || '');
   const colors = CASE_COLORS[story.caseType] || CASE_COLORS['Camp Lejeune'];
 
   const slideVariants = {
@@ -2330,7 +2358,7 @@ function SuccessStoriesCarousel() {
                   {/* Large Avatar with Photo */}
                   <div className={`relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-2xl ring-4 ring-white/10`}>
                     {story.image ? (
-                      <img src={story.image} alt={story.name} className="w-full h-full object-cover" />
+                      <img src={storyImg} alt={story.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className={`w-full h-full bg-gradient-to-br ${story.avatarColor} flex items-center justify-center`}>
                         <span className="text-4xl md:text-5xl font-bold text-white tracking-wider" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -3430,6 +3458,7 @@ const BLOG_ARTICLES = [
     readTime: '8 min read',
     category: 'Camp Lejeune',
     image: '/blog/camp-lejeune.jpg',
+    mediaKey: 'blog-camp-lejeune',
     icon: Building2,
     color: 'bg-blue-500',
     content: 'The Camp Lejeune Justice Act of 2022 created a pathway for veterans, their families, and civilians who were exposed to contaminated water at Camp Lejeune between 1953 and 1987 to seek compensation. Eligible individuals must have lived or worked at the base for at least 30 days during that period and later developed one of several qualifying conditions, including kidney cancer, liver cancer, non-Hodgkin lymphoma, leukemia, multiple myeloma, Parkinson\'s disease, and various other cancers and diseases. The filing process requires comprehensive documentation: military service records or proof of residence, medical records linking your condition to the exposure, and a detailed timeline. Claims are reviewed by the Navy and Justice Department, with current processing times ranging from 6 to 18 months. Our specialists recommend gathering all documentation before filing to avoid the common "Correction Needed" status that delays an estimated 30% of claims.',
@@ -3443,6 +3472,7 @@ const BLOG_ARTICLES = [
     readTime: '6 min read',
     category: 'Roundup',
     image: '/blog/roundup.jpg',
+    mediaKey: 'blog-roundup',
     icon: Leaf,
     color: 'bg-emerald-500',
     content: 'The Roundup (glyphosate) litigation continues to evolve in 2025 with significant settlement developments. Bayer, which acquired Monsanto in 2018, has set aside approximately $16 billion for settlements. Current settlement offers range from $5,000 to over $200,000 depending on the severity of diagnosis, duration of Roundup use, and individual circumstances. To qualify, claimants typically need a diagnosis of non-Hodgkin lymphoma or a related condition, proof of Roundup use for at least one year, and medical records supporting the diagnosis. Filing deadlines vary by state, with some bellwether trials scheduled throughout 2025. Key documents needed include purchase receipts or employer records showing herbicide use, complete medical records with pathology reports, and a physician\'s opinion linking the diagnosis to glyphosate exposure. The settlement program remains open, but claimants are encouraged to file as early as possible as deadlines may tighten.',
@@ -3456,6 +3486,7 @@ const BLOG_ARTICLES = [
     readTime: '10 min read',
     category: 'Tips & Guides',
     image: '/blog/documentation.jpg',
+    mediaKey: 'blog-documentation',
     icon: ClipboardCheck,
     color: 'bg-amber-500',
     content: 'Documentation is the backbone of any successful mass tort claim. Here are the 10 critical documents you need: (1) Government-issued photo ID — verify your identity; (2) Proof of residence during the relevant time period — utility bills, lease agreements, or tax returns; (3) Complete medical records — diagnosis reports, treatment records, and prescription histories from all providers; (4) Proof of exposure — purchase receipts, employment records, or service records showing product use or environmental exposure; (5) Physician\'s opinion letter — a written statement from your doctor linking your condition to the exposure; (6) Timeline documentation — a chronological account connecting exposure to diagnosis; (7) Financial impact records — tax returns, pay stubs, or employer statements showing lost wages; (8) Personal impact statement — a detailed account of how your condition affects daily life; (9) Insurance records — documentation of medical expenses covered and out-of-pocket costs; (10) Prior claim records — any previous claims or appeals related to your condition. Organize all documents chronologically and keep copies of everything you submit.',
@@ -3469,6 +3500,7 @@ const BLOG_ARTICLES = [
     readTime: '7 min read',
     category: 'NEC Baby Formula',
     image: '/blog/nec-formula.jpg',
+    mediaKey: 'blog-nec-formula',
     icon: Baby,
     color: 'bg-cyan-500',
     content: 'Necrotizing enterocolitis (NEC) is a devastating intestinal disease that primarily affects premature infants. Research has established a strong link between cow\'s milk-based infant formula and significantly increased NEC risk in preterm babies. Major manufacturers including Mead Johnson (Enfamil) and Abbott Laboratories (Similac) face litigation for failing to adequately warn hospitals and parents about these dangers. Eligible families typically include parents of babies born before 37 weeks who were fed cow\'s milk-based formula in the NICU and subsequently developed NEC. Compensation may cover medical expenses, surgical costs, long-term care needs, and pain and suffering. Key documents include birth records, NICU feeding logs, medical records documenting NEC diagnosis and treatment, and itemized medical bills. Many cases have already resulted in significant settlements, and multi-district litigation continues to gain momentum in 2025.',
@@ -3482,6 +3514,7 @@ const BLOG_ARTICLES = [
     readTime: '6 min read',
     category: 'Depo Provera',
     image: '/blog/depo-provera.jpg',
+    mediaKey: 'blog-depo-provera',
     icon: Pill,
     color: 'bg-orange-500',
     content: 'A major 2024 study published in the BMJ found that prolonged use of the Depo Provera contraceptive injection is associated with a significantly increased risk of developing intracranial meningiomas — typically benign but potentially serious brain tumors. The risk was highest among women who used Depo Provera for 12 months or longer. Meningiomas can cause headaches, vision problems, seizures, and neurological deficits, often requiring surgical removal. Women who developed meningiomas after using Depo Provera may be eligible to file claims against Pfizer, the manufacturer. Required documentation includes medical records confirming meningioma diagnosis, pharmacy records showing Depo Provera prescriptions, treatment records, and physician opinions linking the tumor to the contraceptive. Claimants should file promptly as statutes of limitations vary by state and many begin from the date of diagnosis.',
@@ -3681,12 +3714,12 @@ const SETTLEMENT_DATA = [
 ];
 
 const VIDEO_TESTIMONIALS = [
-  { name: "Maria S.", caseType: "Camp Lejeune", duration: "2:34", quote: "After years of illness with no answers, ClaimGuard Pro connected me with specialists who finally got to the bottom of my condition.", image: "/testimonials/maria.jpg", accent: "#059669", views: "12.4K", date: "Mar 2025" },
-  { name: "David W.", caseType: "Roundup", duration: "3:12", quote: "I never thought a gardening product could cause so much harm. The team at ClaimGuard Pro fought tirelessly for our family.", image: "/testimonials/david.jpg", accent: "#16a34a", views: "8.7K", date: "Feb 2025" },
-  { name: "Angela T.", caseType: "Talc", duration: "1:58", quote: "The compassion and professionalism I experienced was incredible. They made a very difficult time much more manageable.", image: "/testimonials/angela.jpg", accent: "#9333ea", views: "15.2K", date: "Jan 2025" },
-  { name: "James R.", caseType: "Hernia Mesh", duration: "4:21", quote: "My surgery left me with complications no one warned me about. ClaimGuard Pro helped me understand my rights and get compensated.", image: "/testimonials/james.jpg", accent: "#2563eb", views: "6.3K", date: "Dec 2024" },
-  { name: "Patricia M.", caseType: "Paraquat", duration: "2:47", quote: "As a farmer's widow, I didn't know where to turn. ClaimGuard Pro handled everything and secured a settlement we desperately needed.", image: "/testimonials/patricia.jpg", accent: "#d97706", views: "9.1K", date: "Nov 2024" },
-  { name: "Robert L.", caseType: "3M Earplugs", duration: "3:05", quote: "After serving my country, losing my hearing was devastating. ClaimGuard Pro ensured the VA and manufacturers were held accountable.", image: "/testimonials/robert.jpg", accent: "#dc2626", views: "11.8K", date: "Oct 2024" },
+  { name: "Maria S.", caseType: "Camp Lejeune", duration: "2:34", quote: "After years of illness with no answers, ClaimGuard Pro connected me with specialists who finally got to the bottom of my condition.", image: "/testimonials/maria.jpg", mediaKey: "testimonial-maria", accent: "#059669", views: "12.4K", date: "Mar 2025" },
+  { name: "David W.", caseType: "Roundup", duration: "3:12", quote: "I never thought a gardening product could cause so much harm. The team at ClaimGuard Pro fought tirelessly for our family.", image: "/testimonials/david.jpg", mediaKey: "testimonial-david", accent: "#16a34a", views: "8.7K", date: "Feb 2025" },
+  { name: "Angela T.", caseType: "Talc", duration: "1:58", quote: "The compassion and professionalism I experienced was incredible. They made a very difficult time much more manageable.", image: "/testimonials/angela.jpg", mediaKey: "testimonial-angela", accent: "#9333ea", views: "15.2K", date: "Jan 2025" },
+  { name: "James R.", caseType: "Hernia Mesh", duration: "4:21", quote: "My surgery left me with complications no one warned me about. ClaimGuard Pro helped me understand my rights and get compensated.", image: "/testimonials/james.jpg", mediaKey: "testimonial-james", accent: "#2563eb", views: "6.3K", date: "Dec 2024" },
+  { name: "Patricia M.", caseType: "Paraquat", duration: "2:47", quote: "As a farmer's widow, I didn't know where to turn. ClaimGuard Pro handled everything and secured a settlement we desperately needed.", image: "/testimonials/patricia.jpg", mediaKey: "testimonial-patricia", accent: "#d97706", views: "9.1K", date: "Nov 2024" },
+  { name: "Robert L.", caseType: "3M Earplugs", duration: "3:05", quote: "After serving my country, losing my hearing was devastating. ClaimGuard Pro ensured the VA and manufacturers were held accountable.", image: "/testimonials/robert.jpg", mediaKey: "testimonial-robert", accent: "#dc2626", views: "11.8K", date: "Oct 2024" },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -4095,6 +4128,8 @@ function VideoTestimonialsSection() {
   const { t } = useLanguage();
   const [playingIdx, setPlayingIdx] = useState<number | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const mediaMap = useContext(MediaMapContext);
+  const resolveImg = useCallback((key: string, fallback: string) => mediaMap[key]?.url || fallback, [mediaMap]);
 
   return (
     <section id="video-testimonials" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
@@ -4126,7 +4161,7 @@ function VideoTestimonialsSection() {
                     {/* Portrait Image */}
                     <div className="absolute inset-0">
                       <img
-                        src={item.image}
+                        src={resolveImg(item.mediaKey || '', item.image)}
                         alt={item.name}
                         className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
@@ -4171,7 +4206,7 @@ function VideoTestimonialsSection() {
                     {/* Author info row */}
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-gold/30 shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover object-top" loading="lazy" />
+                        <img src={resolveImg(item.mediaKey || '', item.image)} alt={item.name} className="w-full h-full object-cover object-top" loading="lazy" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -4300,6 +4335,8 @@ function ResourcesSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
   const [expandedArticle, setExpandedArticle] = useState<number | null>(null);
+  const mediaMap = useContext(MediaMapContext);
+  const resolveImg = useCallback((key: string, fallback: string) => mediaMap[key]?.url || fallback, [mediaMap]);
 
   return (
     <section id="resources" className="py-14 md:py-20 bg-white dark:bg-gray-950">
@@ -4318,7 +4355,7 @@ function ResourcesSection() {
               <Card className="h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow flex flex-col">
                 <div className={`${article.color} p-6 text-white relative overflow-hidden min-h-[140px]`}>
                   {article.image && (
-                    <img src={article.image} alt={article.title} className="absolute inset-0 w-full h-full object-cover opacity-30" />
+                    <img src={resolveImg(article.mediaKey || '', article.image)} alt={article.title} className="absolute inset-0 w-full h-full object-cover opacity-30" />
                   )}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" aria-hidden="true" />
                   <div className="relative">
@@ -4362,6 +4399,9 @@ function ResourcesSection() {
 function AboutSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
+  const aboutTeamImg = useMedia('about-team', '/about-team.jpg');
+  const mediaMap = useContext(MediaMapContext);
+  const resolveTeamImg = useCallback((key: string, fallback: string) => mediaMap[key]?.url || fallback, [mediaMap]);
   const VALUES = [
     { icon: Shield, title: t('about.v0'), desc: t('about.v0d') },
     { icon: Scale, title: t('about.v1'), desc: t('about.v1d') },
@@ -4393,7 +4433,7 @@ function AboutSection() {
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-3xl mx-auto mb-8">
           <Card className="bg-navy dark:bg-gray-900 text-white border-0 shadow-xl overflow-hidden">
             <div className="relative img-skeleton">
-                <img src="/about-team.jpg" alt="ClaimGuard Pro team" className="w-full h-48 object-cover opacity-40" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
+                <img src={aboutTeamImg} alt="ClaimGuard Pro team" className="w-full h-48 object-cover opacity-40" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
               <div className="absolute inset-0 bg-gradient-to-t from-[#1a2744] to-transparent z-10" />
             </div>
             <CardContent className="p-8 text-center -mt-12 relative z-10">
@@ -4428,7 +4468,7 @@ function AboutSection() {
                 <CardContent className="p-6">
                   <div className={`w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 shadow-lg`}>
                     {member.photo ? (
-                      <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
+                      <img src={resolveTeamImg(member.mediaKey || '', member.photo)} alt={member.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className={`w-full h-full ${member.color} flex items-center justify-center text-white text-xl font-bold`}>{member.initials}</div>
                     )}
@@ -4489,6 +4529,7 @@ function ContactSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
   const cs = useCompanySettings();
+  const contactOfficeImg = useMedia('contact-office', '/contact-office.jpg');
   const [form, setForm] = useState({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -4588,7 +4629,7 @@ function ContactSection() {
           <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="lg:col-span-3">
             <Card className="border-0 shadow-lg bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden">
               <div className="relative h-48 overflow-hidden img-skeleton">
-                <img src="/contact-office.jpg" alt="ClaimGuard Pro office" className="w-full h-full object-cover" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
+                <img src={contactOfficeImg} alt="ClaimGuard Pro office" className="w-full h-full object-cover" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
                 <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-800 to-transparent z-10" />
               </div>
               <CardContent className="p-6 md:p-8">
@@ -6028,7 +6069,7 @@ interface AdminStats {
 
 function AdminPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'add' | 'upload' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'claimants' | 'add' | 'upload' | 'media' | 'settings'>('dashboard');
   const [authKey, setAuthKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -6080,6 +6121,137 @@ function AdminPanel() {
     privacyEmail: 'privacy@claimguardpro.com',
     legalEmail: 'legal@claimguardpro.com',
   });
+
+  // Media Manager state
+  type MediaRecord = {
+    id: string; key: string; category: string; filePath: string; fileName: string;
+    alt: string; title: string; mediaType: string; sortOrder: number;
+    fileSize: number; mimeType: string; createdAt: string; updatedAt: string;
+  };
+  const [mediaItems, setMediaItems] = useState<MediaRecord[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [mediaFilter, setMediaFilter] = useState('all');
+  const [mediaUploadOpen, setMediaUploadOpen] = useState(false);
+  const [mediaEditItem, setMediaEditItem] = useState<MediaRecord | null>(null);
+  const [mediaPreviewItem, setMediaPreviewItem] = useState<MediaRecord | null>(null);
+  const [mediaDeleteItem, setMediaDeleteItem] = useState<MediaRecord | null>(null);
+  const [mediaUploading, setMediaUploading] = useState(false);
+  const [mediaSaving, setMediaSaving] = useState(false);
+  const [mediaForm, setMediaForm] = useState({ key: '', category: 'general', alt: '', title: '' });
+  const mediaFileInputRef = useRef<HTMLInputElement>(null);
+  const mediaEditFileRef = useRef<HTMLInputElement>(null);
+  const [mediaEditFile, setMediaEditFile] = useState<File | null>(null);
+  const [isDraggingMedia, setIsDraggingMedia] = useState(false);
+
+  const MEDIA_CATEGORIES = [
+    { value: 'hero', label: 'Hero' },
+    { value: 'team', label: 'Team' },
+    { value: 'success', label: 'Success Stories' },
+    { value: 'testimonials', label: 'Testimonials' },
+    { value: 'blog', label: 'Blog' },
+    { value: 'about', label: 'About' },
+    { value: 'contact', label: 'Contact' },
+    { value: 'branding', label: 'Branding' },
+    { value: 'referral', label: 'Referral' },
+    { value: 'general', label: 'General' },
+  ];
+
+  const fetchMedia = useCallback(async () => {
+    setMediaLoading(true);
+    try {
+      const res = await fetch('/api/admin/media', { headers: { Authorization: `Bearer ${ADMIN_AUTH_TOKEN}` } });
+      if (res.ok) setMediaItems(await res.json());
+    } catch { /* ignore */ }
+    setMediaLoading(false);
+  }, []);
+
+  const handleMediaUpload = async () => {
+    const file = mediaFileInputRef.current?.files?.[0];
+    if (!file || !mediaForm.key.trim()) return;
+    setMediaUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('key', mediaForm.key.trim());
+      fd.append('category', mediaForm.category);
+      fd.append('alt', mediaForm.alt);
+      fd.append('title', mediaForm.title);
+      const res = await fetch('/api/admin/media', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${ADMIN_AUTH_TOKEN}` },
+        body: fd,
+      });
+      if (res.ok) {
+        toast.success('Media uploaded successfully');
+        setMediaForm({ key: '', category: 'general', alt: '', title: '' });
+        setMediaUploadOpen(false);
+        fetchMedia();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch { toast.error('Upload failed'); }
+    setMediaUploading(false);
+  };
+
+  const handleMediaEditSave = async () => {
+    if (!mediaEditItem) return;
+    setMediaSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append('id', mediaEditItem.id);
+      if (mediaEditFile) fd.append('file', mediaEditFile);
+      if (mediaEditItem.key) fd.append('key', mediaEditItem.key);
+      fd.append('category', mediaEditItem.category);
+      fd.append('alt', mediaEditItem.alt);
+      fd.append('title', mediaEditItem.title);
+      fd.append('sortOrder', String(mediaEditItem.sortOrder));
+      const res = await fetch('/api/admin/media', {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${ADMIN_AUTH_TOKEN}` },
+        body: fd,
+      });
+      if (res.ok) {
+        toast.success('Media updated');
+        setMediaEditItem(null);
+        setMediaEditFile(null);
+        fetchMedia();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Update failed');
+      }
+    } catch { toast.error('Update failed'); }
+    setMediaSaving(false);
+  };
+
+  const handleMediaDelete = async () => {
+    if (!mediaDeleteItem) return;
+    try {
+      const res = await fetch(`/api/admin/media?id=${mediaDeleteItem.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${ADMIN_AUTH_TOKEN}` },
+      });
+      if (res.ok) {
+        toast.success('Media deleted');
+        setMediaDeleteItem(null);
+        fetchMedia();
+      }
+    } catch { toast.error('Delete failed'); }
+  };
+
+  const handleSeedMedia = async () => {
+    try {
+      const res = await fetch('/api/admin/media/seed', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${ADMIN_AUTH_TOKEN}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Seeded ${data.created} items (${data.copied} files copied)`);
+        fetchMedia();
+      }
+    } catch { toast.error('Seed failed'); }
+  };
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -6201,8 +6373,11 @@ function AdminPanel() {
         fetchClaimants(1);
       }, searchQuery ? 300 : 0);
     }
+    if (activeTab === 'media') {
+      fetchMedia();
+    }
     return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
-  }, [isAuthenticated, isOpen, activeTab, statusFilter, searchQuery, fetchClaimants]);
+  }, [isAuthenticated, isOpen, activeTab, statusFilter, searchQuery, fetchClaimants, fetchMedia]);
 
   const handleUpload = useCallback(async () => {
     if (!uploadFile) return;
@@ -6476,6 +6651,15 @@ function AdminPanel() {
                 >
                   <FileUp className="w-4 h-4" />
                   <span className="hidden sm:inline">Upload CSV</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('media')}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === 'media' ? 'text-purple-400 border-purple-400' : 'text-gray-400 border-transparent hover:text-gray-200'
+                  }`}
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline">Photos & Videos</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('settings')}
@@ -7117,6 +7301,147 @@ function AdminPanel() {
                       </div>
                     )}
 
+                    {/* Media Tab — Photos & Videos Manager */}
+                    {activeTab === 'media' && (
+                      <div className="space-y-4">
+                        {/* Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div>
+                            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                              <ImageIcon className="w-5 h-5 text-purple-400" />
+                              Photos & Videos
+                            </h3>
+                            <p className="text-sm text-gray-400">Manage all images and videos displayed across the website. Upload, replace, or update any media without touching code.</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Button size="sm" onClick={handleSeedMedia} className="bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs gap-1.5 h-8">
+                              <Database className="w-3.5 h-3.5" />
+                              Import Existing
+                            </Button>
+                            <Button size="sm" onClick={() => { setMediaForm({ key: '', category: 'general', alt: '', title: '' }); setMediaUploadOpen(true); }} className="bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1.5 h-8">
+                              <Plus className="w-3.5 h-3.5" />
+                              Upload New
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Category Filter */}
+                        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                          <button
+                            onClick={() => setMediaFilter('all')}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                              mediaFilter === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                            }`}
+                          >All</button>
+                          {MEDIA_CATEGORIES.map(cat => (
+                            <button
+                              key={cat.value}
+                              onClick={() => setMediaFilter(cat.value)}
+                              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                                mediaFilter === cat.value ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                              }`}
+                            >{cat.label}</button>
+                          ))}
+                        </div>
+
+                        {/* Stats bar */}
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <span>{mediaItems.filter(m => mediaFilter === 'all' || m.category === mediaFilter).length} items</span>
+                          <span>{mediaItems.filter(m => m.mediaType === 'video').length} videos</span>
+                          <span>{mediaItems.filter(m => m.mediaType === 'image').length} images</span>
+                        </div>
+
+                        {/* Grid */}
+                        {mediaLoading ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {[...Array(8)].map((_, i) => (
+                              <div key={i} className="bg-gray-800/50 rounded-xl aspect-square animate-pulse" />
+                            ))}
+                          </div>
+                        ) : (() => {
+                          const filtered = mediaItems.filter(m => mediaFilter === 'all' || m.category === mediaFilter);
+                          return filtered.length === 0 ? (
+                            <div className="text-center py-16 text-gray-500">
+                              <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                              <p className="font-medium">No media items yet</p>
+                              <p className="text-sm mt-1">Click "Import Existing" to seed your current images, or upload new ones.</p>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                              {filtered.map(item => (
+                                <div
+                                  key={item.id}
+                                  className="group relative bg-gray-800/60 rounded-xl overflow-hidden border border-gray-700/50 hover:border-purple-500/50 transition-all cursor-pointer"
+                                  onClick={() => setMediaPreviewItem(item)}
+                                >
+                                  {/* Thumbnail */}
+                                  <div className="aspect-square bg-gray-900 relative overflow-hidden">
+                                    {item.mediaType === 'video' ? (
+                                      <div className="w-full h-full flex items-center justify-center bg-gray-900">
+                                        <video
+                                          src={`/api/media/file?path=${encodeURIComponent(item.filePath)}`}
+                                          className="w-full h-full object-cover"
+                                          preload="metadata"
+                                          muted
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                          <Play className="w-10 h-10 text-white/80" />
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <img
+                                        src={`/api/media/file?path=${encodeURIComponent(item.filePath)}`}
+                                        alt={item.alt || item.title || item.key}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        loading="lazy"
+                                      />
+                                    )}
+
+                                    {/* Overlay buttons */}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-end justify-center pb-3 gap-2 opacity-0 group-hover:opacity-100">
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); setMediaEditItem({ ...item }); setMediaEditFile(null); }}
+                                        className="p-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors"
+                                        title="Edit"
+                                      >
+                                        <Pencil className="w-4 h-4 text-white" />
+                                      </button>
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); setMediaDeleteItem(item); }}
+                                        className="p-2 bg-red-500/60 backdrop-blur-sm rounded-lg hover:bg-red-500/80 transition-colors"
+                                        title="Delete"
+                                      >
+                                        <Trash2 className="w-4 h-4 text-white" />
+                                      </button>
+                                    </div>
+
+                                    {/* Type badge */}
+                                    <div className="absolute top-2 left-2">
+                                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-md ${
+                                        item.mediaType === 'video' ? 'bg-blue-500/80 text-white' : 'bg-gray-700/80 text-gray-300'
+                                      }`}>{item.mediaType}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Info */}
+                                  <div className="p-2.5">
+                                    <p className="text-sm font-medium text-gray-200 truncate">{item.title || item.key}</p>
+                                    <p className="text-xs text-gray-500 truncate mt-0.5">{item.key}</p>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <span className="text-[10px] text-purple-400 bg-purple-400/10 px-1.5 py-0.5 rounded">{item.category}</span>
+                                      {item.fileSize > 0 && (
+                                        <span className="text-[10px] text-gray-500">{(item.fileSize / 1024).toFixed(0)}KB</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+
                     {/* Settings Tab */}
                     {activeTab === 'settings' && (
                       <div className="space-y-6 max-w-2xl">
@@ -7213,6 +7538,267 @@ function AdminPanel() {
           )}
         </motion.div>
       </motion.div>
+
+      {/* Upload New Media Dialog */}
+      <Dialog key="media-upload-dialog" open={mediaUploadOpen} onOpenChange={(open) => { if (!open) setMediaUploadOpen(false); }}>
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Upload className="w-5 h-5 text-purple-400" />
+              Upload New Media
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">Add a new image or video to the website media library.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Drag & Drop Zone */}
+            <div
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+                isDraggingMedia ? 'border-purple-500 bg-purple-500/10' : 'border-gray-700 hover:border-gray-500'
+              }`}
+              onDragOver={(e) => { e.preventDefault(); setIsDraggingMedia(true); }}
+              onDragLeave={() => setIsDraggingMedia(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDraggingMedia(false);
+                const file = e.dataTransfer.files[0];
+                if (file && mediaFileInputRef.current) {
+                  const dt = new DataTransfer();
+                  dt.items.add(file);
+                  mediaFileInputRef.current.files = dt.files;
+                }
+              }}
+              onClick={() => mediaFileInputRef.current?.click()}
+            >
+              <Upload className="w-8 h-8 mx-auto mb-2 text-gray-500" />
+              <p className="text-sm text-gray-400">Click or drag a file here</p>
+              <p className="text-xs text-gray-600 mt-1">JPG, PNG, GIF, WebP, SVG, MP4, WebM (max 20MB)</p>
+              <input ref={mediaFileInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={() => {}} />
+            </div>
+
+            {/* Form fields */}
+            <div className="space-y-3">
+              <div>
+                <Label className="text-sm text-gray-300 mb-1 block">Media Key *</Label>
+                <Input
+                  value={mediaForm.key}
+                  onChange={(e) => setMediaForm(f => ({ ...f, key: e.target.value }))}
+                  placeholder="e.g. hero-bg, team-sarah, blog-camp-lejeune"
+                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Unique identifier used by the website to load this media.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm text-gray-300 mb-1 block">Category</Label>
+                  <Select value={mediaForm.category} onValueChange={(v) => setMediaForm(f => ({ ...f, category: v }))}>
+                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[200] bg-gray-800 border-gray-700">
+                      {MEDIA_CATEGORIES.map(c => (
+                        <SelectItem key={c.value} value={c.value} className="text-gray-200">{c.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-300 mb-1 block">Title</Label>
+                  <Input
+                    value={mediaForm.title}
+                    onChange={(e) => setMediaForm(f => ({ ...f, title: e.target.value }))}
+                    placeholder="Display title"
+                    className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm text-gray-300 mb-1 block">Alt Text</Label>
+                <Input
+                  value={mediaForm.alt}
+                  onChange={(e) => setMediaForm(f => ({ ...f, alt: e.target.value }))}
+                  placeholder="Image description for accessibility"
+                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={handleMediaUpload}
+              disabled={mediaUploading || !mediaForm.key.trim() || !mediaFileInputRef.current?.files?.[0]}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            >
+              {mediaUploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : 'Upload Media'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Media Dialog */}
+      <Dialog key="media-edit-dialog" open={!!mediaEditItem} onOpenChange={(open) => { if (!open) { setMediaEditItem(null); setMediaEditFile(null); } }}>
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Pencil className="w-5 h-5 text-purple-400" />
+              Edit Media
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">Update media details or replace the file.</DialogDescription>
+          </DialogHeader>
+          {mediaEditItem && (
+            <div className="space-y-4">
+              {/* Current preview */}
+              <div className="rounded-xl overflow-hidden bg-gray-800 aspect-video flex items-center justify-center">
+                {mediaEditItem.mediaType === 'video' ? (
+                  <video
+                    src={`/api/media/file?path=${encodeURIComponent(mediaEditItem.filePath)}`}
+                    className="w-full h-full object-contain"
+                    controls
+                  />
+                ) : (
+                  <img
+                    src={`/api/media/file?path=${encodeURIComponent(mediaEditItem.filePath)}`}
+                    alt={mediaEditItem.alt || mediaEditItem.title}
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+
+              {/* Replace file */}
+              <div>
+                <Label className="text-sm text-gray-300 mb-1 block">Replace File (optional)</Label>
+                <div
+                  className="border border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-gray-500 transition-colors"
+                  onClick={() => mediaEditFileRef.current?.click()}
+                >
+                  <p className="text-sm text-gray-400">
+                    {mediaEditFile ? mediaEditFile.name : 'Click to choose a new file'}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-0.5">Leave empty to keep current file</p>
+                  <input ref={mediaEditFileRef} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => setMediaEditFile(e.target.files?.[0] || null)} />
+                </div>
+              </div>
+
+              {/* Metadata fields */}
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm text-gray-300 mb-1 block">Media Key</Label>
+                  <Input
+                    value={mediaEditItem.key}
+                    onChange={(e) => setMediaEditItem({ ...mediaEditItem, key: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-sm text-gray-300 mb-1 block">Category</Label>
+                    <Select value={mediaEditItem.category} onValueChange={(v) => setMediaEditItem({ ...mediaEditItem, category: v })}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="z-[200] bg-gray-800 border-gray-700">
+                        {MEDIA_CATEGORIES.map(c => (
+                          <SelectItem key={c.value} value={c.value} className="text-gray-200">{c.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm text-gray-300 mb-1 block">Sort Order</Label>
+                    <Input
+                      type="number"
+                      value={mediaEditItem.sortOrder}
+                      onChange={(e) => setMediaEditItem({ ...mediaEditItem, sortOrder: parseInt(e.target.value, 10) || 0 })}
+                      className="bg-gray-800 border-gray-600 text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-300 mb-1 block">Title</Label>
+                  <Input
+                    value={mediaEditItem.title}
+                    onChange={(e) => setMediaEditItem({ ...mediaEditItem, title: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-300 mb-1 block">Alt Text</Label>
+                  <Input
+                    value={mediaEditItem.alt}
+                    onChange={(e) => setMediaEditItem({ ...mediaEditItem, alt: e.target.value })}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleMediaEditSave} disabled={mediaSaving} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold">
+                  {mediaSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : 'Save Changes'}
+                </Button>
+                <Button variant="ghost" onClick={() => { setMediaEditItem(null); setMediaEditFile(null); }} className="text-gray-400 hover:text-white">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Media Preview Dialog */}
+      <Dialog key="media-preview-dialog" open={!!mediaPreviewItem} onOpenChange={(open) => { if (!open) setMediaPreviewItem(null); }}>
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="text-white">{mediaPreviewItem?.title || mediaPreviewItem?.key || 'Preview'}</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              {mediaPreviewItem?.category && <Badge variant="outline" className="border-purple-500/50 text-purple-400 mr-2">{mediaPreviewItem.category}</Badge>}
+              {mediaPreviewItem?.mediaType === 'video' ? 'Video' : 'Image'}
+              {mediaPreviewItem?.fileSize ? ` · ${(mediaPreviewItem.fileSize / 1024).toFixed(0)}KB` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          {mediaPreviewItem && (
+            <div className="space-y-3">
+              <div className="rounded-xl overflow-hidden bg-black/50 flex items-center justify-center" style={{ maxHeight: '60vh' }}>
+                {mediaPreviewItem.mediaType === 'video' ? (
+                  <video
+                    src={`/api/media/file?path=${encodeURIComponent(mediaPreviewItem.filePath)}`}
+                    className="w-full max-h-[60vh] object-contain"
+                    controls
+                    autoPlay
+                  />
+                ) : (
+                  <img
+                    src={`/api/media/file?path=${encodeURIComponent(mediaPreviewItem.filePath)}`}
+                    alt={mediaPreviewItem.alt || mediaPreviewItem.title}
+                    className="w-full max-h-[60vh] object-contain"
+                  />
+                )}
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                <div><span className="text-gray-500 block text-xs">Key</span><span className="text-gray-200 font-mono">{mediaPreviewItem.key}</span></div>
+                <div><span className="text-gray-500 block text-xs">Alt</span><span className="text-gray-200">{mediaPreviewItem.alt || '—'}</span></div>
+                <div><span className="text-gray-500 block text-xs">File</span><span className="text-gray-200 truncate block">{mediaPreviewItem.fileName}</span></div>
+                <div><span className="text-gray-500 block text-xs">URL Path</span><code className="text-purple-400 text-xs break-all">/api/media/file?path={mediaPreviewItem.filePath}</code></div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Media Delete Confirmation Dialog */}
+      <AlertDialog key="media-delete-dialog" open={!!mediaDeleteItem} onOpenChange={(open) => !open && setMediaDeleteItem(null)}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Media</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Are you sure you want to delete <span className="text-white font-semibold">{mediaDeleteItem?.title || mediaDeleteItem?.key}</span>? The file will be permanently removed. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">Cancel</AlertDialogCancel>
+            <Button onClick={handleMediaDelete} className="bg-red-600 hover:bg-red-700 text-white">
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog key="delete-dialog" open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
@@ -7325,6 +7911,7 @@ function AdminPanel() {
 
 export default function HomePage() {
   const [companySettings, setCompanySettings] = useState<CompanySettings>(DEFAULT_COMPANY_SETTINGS);
+  const [mediaMap, setMediaMap] = useState<Record<string, MediaEntry>>(defaultMediaMap);
 
   // Fetch company settings on mount
   useEffect(() => {
@@ -7336,6 +7923,19 @@ export default function HomePage() {
           setCompanySettings(data);
         }
       } catch { /* use defaults */ }
+    })();
+  }, []);
+
+  // Fetch media map on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/media');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === 'object') setMediaMap(data);
+        }
+      } catch { /* use defaults — images fall back to hardcoded paths */ }
     })();
   }, []);
 
@@ -7362,6 +7962,7 @@ export default function HomePage() {
   }, []);
 
   return (
+    <MediaMapContext.Provider value={mediaMap}>
     <CompanySettingsContext.Provider value={companySettings}>
     <>
       <a href="#hero" className="skip-to-content">
@@ -7427,5 +8028,6 @@ export default function HomePage() {
       </nav>
     </>
     </CompanySettingsContext.Provider>
+    </MediaMapContext.Provider>
   );
 }
