@@ -98,8 +98,6 @@ import {
   Play,
   Pause,
   Video,
-  ExternalLink,
-
   Trash2,
   Plus,
   LayoutDashboard,
@@ -115,11 +113,10 @@ import {
   Calculator,
   FileUp,
   Database,
-  ChevronRight as ChevronRightIcon,
   UsersRound,
   CircleDot,
   Filter,
-  SortAsc,
+
   XCircle,
   DownloadCloud,
   FileSpreadsheet,
@@ -2109,15 +2106,6 @@ function EligibilityQuizSection() {
    SECTION: WHY CHOOSE US / STATS
    ═══════════════════════════════════════════════════════════════ */
 
-const STATS_TOOLTIP_DATA: Record<string, string> = {
-  'Claims Assisted': 'Over 1,250 claimants have trusted us to guide them through the mass tort claims process since 2009.',
-  'Success Rate': '98% of our clients who complete the full process receive a favorable outcome on their claims.',
-  'Recovered': 'Our clients have recovered a combined total of over $47 million in settlements and compensation.',
-  'Years Experience': 'Our team brings 15+ years of specialized experience in mass tort litigation and claims management.',
-  'Dedicated Support': 'Our specialists are available 24 hours a day, 7 days a week via phone, email, and live chat.',
-  'Secure & Confidential': 'Bank-level 256-bit encryption with HIPAA-compliant systems. Regular third-party security audits.',
-};
-
 function StatCardComponent({ icon: Icon, value, suffix, label, inView, progress, prefix = '', tooltip }: {
   icon: typeof Users; value: number; suffix: string; label: string; inView: boolean; progress: number; prefix?: string; tooltip?: string;
 }) {
@@ -2617,7 +2605,7 @@ function TrackClaimSkeleton() {
 function ClaimPipelineTimeline({ currentStage }: { currentStage: string }) {
   const { t, locale } = useLanguage();
   const pipelineStages = useMemo(() => [t('pipeline.submitted'), t('pipeline.validated'), t('pipeline.underReview'), t('pipeline.decision'), t('pipeline.completed')], [locale, t]);
-  const stageIndex = PIPELINE_STAGES.indexOf(currentStage);
+  const stageIndex = getStageIndex(currentStage);
   const stageColors = ['bg-blue-500', 'bg-gold', 'bg-violet-500', 'bg-amber-500', 'bg-emerald-500'];
   return (
     <div className="relative py-4">
@@ -2835,9 +2823,9 @@ function TrackClaimSection() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input value={trackingId} onChange={(e) => { setTrackingId(e.target.value); setError(''); }} onKeyDown={(e) => e.key === 'Enter' && handleTrack()} placeholder={t('track.placeholder')} className="pl-12 h-13 text-base border-2 focus:border-gold bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white" disabled={loading} />
+              <Input value={trackingId} onChange={(e) => { setTrackingId(e.target.value); setError(''); }} onKeyDown={(e) => e.key === 'Enter' && handleTrack()} placeholder={t('track.placeholder')} className="pl-12 h-[3.25rem] text-base border-2 focus:border-gold bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white" disabled={loading} />
             </div>
-            <Button onClick={handleTrack} disabled={loading} className="h-13 px-8 bg-navy dark:bg-gray-800 hover:bg-navy-light dark:hover:bg-gray-700 text-white font-semibold text-base">
+            <Button onClick={handleTrack} disabled={loading} className="h-[3.25rem] px-8 bg-navy dark:bg-gray-800 hover:bg-navy-light dark:hover:bg-gray-700 text-white font-semibold text-base">
               {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('track.searching')}</> : <><Search className="w-5 h-5 mr-2" />{t('track.trackClaim')}</>}
             </Button>
           </div>
@@ -4727,7 +4715,7 @@ function ContactSection() {
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><MapPin className="w-5 h-5 text-gold" /></div>
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('contact.officeAddress')}</p>
-                    <p className="text-sm font-medium text-navy dark:text-gray-200" dangerouslySetInnerHTML={{ __html: cs.address.replace(/, /g, ',<br/>') }} />
+                    <p className="text-sm font-medium text-navy dark:text-gray-200" style={{ whiteSpace: 'pre-line' }}>{cs.address}</p>
                   </div>
                 </div>
                 {[
@@ -4885,7 +4873,7 @@ function Footer() {
             <div>
               <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">{t('footer.contact')}</h4>
               <div className="space-y-3">
-                <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50" dangerouslySetInnerHTML={{ __html: cs.address.replace(/, /g, ',<br />') }} /></div>
+                <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50" style={{ whiteSpace: 'pre-line' }}>{cs.address}</span></div>
                 <a href={cs.phoneHref} className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Phone className="w-4 h-4 text-gold" />{cs.phone}</a>
                 <a href={cs.emailHref} className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Mail className="w-4 h-4 text-gold" />{cs.email}</a>
               </div>
@@ -4981,7 +4969,7 @@ function LiveChatWidget() {
 
     const typingStart = Date.now();
     try {
-      const history = messages.slice(-10).map(m => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.text }));
+      const history = [...messages.slice(-9), { role: 'user', content: text.trim() }].slice(-10).map(m => ({ role: (m as {role?: string}).role === 'assistant' ? 'assistant' : 'user', content: (m as {content?: string}).content || (m as {text?: string}).text || '' }));
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -5016,7 +5004,7 @@ function LiveChatWidget() {
         <Tooltip>
           <TooltipTrigger asChild>
             <motion.button
-              onClick={() => setIsOpen(true)}
+              onClick={() => { setIsOpen(true); setMsgCount(0); }}
               className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
               style={{ background: 'linear-gradient(135deg, #C5A55A, #A88A3F)' }}
               whileHover={{ scale: 1.1 }}
@@ -6760,7 +6748,7 @@ function AdminPanel() {
                                 disabled={currentPage >= totalPages}
                                 className="text-gray-400 hover:text-white h-8"
                               >
-                                <ChevronRightIcon className="w-4 h-4" />
+                                <ChevronRight className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>

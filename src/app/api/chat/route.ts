@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
           entry &&
           typeof entry === 'object' &&
           typeof entry.role === 'string' &&
-          typeof entry.content === 'string'
+          typeof entry.content === 'string' &&
+          (entry.role === 'user' || entry.role === 'assistant')
         ) {
           messages.push({ role: entry.role, content: entry.content });
         }

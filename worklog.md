@@ -209,3 +209,66 @@ All custom hooks, animation variants, and small reusable components.
 - ✅ ESLint passes with zero errors
 - ✅ Prisma schema migrated successfully
 - ✅ All features working on dev server
+
+---
+# Task: Comprehensive Code Audit & UI/UX Modernization
+
+### Date: 2025-07-15
+
+### Scope
+Full code audit of 7,400+ line page.tsx, 12 API routes, Prisma schema, CSS, and config files.
+
+### Critical Bug Fixes Applied (page.tsx)
+
+1. **Fixed ClaimPipelineTimeline broken index** — Was using `PIPELINE_STAGES.indexOf(currentStage)` which returned -1 for statuses like 'Approved', 'Denied'. Changed to use existing `getStageIndex()` function that properly maps all statuses.
+
+2. **Fixed stale closure in chat sendMessage** — The `messages` variable in the closure was stale after `setMessages`. Fixed by explicitly constructing history with the new message included.
+
+3. **Fixed chat msgCount badge never resetting** — Added `setMsgCount(0)` when chat opens so unread badge clears.
+
+4. **Removed 2x dangerouslySetInnerHTML** — Address rendering in contact and footer now uses safe `style={{ whiteSpace: 'pre-line' }}` instead of XSS-vulnerable innerHTML.
+
+5. **Removed dead STATS_TOOLTIP_DATA** — 7 lines of unused constant removed.
+
+6. **Fixed h-13 non-standard Tailwind class** — Replaced with `h-[3.25rem]`.
+
+7. **Removed duplicate/unused imports** — `ExternalLink`, `SortAsc` (unused), `ChevronRight as ChevronRightIcon` (duplicate alias), replaced usage at line 6763 with `ChevronRight`.
+
+### API Security Fixes
+
+8. **Added `db` export to db.ts** — Contact, referral, claims, newsletter routes were importing `db` which didn't exist.
+
+9. **Added missing Prisma models** — Claim, ClaimHistory, ContactMessage, Newsletter models added to schema. Added indexes on Claimant (email, status, createdAt).
+
+10. **Fixed chat prompt injection** — Whitelisted only 'user' and 'assistant' roles in history, preventing system role injection.
+
+11. **Added auth to Settings PUT** — Was completely unprotected, now requires admin token.
+
+12. **Added auth to Referral GET/PATCH** — Was exposing all referral data publicly.
+
+13. **Added auth to Newsletter GET** — Was exposing all subscriber emails.
+
+14. **Added CSV file size limit** — 10MB cap prevents DoS via multi-GB uploads.
+
+15. **Added pagination limit cap** — Capped at 100 to prevent dumping entire database.
+
+16. **Added referral status validation** — PATCH now validates against whitelist of valid statuses.
+
+### UI/UX Improvements
+
+17. **Modernized dark color palette** — Changed base dark from #111D33 to #0F172A (Slate 900) for richer, more modern look.
+
+18. **Enhanced scrollbar** — Thinner 6px scrollbar, gold on hover, dark background track.
+
+19. **Improved hero gradient** — More subtle gold accent, cleaner overlay.
+
+20. **Added new utility classes** — `hover-lift` (card lift effect), `trust-glow` (trust badge glow), `border-gold-gradient`, `shimmer-loading`.
+
+21. **Added new design tokens** — `navy-deeper`, `gold-bright`, `danger`, `trust-blue`, `trust-green`.
+
+22. **Regenerated professional images** — New hero background, team photo, office photo, referral reward illustration, logo, OG image.
+
+### Verification
+- ESLint passes with zero errors
+- Prisma schema pushed successfully
+- All 16 fixes verified

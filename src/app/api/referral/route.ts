@@ -47,7 +47,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
+const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN || 'claimguard-admin-2025';
+
+function auth(request: NextRequest): boolean {
+  const authHeader = request.headers.get('authorization');
+  return authHeader === `Bearer ${ADMIN_TOKEN}`;
+}
+
 export async function GET(request: NextRequest) {
+  if (!auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -81,12 +90,19 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  if (!auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   try {
     const body = await request.json();
     const { id, status, paidOut, notes } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Referral ID is required' }, { status: 400 });
+    }
+
+    const VALID_STATUSES = ['Pending', 'Approved', 'Denied', 'Paid', 'Contacted', 'In Review'];
+    if (status && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
     }
 
     const updated = await db.referral.update({

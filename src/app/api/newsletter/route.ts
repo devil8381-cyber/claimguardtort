@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
+const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN || 'claimguard-admin-2025';
+
+function auth(request: NextRequest): boolean {
+  const authHeader = request.headers.get('authorization');
+  return authHeader === `Bearer ${ADMIN_TOKEN}`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Rate limit: 3 requests per minute per IP
@@ -75,7 +82,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   try {
     const subscribers = await db.newsletter.findMany({
       orderBy: { createdAt: 'desc' },

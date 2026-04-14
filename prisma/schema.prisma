@@ -8,34 +8,88 @@ generator client {
 }
 
 model Claimant {
+  id              String           @id @default(uuid())
+  trackingId      String           @unique
+  firstName       String
+  lastName        String
+  email           String
+  phone           String?
+  claimType       String?
+  status          String           @default("Submitted")
+  state           String?
+  filedDate       String?
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  claims          Claim[]
+  contactMessages ContactMessage[]
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Claim {
+  id          String   @id @default(uuid())
+  trackingId  String   @unique
+  status      String   @default("Pending")
+  claimType   String?
+  description String?
+  claimantId  String
+  filedDate   DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+  notes       String?
+  nextSteps   String?
+  claimant    Claimant @relation(fields: [claimantId], references: [id])
+  history     ClaimHistory[]
+}
+
+model ClaimHistory {
+  id        String   @id @default(uuid())
+  status    String
+  notes     String?
+  date      DateTime @default(now())
+  claimId   String
+  claim     Claim    @relation(fields: [claimId], references: [id])
+}
+
+model ContactMessage {
   id         String   @id @default(uuid())
-  trackingId String   @unique
-  firstName  String
-  lastName  String
+  name       String
   email      String
   phone      String?
-  claimType  String?
-  status     String   @default("Submitted")
-  state      String?
-  filedDate  String?
-  notes      String?
+  claimId    String?
+  message    String
+  fileName   String?
+  fileSize   String?
+  claimantId String?
+  claimant   Claimant? @relation(fields: [claimantId], references: [id])
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+}
+
+model Newsletter {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  claimType String?
+  updates   Boolean  @default(true)
+  deadlines Boolean  @default(true)
+  tips      Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
 
 model Referral {
-  id             String   @id @default(uuid())
-  referrerName   String
-  referrerEmail  String
-  referrerPhone  String?
-  referralFirst  String
-  referralLast   String
-  referralPhone  String
-  claimType      String?
-  status         String   @default("Pending")
-  payoutAmount   String   @default("5000")
-  paidOut        Boolean  @default(false)
-  notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(uuid())
+  referrerName  String
+  referrerEmail String
+  referrerPhone String?
+  referralFirst String
+  referralLast  String
+  referralPhone String
+  claimType     String?
+  status        String   @default("Pending")
+  payoutAmount  String   @default("5000")
+  paidOut       Boolean  @default(false)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

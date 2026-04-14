@@ -4,6 +4,13 @@ import path from 'path';
 
 const SETTINGS_FILE = path.join(process.cwd(), 'data', 'company-settings.json');
 
+const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN || 'claimguard-admin-2025';
+
+function auth(request: NextRequest): boolean {
+  const authHeader = request.headers.get('authorization');
+  return authHeader === `Bearer ${ADMIN_TOKEN}`;
+}
+
 const DEFAULT_SETTINGS = {
   companyName: 'ClaimGuard Pro',
   phone: '(484) 968-1529',
@@ -46,6 +53,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   try {
     const body = await req.json();
     const current = await readSettings();
