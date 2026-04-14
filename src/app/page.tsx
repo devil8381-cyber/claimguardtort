@@ -94,6 +94,8 @@ import {
   Brain,
   Globe,
   Play,
+  Pause,
+  Video,
   ExternalLink,
 
   Trash2,
@@ -3559,12 +3561,12 @@ const SETTLEMENT_DATA = [
 ];
 
 const VIDEO_TESTIMONIALS = [
-  { name: "Maria S.", caseType: "Camp Lejeune", duration: "2:34", quote: "After years of illness with no answers, ClaimGuard Pro connected me with specialists who finally got to the bottom of my condition.", gradient: "from-emerald-900/40 to-gray-900" },
-  { name: "David W.", caseType: "Roundup", duration: "3:12", quote: "I never thought a gardening product could cause so much harm. The team at ClaimGuard Pro fought tirelessly for our family.", gradient: "from-green-900/40 to-gray-900" },
-  { name: "Angela T.", caseType: "Talc", duration: "1:58", quote: "The compassion and professionalism I experienced was incredible. They made a very difficult time much more manageable.", gradient: "from-purple-900/40 to-gray-900" },
-  { name: "James R.", caseType: "Hernia Mesh", duration: "4:21", quote: "My surgery left me with complications no one warned me about. ClaimGuard Pro helped me understand my rights and get compensated.", gradient: "from-blue-900/40 to-gray-900" },
-  { name: "Patricia M.", caseType: "Paraquat", duration: "2:47", quote: "As a farmer's widow, I didn't know where to turn. ClaimGuard Pro handled everything and secured a settlement we desperately needed.", gradient: "from-amber-900/40 to-gray-900" },
-  { name: "Robert L.", caseType: "3M Earplugs", duration: "3:05", quote: "After serving my country, losing my hearing was devastating. ClaimGuard Pro ensured the VA and manufacturers were held accountable.", gradient: "from-red-900/40 to-gray-900" },
+  { name: "Maria S.", caseType: "Camp Lejeune", duration: "2:34", quote: "After years of illness with no answers, ClaimGuard Pro connected me with specialists who finally got to the bottom of my condition.", image: "/testimonials/maria.jpg", accent: "#059669", views: "12.4K", date: "Mar 2025" },
+  { name: "David W.", caseType: "Roundup", duration: "3:12", quote: "I never thought a gardening product could cause so much harm. The team at ClaimGuard Pro fought tirelessly for our family.", image: "/testimonials/david.jpg", accent: "#16a34a", views: "8.7K", date: "Feb 2025" },
+  { name: "Angela T.", caseType: "Talc", duration: "1:58", quote: "The compassion and professionalism I experienced was incredible. They made a very difficult time much more manageable.", image: "/testimonials/angela.jpg", accent: "#9333ea", views: "15.2K", date: "Jan 2025" },
+  { name: "James R.", caseType: "Hernia Mesh", duration: "4:21", quote: "My surgery left me with complications no one warned me about. ClaimGuard Pro helped me understand my rights and get compensated.", image: "/testimonials/james.jpg", accent: "#2563eb", views: "6.3K", date: "Dec 2024" },
+  { name: "Patricia M.", caseType: "Paraquat", duration: "2:47", quote: "As a farmer's widow, I didn't know where to turn. ClaimGuard Pro handled everything and secured a settlement we desperately needed.", image: "/testimonials/patricia.jpg", accent: "#d97706", views: "9.1K", date: "Nov 2024" },
+  { name: "Robert L.", caseType: "3M Earplugs", duration: "3:05", quote: "After serving my country, losing my hearing was devastating. ClaimGuard Pro ensured the VA and manufacturers were held accountable.", image: "/testimonials/robert.jpg", accent: "#dc2626", views: "11.8K", date: "Oct 2024" },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -3932,43 +3934,168 @@ function SettlementTrackerSection() {
    SECTION: VIDEO TESTIMONIALS
    ═══════════════════════════════════════════════════════════════ */
 
+function AudioWaveform({ color, isPlaying }: { color: string; isPlaying?: boolean }) {
+  const bars = useMemo(() => Array.from({ length: 28 }, (_, i) => ({ h: 8 + Math.random() * 22, delay: i * 0.06 })), []);
+  return (
+    <div className="flex items-center justify-center gap-[2px] h-6">
+      {bars.map((b, i) => (
+        <motion.div
+          key={i}
+          className="w-[3px] rounded-full"
+          style={{ backgroundColor: color, opacity: 0.6 }}
+          animate={isPlaying ? { height: [b.h * 0.3, b.h, b.h * 0.5, b.h * 0.8, b.h * 0.3] } : { height: b.h * 0.4 }}
+          transition={isPlaying ? { duration: 1.2, repeat: Infinity, delay: b.delay, ease: 'easeInOut' } : { duration: 0.3 }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function VideoTestimonialsSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
+  const [playingIdx, setPlayingIdx] = useState<number | null>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   return (
-    <section id="video-testimonials" className="py-20 bg-white dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto px-4" ref={ref}>
+    <section id="video-testimonials" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+
+      <div className="max-w-7xl mx-auto px-4 relative" ref={ref}>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-14">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('video.badge')}</Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             {t('video.title')}
           </h2>
           <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">{t('video.description')}</p>
+          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-gray-400 dark:text-gray-500">
+            <span className="flex items-center gap-2"><Play className="w-4 h-4 text-gold" /> 6 Stories</span>
+            <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-gold" /> 18 min total</span>
+            <span className="flex items-center gap-2"><Eye className="w-4 h-4 text-gold" /> 63K+ views</span>
+          </div>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {VIDEO_TESTIMONIALS.map((item) => (
-            <motion.div key={item.name} variants={fadeInUp}>
-              <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-900 overflow-hidden hover:border-gold/30 transition-all duration-300 group h-full flex flex-col">
-                <div className={`relative h-48 bg-gradient-to-br ${item.gradient} flex items-center justify-center cursor-pointer`}>
-                  <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
-                    <Play className="w-7 h-7 text-white ml-1" />
+          {VIDEO_TESTIMONIALS.map((item, idx) => {
+            const isPlaying = playingIdx === idx;
+            const isHovered = hoveredIdx === idx;
+            return (
+              <motion.div key={item.name} variants={fadeInUp} onMouseEnter={() => setHoveredIdx(idx)} onMouseLeave={() => setHoveredIdx(null)}>
+                <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-900 overflow-hidden hover:shadow-xl dark:hover:shadow-gold/5 transition-all duration-500 group h-full flex flex-col">
+                  {/* Video Thumbnail with Photo */}
+                  <div className="relative h-56 overflow-hidden cursor-pointer" onClick={() => setPlayingIdx(isPlaying ? null : idx)}>
+                    {/* Portrait Image */}
+                    <div className="absolute inset-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    {/* Dark overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+                    {/* Animated waveform at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <AudioWaveform color={item.accent} isPlaying={isPlaying} />
+                    </div>
+                    {/* Play button center */}
+                    <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isHovered || isPlaying ? 'opacity-100' : 'opacity-90'}`}>
+                      <motion.div
+                        className="w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-md border-2 border-white/30 shadow-2xl"
+                        style={{ backgroundColor: `${item.accent}cc` }}
+                        animate={isPlaying ? { scale: [1, 1.1, 1] } : isHovered ? { scale: 1.15 } : { scale: 1 }}
+                        transition={{ duration: isPlaying ? 1.5 : 0.2, repeat: isPlaying ? Infinity : 0 }}
+                      >
+                        {isPlaying ? (
+                          <div className="flex items-center gap-[3px] ml-0.5">
+                            <div className="w-[3px] h-4 bg-white rounded-full animate-pulse" />
+                            <div className="w-[3px] h-6 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.15s' }} />
+                            <div className="w-[3px] h-4 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
+                          </div>
+                        ) : (
+                          <Play className="w-6 h-6 text-white ml-0.5" fill="white" />
+                        )}
+                      </motion.div>
+                    </div>
+                    {/* Duration badge */}
+                    <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-lg font-medium flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {item.duration}
+                    </div>
+                    {/* Case type badge */}
+                    <div className="absolute top-3 left-3 text-white text-xs px-2.5 py-1 rounded-lg font-semibold backdrop-blur-sm" style={{ backgroundColor: `${item.accent}cc` }}>
+                      {item.caseType}
+                    </div>
                   </div>
-                  <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md">{item.duration}</div>
+                  {/* Content area */}
+                  <CardContent className="p-5 flex-1 flex flex-col">
+                    {/* Author info row */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-gold/30 shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover object-top" loading="lazy" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="font-semibold text-navy dark:text-white text-sm truncate">{item.name}</h3>
+                          <BadgeCheck className="w-4 h-4 text-blue-500 shrink-0" />
+                        </div>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{item.date}</p>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                        <Eye className="w-3.5 h-3.5" /> {item.views}
+                      </div>
+                    </div>
+                    {/* Quote */}
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed flex-1 mb-4 line-clamp-3">&ldquo;{item.quote}&rdquo;</p>
+                    {/* Watch story button */}
+                    <button
+                      onClick={() => setPlayingIdx(isPlaying ? null : idx)}
+                      className="flex items-center gap-2 text-sm font-semibold transition-all duration-300 w-full justify-center py-2.5 rounded-lg"
+                      style={{ color: item.accent, backgroundColor: isHovered ? `${item.accent}10` : 'transparent' }}
+                    >
+                      {isPlaying ? (
+                        <><Pause className="w-4 h-4" /> Pause Story</>
+                      ) : (
+                        <>{t('video.watchStory')} <ArrowRight className="w-4 h-4" /></>
+                      )}
+                    </button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+        {/* Bottom stats bar */}
+        <motion.div variants={fadeInUp} initial="hidden" animate={inView ? 'visible' : 'hidden'} className="mt-10">
+          <Card className="border-gold/20 dark:border-gold/10 bg-gradient-to-r from-gold/5 to-amber-500/5 dark:from-gold/5 dark:to-amber-500/5">
+            <CardContent className="py-5 px-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
+                    <Video className="w-5 h-5 text-gold" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-navy dark:text-white text-sm">Real Stories, Real Results</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Hear directly from claimants who found justice</p>
+                  </div>
                 </div>
-                <CardContent className="p-5 flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <div><h3 className="font-semibold text-navy dark:text-white">{item.name}</h3><p className="text-xs text-gold">{item.caseType}</p></div>
-                    <BadgeCheck className="w-5 h-5 text-blue-400" />
+                <div className="flex items-center gap-6 text-center">
+                  <div>
+                    <p className="text-lg font-bold text-gold">6</p>
+                    <p className="text-xs text-gray-500">Stories</p>
                   </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed flex-1 mb-4">&ldquo;{item.quote}&rdquo;</p>
-                  <button className="flex items-center gap-2 text-sm text-gold-dark dark:text-gold hover:text-gold font-medium transition-colors">
-                    {t('video.watchStory')} <ArrowRight className="w-4 h-4" />
-                  </button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <div>
+                    <p className="text-lg font-bold text-gold">63K+</p>
+                    <p className="text-xs text-gray-500">Views</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-gold">4.9</p>
+                    <p className="text-xs text-gray-500">Rating</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </section>
