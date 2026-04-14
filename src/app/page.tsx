@@ -1235,14 +1235,14 @@ function HeroSection() {
         <div className="hero-gradient absolute inset-0" />
       </motion.div>
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         {PARTICLE_POSITIONS.map((pos, i) => (
           <div key={i} className="particle-dot" style={{ left: pos.left, top: pos.top, animationDelay: pos.delay, animationDuration: pos.duration }} />
         ))}
       </div>
 
-      <motion.div animate={{ y: [0, -20, 0], x: [0, 10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="absolute top-20 right-10 w-72 h-72 bg-gold/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
-      <motion.div animate={{ y: [0, 15, 0], x: [0, -15, 0], scale: [1, 0.9, 1] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }} className="absolute bottom-20 left-10 w-96 h-96 bg-navy-light/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <motion.div animate={{ y: [0, -20, 0], x: [0, 10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="hidden md:block absolute top-20 right-10 w-72 h-72 bg-gold/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <motion.div animate={{ y: [0, 15, 0], x: [0, -15, 0], scale: [1, 0.9, 1] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }} className="hidden md:block absolute bottom-20 left-10 w-96 h-96 bg-navy-light/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
       <motion.div animate={{ y: [0, -10, 0], x: [0, 20, 0] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 4 }} className="absolute top-1/2 right-1/3 w-64 h-64 bg-gold/5 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-40">
@@ -1587,8 +1587,22 @@ const SETTLEMENT_RANGES: Record<string, { min: number; max: number }> = {
   'Roundup': { min: 5000, max: 400000 },
   'Talc / Baby Powder': { min: 10000, max: 500000 },
   'Hernia Mesh': { min: 50000, max: 250000 },
-  'Paraquat': { min: 100000, max: 1000000 },
+  'Paraquat': { min: 100000, max: 1500000 },
   'Firefighting Foam': { min: 50000, max: 500000 },
+  'Zantac': { min: 15000, max: 350000 },
+  'Hair Relaxer': { min: 25000, max: 400000 },
+  'CPAP Machines': { min: 20000, max: 300000 },
+  'Social Media Lawsuits': { min: 10000, max: 250000 },
+  'Rideshare Assault': { min: 50000, max: 1000000 },
+  'NEC Baby Formula': { min: 100000, max: 2000000 },
+  'Depo Provera': { min: 75000, max: 750000 },
+  'Roblox / Gaming': { min: 500, max: 25000 },
+  'IL Detention': { min: 25000, max: 500000 },
+  '3M Earplugs': { min: 50000, max: 350000 },
+  'Exactech Implants': { min: 75000, max: 500000 },
+  'Bard PowerPort': { min: 50000, max: 400000 },
+  'Elmiron': { min: 25000, max: 350000 },
+  'Taxotere': { min: 20000, max: 300000 },
   'Other': { min: 10000, max: 200000 },
 };
 
@@ -1866,8 +1880,8 @@ function WhyChooseUsSection() {
 
   return (
     <section id="why-choose-us" className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
-      <motion.div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" style={{ y: orbY }} aria-hidden="true" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-navy-light/30 rounded-full blur-3xl" aria-hidden="true" />
+      <motion.div className="hidden md:block absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" style={{ y: orbY }} aria-hidden="true" />
+      <div className="hidden md:block absolute bottom-0 left-0 w-96 h-96 bg-navy-light/30 rounded-full blur-3xl" aria-hidden="true" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/20 text-gold border-gold/30 text-xs font-semibold uppercase tracking-wider">Why Choose Us</Badge>
@@ -1889,14 +1903,24 @@ function WhyChooseUsSection() {
               <CardTitle className="text-white text-base font-bold">Recovery by Case Type</CardTitle>
             </CardHeader>
             <CardContent className="p-4 md:p-6">
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[400px] md:max-h-none overflow-y-auto md:overflow-visible pr-1">
                 {[
-                  { type: 'Camp Lejeune', amount: 18, color: 'bg-blue-400' },
-                  { type: 'Roundup', amount: 12, color: 'bg-emerald-400' },
-                  { type: 'Talc', amount: 8, color: 'bg-purple-400' },
-                  { type: 'AFFF', amount: 5, color: 'bg-teal-400' },
-                  { type: 'Hernia Mesh', amount: 3, color: 'bg-amber-400' },
-                  { type: 'Paraquat', amount: 1, color: 'bg-rose-400' },
+                  { type: 'Camp Lejeune', amount: 18.5, color: 'bg-blue-400' },
+                  { type: 'Roundup', amount: 12.3, color: 'bg-emerald-400' },
+                  { type: 'Paraquat', amount: 8.7, color: 'bg-rose-400' },
+                  { type: 'NEC Baby Formula', amount: 7.2, color: 'bg-cyan-400' },
+                  { type: 'AFFF / Firefighting Foam', amount: 5.8, color: 'bg-teal-400' },
+                  { type: 'Depo Provera', amount: 4.5, color: 'bg-orange-400' },
+                  { type: '3M Earplugs', amount: 4.1, color: 'bg-lime-400' },
+                  { type: 'Talcum Powder', amount: 3.8, color: 'bg-purple-400' },
+                  { type: 'Hernia Mesh', amount: 3.2, color: 'bg-amber-400' },
+                  { type: 'Rideshare Assault', amount: 2.9, color: 'bg-indigo-400' },
+                  { type: 'Zantac', amount: 2.5, color: 'bg-violet-400' },
+                  { type: 'IL Detention', amount: 2.1, color: 'bg-slate-400' },
+                  { type: 'Hair Relaxer', amount: 1.8, color: 'bg-fuchsia-400' },
+                  { type: 'CPAP Machines', amount: 1.5, color: 'bg-sky-400' },
+                  { type: 'Social Media Lawsuits', amount: 1.2, color: 'bg-pink-400' },
+                  { type: 'Exactech Implants', amount: 0.9, color: 'bg-stone-400' },
                 ].map((item) => (
                   <div key={item.type}>
                     <div className="flex justify-between text-sm mb-1">
@@ -1904,7 +1928,7 @@ function WhyChooseUsSection() {
                       <span className="text-white/50">${item.amount}M+</span>
                     </div>
                     <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
-                      <motion.div initial={{ width: 0 }} animate={inView ? { width: `${(item.amount / 18) * 100}%` } : { width: 0 }} transition={{ duration: 1.2, ease: 'easeOut', delay: 0.5 }} className={`h-full ${item.color} rounded-full`} />
+                      <motion.div initial={{ width: 0 }} animate={inView ? { width: `${(item.amount / 18.5) * 100}%` } : { width: 0 }} transition={{ duration: 1.2, ease: 'easeOut', delay: 0.5 }} className={`h-full ${item.color} rounded-full`} />
                     </div>
                   </div>
                 ))}
@@ -2692,7 +2716,7 @@ function CTASection() {
 
   return (
     <section className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
-      <motion.div className="absolute top-0 left-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl" style={{ x: gradShift }} aria-hidden="true" />
+      <motion.div className="hidden md:block absolute top-0 left-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl" style={{ x: gradShift }} aria-hidden="true" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
       <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -3016,6 +3040,42 @@ const BLOG_ARTICLES = [
     icon: ClipboardCheck,
     color: 'bg-amber-500',
     content: 'Documentation is the backbone of any successful mass tort claim. Here are the 10 critical documents you need: (1) Government-issued photo ID — verify your identity; (2) Proof of residence during the relevant time period — utility bills, lease agreements, or tax returns; (3) Complete medical records — diagnosis reports, treatment records, and prescription histories from all providers; (4) Proof of exposure — purchase receipts, employment records, or service records showing product use or environmental exposure; (5) Physician\'s opinion letter — a written statement from your doctor linking your condition to the exposure; (6) Timeline documentation — a chronological account connecting exposure to diagnosis; (7) Financial impact records — tax returns, pay stubs, or employer statements showing lost wages; (8) Personal impact statement — a detailed account of how your condition affects daily life; (9) Insurance records — documentation of medical expenses covered and out-of-pocket costs; (10) Prior claim records — any previous claims or appeals related to your condition. Organize all documents chronologically and keep copies of everything you submit.',
+  },
+  {
+    id: 'nec-baby-formula-claims',
+    title: 'NEC Baby Formula Claims: What Parents Need to Know in 2025',
+    excerpt: 'If your premature baby developed NEC after receiving formula in the NICU, you may be eligible...',
+    date: 'Feb 5, 2025',
+    dateISO: '2025-02-05',
+    readTime: '7 min read',
+    category: 'NEC Baby Formula',
+    icon: Baby,
+    color: 'bg-cyan-500',
+    content: 'Necrotizing enterocolitis (NEC) is a devastating intestinal disease that primarily affects premature infants. Research has established a strong link between cow\'s milk-based infant formula and significantly increased NEC risk in preterm babies. Major manufacturers including Mead Johnson (Enfamil) and Abbott Laboratories (Similac) face litigation for failing to adequately warn hospitals and parents about these dangers. Eligible families typically include parents of babies born before 37 weeks who were fed cow\'s milk-based formula in the NICU and subsequently developed NEC. Compensation may cover medical expenses, surgical costs, long-term care needs, and pain and suffering. Key documents include birth records, NICU feeding logs, medical records documenting NEC diagnosis and treatment, and itemized medical bills. Many cases have already resulted in significant settlements, and multi-district litigation continues to gain momentum in 2025.',
+  },
+  {
+    id: 'depo-provera-brain-tumor-link',
+    title: 'Depo Provera Brain Tumor Link: Filing a Claim After a Meningioma Diagnosis',
+    excerpt: 'New research connects the Depo Provera birth control shot to increased meningioma risk...',
+    date: 'Feb 12, 2025',
+    dateISO: '2025-02-12',
+    readTime: '6 min read',
+    category: 'Depo Provera',
+    icon: Pill,
+    color: 'bg-orange-500',
+    content: 'A major 2024 study published in the BMJ found that prolonged use of the Depo Provera contraceptive injection is associated with a significantly increased risk of developing intracranial meningiomas — typically benign but potentially serious brain tumors. The risk was highest among women who used Depo Provera for 12 months or longer. Meningiomas can cause headaches, vision problems, seizures, and neurological deficits, often requiring surgical removal. Women who developed meningiomas after using Depo Provera may be eligible to file claims against Pfizer, the manufacturer. Required documentation includes medical records confirming meningioma diagnosis, pharmacy records showing Depo Provera prescriptions, treatment records, and physician opinions linking the tumor to the contraceptive. Claimants should file promptly as statutes of limitations vary by state and many begin from the date of diagnosis.',
+  },
+  {
+    id: 'social-media-teen-mental-health',
+    title: 'Social Media Lawsuits: Holding Platforms Accountable for Teen Mental Health Harm',
+    excerpt: 'Internal documents reveal social media companies knew their platforms were harming children...',
+    date: 'Feb 20, 2025',
+    dateISO: '2025-02-20',
+    readTime: '9 min read',
+    category: 'Social Media',
+    icon: Users,
+    color: 'bg-pink-500',
+    content: 'Multi-district litigation is moving forward against Meta (Instagram/Facebook), TikTok, Snapchat, and YouTube for their roles in the teen mental health crisis. Internal company documents obtained through discovery reveal that platforms were fully aware of the harmful effects of their algorithms on young users but chose engagement and profit over safety. Eligible cases typically involve minors (under 18) who developed eating disorders, depression, anxiety, self-harm behaviors, or suicidal ideation linked to social media use. Parents report that their children spent excessive hours on these platforms and experienced worsening mental health. Compensation may cover therapy costs, psychiatric treatment, inpatient care, and pain and suffering. Key evidence includes screen time records, mental health treatment records, school counseling reports, and social media usage logs. Over 500 cases are currently pending in federal court, with bellwether trials expected in late 2025.',
   },
 ];
 

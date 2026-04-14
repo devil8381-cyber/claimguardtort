@@ -3,6 +3,49 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ─── GPU Acceleration for Smooth Scrolling ─── */
+html, body, main, section, div, nav, header, footer, article {
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Only animate elements that are actually animating */
+@media (hover: none) and (pointer: coarse) {
+  /* On touch devices, reduce motion complexity */
+  .animate-float,
+  .animate-pulse-glow,
+  .animate-chat-pulse,
+  .animate-badge-scroll,
+  .animate-marquee {
+    animation: none !important;
+  }
+  
+  /* Disable complex backdrop-blur on mobile */
+  .glass, .glass-light, .glass-dark {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Contain paint for scrolling sections */
+main {
+  contain: layout style;
+}
+
+/* Optimize scroll performance */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth momentum scrolling on iOS */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
 /* Mobile bottom nav safe area */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -630,6 +673,16 @@ html.dark {
     scroll-behavior: auto !important;
   }
   .scroll-progress-bar { display: none; }
+  .hover-glow {
+    box-shadow: none !important;
+    transition: none !important;
+  }
+  .particle-dot {
+    animation: none !important;
+  }
+  .splash-screen .splash-icon {
+    animation: none !important;
+  }
 }
 
 /* ─── Splash Screen ─── */

@@ -184,3 +184,44 @@ Stage Summary:
 - 18 detailed case type entries with full descriptions, icons, deadlines, statuses
 - 30 case types in the hero typeahead, 25 in social proof, 18 in quiz
 - Zero ESLint errors confirmed
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Expand settlement calculator, chart, blog articles, mobile performance fixes, responsive sizing
+
+Work Log:
+TASK 1 — SETTLEMENT_RANGES expanded from 7 to 21 entries:
+- Added 14 new tort types: Zantac, Hair Relaxer, CPAP Machines, Social Media Lawsuits, Rideshare Assault, NEC Baby Formula, Depo Provera, Roblox/Gaming, IL Detention, 3M Earplugs, Exactech Implants, Bard PowerPort, Elmiron, Taxotere
+- Updated Paraquat max from 1M to 1.5M
+
+TASK 2 — Recovery by Case Type chart expanded from 6 to 16 entries:
+- Added 10 new case types with unique colors and realistic recovery amounts
+- Changed max reference from 18 to 18.5 for accurate bar scaling
+- Made chart scrollable on mobile (max-h-[400px] overflow-y-auto)
+
+TASK 3 — Added 3 new blog articles to BLOG_ARTICLES:
+- NEC Baby Formula Claims (Baby icon, cyan)
+- Depo Provera Brain Tumor Link (Pill icon, orange)
+- Social Media Teen Mental Health (Users icon, pink)
+- All required icons already imported (Baby, Pill, Users)
+
+TASK 4 — Mobile Scrolling Performance Fixes:
+- globals.css: Added GPU acceleration rules (will-change, backface-visibility, translateZ) at top of file
+- globals.css: Added touch device media query disabling complex animations and backdrop-blur
+- globals.css: Added main contain layout/style, tap highlight removal, iOS smooth scrolling
+- globals.css: Enhanced prefers-reduced-motion with hover-glow, particle-dot, splash-icon animation disables
+- page.tsx: Hero particle dots wrapper hidden on mobile (hidden md:block)
+- page.tsx: Hero floating orbs (2) hidden on mobile (hidden md:block)
+- page.tsx: WhyChooseUsSection decorative orbs (2) hidden on mobile (hidden md:block)
+- page.tsx: CTASection decorative orb hidden on mobile (hidden md:block)
+
+TASK 5 — Responsive Sizing Fixes:
+- Recovery by Case Type chart list now scrollable on mobile with max-h-[400px] md:max-h-none
+
+Stage Summary:
+- Settlement Calculator now covers all 21 case types
+- Recovery chart expanded to 16 case types with scrollable mobile layout
+- Blog section expanded from 3 to 6 articles covering new case types
+- Significant mobile performance improvements: GPU acceleration, reduced animations, hidden decorative elements
+- Zero ESLint errors (1 expected warning for GA inline script)
