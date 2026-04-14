@@ -5758,6 +5758,10 @@ function AdminPanel() {
   const [deleteTarget, setDeleteTarget] = useState<ClaimantRecord | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // View Detail state
+  const [selectedClaimant, setSelectedClaimant] = useState<ClaimantRecord | null>(null);
+  const [editStatus, setEditStatus] = useState<string | null>(null);
+
   // Manual Add state
   const [manualForm, setManualForm] = useState({
     trackingId: '', firstName: '', lastName: '', email: '',
@@ -5848,18 +5852,22 @@ function AdminPanel() {
     }
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated && isOpen) {
-      fetchClaimants(1);
-      fetchStats();
-    }
-  }, [isAuthenticated, isOpen, fetchClaimants, fetchStats]);
+  // Search debounce timer
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Single data fetch effect — runs when auth state, tab, or filters change
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchClaimants(1);
+    if (!isAuthenticated || !isOpen) return;
+    fetchStats();
+    if (activeTab === 'claimants' || activeTab === 'dashboard') {
+      // Debounced search for claimants tab
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = setTimeout(() => {
+        fetchClaimants(1);
+      }, searchQuery ? 300 : 0);
     }
-  }, [searchQuery, statusFilter, isAuthenticated, fetchClaimants]);
+    return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
+  }, [isAuthenticated, isOpen, activeTab, statusFilter, searchQuery, fetchClaimants, fetchStats]);
 
   const handleUpload = useCallback(async () => {
     if (!uploadFile) return;
@@ -5901,7 +5909,9 @@ function AdminPanel() {
       });
       if (res.ok) {
         toast.success('Claimant deleted', { description: `${deleteTarget.trackingId} has been removed` });
-        fetchClaimants(currentPage);
+        // If deleting the last item on current page, go back
+        const goToPage = (claimants.length <= 1 && currentPage > 1) ? currentPage - 1 : currentPage;
+        fetchClaimants(goToPage);
         fetchStats();
       } else {
         toast.error('Delete failed');
@@ -5912,14 +5922,14 @@ function AdminPanel() {
       setDeleting(false);
       setDeleteTarget(null);
     }
-  }, [deleteTarget, currentPage, fetchClaimants, fetchStats]);
+  }, [deleteTarget, currentPage, claimants.length, fetchClaimants, fetchStats]);
 
   const handleDownloadExport = useCallback(() => {
-    window.open('/api/admin/export?format=csv', '_blank');
+    window.open(`/api/admin/export?format=csv&token=${ADMIN_AUTH_TOKEN}`, '_blank');
   }, []);
 
   const handleDownloadSample = useCallback(() => {
-    window.open('/api/admin/export?format=sample', '_blank');
+    window.open(`/api/admin/export?format=sample&token=${ADMIN_AUTH_TOKEN}`, '_blank');
   }, []);
 
   const handleManualAdd = useCallback(async () => {
@@ -6050,8 +6060,8 @@ function AdminPanel() {
             </div>
           ) : (
             <>
-              {/* Tab Navigation */}
-              <div className="flex items-center gap-1 px-4 sm:px-6 border-b border-gray-800 shrink-0">
+              {/* Tab Navigation — scrollable on mobile */}
+              <div className="flex items-center gap-0 px-2 sm:px-6 border-b border-gray-800 shrink-0 overflow-x-auto scrollbar-none">
                 <button
                   onClick={() => setActiveTab('dashboard')}
                   className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
@@ -6089,8 +6099,8 @@ function AdminPanel() {
                   <span className="hidden sm:inline">Upload CSV</span>
                 </button>
 
-                {/* Quick Actions - right aligned */}
-                <div className="ml-auto flex items-center gap-1">
+                {/* Spacer then Quick Actions */}
+                <div className="ml-auto flex items-center gap-1 shrink-0 pl-2 border-l border-gray-800">
                   <Button variant="ghost" size="sm" onClick={handleDownloadSample} className="text-gray-400 hover:text-[#C5A059] hover:bg-gray-800 text-xs gap-1.5 h-8">
                     <FileSpreadsheet className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Sample CSV</span>
@@ -6110,33 +6120,36 @@ function AdminPanel() {
                     {activeTab === 'dashboard' && stats && (
                       <div className="space-y-6">
                         {/* Stats Cards */}
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                          <Card className="bg-gray-800/50 border-gray-700 p-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-[#C5A059]/20 flex items-center justify-center">
-                                <UsersRound className="w-5 h-5 text-[#C5A059]" />
-                              </div>
-                              <div>
-                                <p className="text-2xl font-bold text-white">{stats.total}</p>
-                                <p className="text-xs text-gray-400">Total Claimants</p>
-                              </div>
-                            </div>
-                          </Card>
+                        {/* Total Claimants — header card */}
+                      <Card className="bg-[#C5A059]/10 border-[#C5A059]/30 p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-[#C5A059]/20 flex items-center justify-center">
+                            <UsersRound className="w-5 h-5 text-[#C5A059]" />
+                          </div>
+                          <div>
+                            <p className="text-3xl font-bold text-[#C5A059]">{stats.total}</p>
+                            <p className="text-xs text-[#C5A059]/70">Total Claimants</p>
+                          </div>
+                        </div>
+                      </Card>
 
-                          {VALID_STATUSES.map(status => (
-                            <Card key={status} className="bg-gray-800/50 border-gray-700 p-4">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${STATUS_COLORS[status]?.split(' ')[0] || 'bg-gray-500/15'}`}>
-                                  <CircleDot className={`w-5 h-5 ${STATUS_DOT_COLORS[status] || 'text-gray-400'}`} />
-                                </div>
-                                <div>
-                                  <p className="text-2xl font-bold text-white">{stats.statusCounts[status] || 0}</p>
-                                  <p className="text-xs text-gray-400">{status}</p>
+                      {/* Status Cards — compact grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                        {VALID_STATUSES.map(status => {
+                          const count = stats.statusCounts[status] || 0;
+                          return (
+                            <Card key={status} className="bg-gray-800/50 border-gray-700 p-3">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT_COLORS[status] || 'bg-gray-400'} shrink-0`} />
+                                <div className="min-w-0">
+                                  <p className="text-lg font-bold text-white">{count}</p>
+                                  <p className="text-[10px] text-gray-400 truncate">{status}</p>
                                 </div>
                               </div>
                             </Card>
-                          ))}
-                        </div>
+                          );
+                        })}
+                      </div>
 
                         {/* Status Distribution Bar */}
                         <Card className="bg-gray-800/50 border-gray-700 p-4">
@@ -6149,7 +6162,7 @@ function AdminPanel() {
                               return (
                                 <div
                                   key={status}
-                                  className={`h-full transition-all duration-500 ${STATUS_DOT_COLORS[status]?.replace('bg-', 'bg-') || 'bg-gray-500'}`}
+                                  className={`h-full transition-all duration-500 ${STATUS_DOT_COLORS[status] || 'bg-gray-500'}`}
                                   style={{ width: `${pct}%` }}
                                   title={`${status}: ${count} (${pct.toFixed(1)}%)`}
                                 />
@@ -6254,6 +6267,7 @@ function AdminPanel() {
                                   <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</TableHead>
                                   <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Filed Date</TableHead>
                                   <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">State</TableHead>
+                                  <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider hidden xl:table-cell">Notes</TableHead>
                                   <TableHead className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider text-right">Actions</TableHead>
                                 </TableRow>
                               </TableHeader>
@@ -6270,7 +6284,7 @@ function AdminPanel() {
                                   ))
                                 ) : claimants.length === 0 ? (
                                   <TableRow>
-                                    <TableCell colSpan={7} className="py-12 text-center">
+                                    <TableCell colSpan={8} className="py-12 text-center">
                                       <Database className="w-8 h-8 text-gray-600 mx-auto mb-2" />
                                       <p className="text-gray-500 text-sm">No claimants found</p>
                                       <p className="text-gray-600 text-xs mt-1">Try a different search or upload a CSV file</p>
@@ -6278,7 +6292,7 @@ function AdminPanel() {
                                   </TableRow>
                                 ) : (
                                   claimants.map((c) => (
-                                    <TableRow key={c.id} className="border-gray-700/50 hover:bg-gray-800/30">
+                                    <TableRow key={c.id} className="border-gray-700/50 hover:bg-gray-800/30 cursor-pointer" onClick={() => setSelectedClaimant(c)}>
                                       <TableCell className="py-3">
                                         <code className="text-xs font-mono text-[#C5A059] bg-[#C5A059]/10 px-1.5 py-0.5 rounded">
                                           {c.trackingId || '—'}
@@ -6304,11 +6318,14 @@ function AdminPanel() {
                                       <TableCell className="py-3 hidden lg:table-cell">
                                         <span className="text-xs text-gray-400">{c.state || '—'}</span>
                                       </TableCell>
+                                      <TableCell className="py-3 hidden xl:table-cell">
+                                        <span className="text-xs text-gray-400 truncate block max-w-[180px]" title={c.notes || ''}>{c.notes || '—'}</span>
+                                      </TableCell>
                                       <TableCell className="py-3 text-right">
                                         <Button
                                           variant="ghost"
                                           size="icon"
-                                          onClick={() => setDeleteTarget(c)}
+                                          onClick={(e) => { e.stopPropagation(); setDeleteTarget(c); }}
                                           className="text-gray-500 hover:text-red-400 hover:bg-red-400/10 h-8 w-8"
                                         >
                                           <Trash2 className="w-4 h-4" />
@@ -6573,7 +6590,7 @@ function AdminPanel() {
                           {uploadFile ? (
                             <div>
                               <p className="text-sm font-medium text-white">{uploadFile.name}</p>
-                              <p className="text-xs text-gray-500 mt-1">{(uploadFile.size / 1024).toFixed(1)} KB</p>
+                              <p className="text-xs text-gray-500 mt-1">{uploadFile.size > 1048576 ? `${(uploadFile.size / 1048576).toFixed(1)} MB` : `${(uploadFile.size / 1024).toFixed(1)} KB`}</p>
                               <button
                                 onClick={(e) => { e.stopPropagation(); setUploadFile(null); setUploadResult(null); }}
                                 className="mt-2 text-xs text-red-400 hover:text-red-300 underline"
@@ -6736,6 +6753,86 @@ function AdminPanel() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Claimant Detail Dialog */}
+      <Dialog open={!!selectedClaimant} onOpenChange={(open) => { if (!open) { setSelectedClaimant(null); setEditStatus(null); } }}>
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white">Claimant Details</DialogTitle>
+            <DialogDescription className="text-gray-400">Full profile and case information</DialogDescription>
+          </DialogHeader>
+          {selectedClaimant && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-[#C5A059]/20 flex items-center justify-center text-lg font-bold text-[#C5A059]">
+                  {selectedClaimant.firstName[0]}{selectedClaimant.lastName[0]}
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-white">{selectedClaimant.firstName} {selectedClaimant.lastName}</p>
+                  <code className="text-xs text-[#C5A059] bg-[#C5A059]/10 px-1.5 py-0.5 rounded">{selectedClaimant.trackingId}</code>
+                </div>
+              </div>
+              <Separator className="bg-gray-800" />
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div><span className="text-gray-500">Email:</span><p className="text-gray-200 mt-0.5 break-all">{selectedClaimant.email}</p></div>
+                <div><span className="text-gray-500">Phone:</span><p className="text-gray-200 mt-0.5">{selectedClaimant.phone || '—'}</p></div>
+                <div><span className="text-gray-500">Claim Type:</span><p className="text-gray-200 mt-0.5">{selectedClaimant.claimType || '—'}</p></div>
+                <div><span className="text-gray-500">State:</span><p className="text-gray-200 mt-0.5">{selectedClaimant.state || '—'}</p></div>
+                <div><span className="text-gray-500">Filed Date:</span><p className="text-gray-200 mt-0.5">{selectedClaimant.filedDate || '—'}</p></div>
+                <div><span className="text-gray-500">Created:</span><p className="text-gray-200 mt-0.5">{new Date(selectedClaimant.createdAt).toLocaleDateString()}</p></div>
+              </div>
+              {/* Status with inline edit */}
+              <div>
+                <span className="text-gray-500 text-sm">Status:</span>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <Select value={editStatus ?? selectedClaimant.status} onValueChange={(v) => setEditStatus(v)}>
+                    <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      {VALID_STATUSES.map(s => (
+                        <SelectItem key={s} value={s} className="text-gray-200">
+                          <span className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${STATUS_DOT_COLORS[s] || 'bg-gray-400'}`} />
+                            {s}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {editStatus && editStatus !== selectedClaimant.status && (
+                    <Button size="sm" onClick={async () => {
+                      try {
+                        const res = await fetch(`/api/admin/claimants/${selectedClaimant.trackingId}`, {
+                          method: 'PATCH',
+                          headers: { 'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}`, 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ status: editStatus }),
+                        });
+                        if (res.ok) {
+                          toast.success('Status updated');
+                          setSelectedClaimant({ ...selectedClaimant, status: editStatus });
+                          setEditStatus(null);
+                          fetchClaimants(currentPage);
+                          fetchStats();
+                        }
+                      } catch { toast.error('Update failed'); }
+                    }} className="bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 text-xs shrink-0">
+                      Save
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {/* Notes */}
+              {selectedClaimant.notes && (
+                <div>
+                  <span className="text-gray-500 text-sm">Notes:</span>
+                  <p className="text-gray-300 text-sm mt-1 bg-gray-800 rounded-lg p-3">{selectedClaimant.notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AnimatePresence>
   );
 }

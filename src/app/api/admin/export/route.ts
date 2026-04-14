@@ -5,7 +5,10 @@ const ADMIN_TOKEN = 'claimguard-admin-2025';
 
 function auth(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
-  return authHeader === `Bearer ${ADMIN_TOKEN}`;
+  if (authHeader === `Bearer ${ADMIN_TOKEN}`) return true;
+  // Also support token via query param for window.open compatibility
+  const { searchParams } = new URL(request.url);
+  return searchParams.get('token') === ADMIN_TOKEN;
 }
 
 export async function GET(request: NextRequest) {

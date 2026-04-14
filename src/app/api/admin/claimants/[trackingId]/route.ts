@@ -8,6 +8,30 @@ function auth(request: NextRequest): boolean {
   return authHeader === `Bearer ${ADMIN_TOKEN}`;
 }
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ trackingId: string }> }
+) {
+  if (!auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const { trackingId } = await params;
+  const body = await request.json();
+  const { status, notes } = body;
+
+  try {
+    const updated = await prisma.claimant.update({
+      where: { trackingId: trackingId.toUpperCase().trim() },
+      data: {
+        ...(status ? { status } : {}),
+        ...(notes !== undefined ? { notes } : {}),
+      },
+    });
+    return NextResponse.json({ claimant: updated, success: true });
+  } catch {
+    return NextResponse.json({ error: 'Failed to update claimant' }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ trackingId: string }> }
