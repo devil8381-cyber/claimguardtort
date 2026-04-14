@@ -155,3 +155,57 @@ All custom hooks, animation variants, and small reusable components.
 - `hooks.ts` was renamed to `hooks.tsx` because it contains JSX (the `CountUpNumber` component uses a React fragment).
 - The `STATS_DATA` constant uses an IIFE with date-based seeding — this is preserved exactly as-is.
 - The `generateSocialProofPool` function uses `sessionStorage` and `window` — kept in constants.ts since it's a data-generation utility, not a React hook.
+
+---
+# Task: Feature Enhancements — Referral $5K Payout, Mobile Polish, Media Logos, PDF Export
+
+### Date: 2025-07-15
+
+### Changes Made
+
+#### 1. $5,000 Referral Payout Program (MAJOR FEATURE)
+- **Prisma Schema**: Added `Referral` model with fields: id, referrerName, referrerEmail, referrerPhone, referralFirst, referralLast, referralPhone, claimType, status, payoutAmount, paidOut, notes, timestamps
+- **API** (`/api/referral/route.ts`): Full rewrite with POST (submit), GET (list + stats), PATCH (update status/mark paid)
+- **ReferralSection**: Complete redesign with:
+  - Animated dark gradient background with dot pattern
+  - "$5,000 Per Approved Referral" hero badge
+  - Stats row: $5,000/case, Unlimited refs, 48hr review, 100% secure
+  - 3-step how-it-works cards
+  - Glassmorphism form card with gold gradient top bar
+  - Two-section form: Your Info + Referral Details
+  - Success state with animated checkmark
+  - Mobile responsive layout
+
+#### 2. Mobile Menu Polish
+- Dark themed Sheet (bg-gray-950) instead of white
+- Split nav links into two groups with divider
+- Active section indicator (gold dot + highlight)
+- Added "Earn $5,000 Referral" link in emerald
+- Added language toggle (EN/ES) in menu
+- Styled phone button with gold accent
+- Removed unnecessary chevrons
+
+#### 3. "As Featured In" Media Logos Polish
+- Individual brand styling per outlet (CNN red, Forbes italic, etc.)
+- Gray-to-gold hover transitions
+- Underline animation on hover
+- Dark background section (bg-gray-950)
+- Tighter tracking and font weights
+
+#### 4. Image Loading Skeletons
+- Added `img-skeleton` CSS class with shimmer animation
+- Applied to contact-office.jpg and about-team.jpg
+- Images fade in on load via `loaded` class
+
+#### 5. Export Claims to PDF
+- Added `handleExportPDF` function using jsPDF (already in deps)
+- Generates professional PDF with header, date, table layout
+- Navy header row, alternating row separators
+- Auto-paginates at page break
+- Downloads as `claimguard-claimants-YYYY-MM-DD.pdf`
+- Added "Export Claims to PDF" button next to CSV download
+
+### Verification
+- ✅ ESLint passes with zero errors
+- ✅ Prisma schema migrated successfully
+- ✅ All features working on dev server

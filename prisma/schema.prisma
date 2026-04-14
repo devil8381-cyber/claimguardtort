@@ -11,7 +11,7 @@ model Claimant {
   id         String   @id @default(uuid())
   trackingId String   @unique
   firstName  String
-  lastName   String
+  lastName  String
   email      String
   phone      String?
   claimType  String?
@@ -21,4 +21,21 @@ model Claimant {
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Referral {
+  id             String   @id @default(uuid())
+  referrerName   String
+  referrerEmail  String
+  referrerPhone  String?
+  referralFirst  String
+  referralLast   String
+  referralPhone  String
+  claimType      String?
+  status         String   @default("Pending")
+  payoutAmount   String   @default("5000")
+  paidOut        Boolean  @default(false)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

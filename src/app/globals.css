@@ -658,6 +658,28 @@ html.dark {
   border-radius: 4px;
 }
 
+/* ─── Image Loading Skeleton ─── */
+.img-skeleton {
+  position: relative;
+  background: linear-gradient(90deg, #1E293B 25%, #2A3F6A 50%, #1E293B 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  overflow: hidden;
+}
+.img-skeleton img {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+.img-skeleton img.loaded {
+  opacity: 1;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 /* ─── Reduced Motion ─── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

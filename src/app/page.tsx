@@ -1149,34 +1149,53 @@ const Navbar = memo(function Navbar() {
                   <Menu className="w-6 h-6" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 bg-white dark:bg-gray-950 p-0">
+              <SheetContent side="right" className="w-80 bg-gray-950 p-0 border-gray-800">
                 <SheetTitle className="sr-only">{t('nav.navigationMenu')}</SheetTitle>
                 <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between p-4 border-b border-border">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-navy flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-gold" />
-                      </div>
-                      <span className="text-lg font-bold text-navy dark:text-white">Claim<span className="text-gold">Guard</span> Pro</span>
+                  <div className="flex items-center gap-2 p-5 border-b border-gray-800">
+                    <div className="w-9 h-9 rounded-lg bg-navy flex items-center justify-center">
+                      <Shield className="w-5 h-5 text-gold" />
                     </div>
+                    <span className="text-lg font-bold text-white">Claim<span className="text-gold">Guard</span> Pro</span>
                   </div>
-                  <ScrollArea className="flex-1 py-4">
-                    {navLinks.map((link) => (
-                      <button key={link.href} onClick={() => handleClick(link.href)} className="w-full text-left px-6 py-3 text-base font-medium text-navy dark:text-gray-200 hover:bg-navy/5 dark:hover:bg-gray-800 hover:text-gold transition-colors flex items-center justify-between">
-                        {link.label}
-                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                      </button>
-                    ))}
-                    <button onClick={() => handleClick('#track-claim')} className="w-full text-left px-6 py-3 text-base font-bold text-gold hover:bg-gold/5 transition-colors flex items-center justify-between">
-                      <span className="flex items-center gap-2"><Search className="w-4 h-4" />{t('nav.trackMyClaim')}</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <ScrollArea className="flex-1 py-2">
+                    {/* Main nav links */}
+                    {navLinks.slice(0, 5).map((link) => {
+                      const isActive = activeSection === link.href;
+                      return (
+                        <button key={link.href} onClick={() => handleClick(link.href)} className={`w-full text-left px-5 py-3 text-sm font-medium transition-colors flex items-center justify-between ${isActive ? 'text-gold bg-gold/10 border-r-2 border-gold' : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}>
+                          {link.label}
+                          {isActive && <div className="w-1.5 h-1.5 rounded-full bg-gold" />}
+                        </button>
+                      );
+                    })}
+                    <div className="mx-5 my-3 h-px bg-gray-800" />
+                    {navLinks.slice(5).map((link) => {
+                      const isActive = activeSection === link.href;
+                      return (
+                        <button key={link.href} onClick={() => handleClick(link.href)} className={`w-full text-left px-5 py-3 text-sm font-medium transition-colors flex items-center justify-between ${isActive ? 'text-gold bg-gold/10 border-r-2 border-gold' : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}>
+                          {link.label}
+                          {isActive && <div className="w-1.5 h-1.5 rounded-full bg-gold" />}
+                        </button>
+                      );
+                    })}
+                    <div className="mx-5 my-3 h-px bg-gray-800" />
+                    <button onClick={() => handleClick('#track-claim')} className="w-full text-left px-5 py-3 text-sm font-bold text-gold hover:bg-gold/10 transition-colors flex items-center gap-2">
+                      <Search className="w-4 h-4" />{t('nav.trackMyClaim')}
+                    </button>
+                    <button onClick={() => handleClick('#referral-program')} className="w-full text-left px-5 py-3 text-sm font-bold text-emerald-400 hover:bg-emerald-400/10 transition-colors flex items-center gap-2">
+                      <DollarSign className="w-4 h-4" />Earn $5,000 Referral
+                    </button>
+                    <div className="mx-5 my-3 h-px bg-gray-800" />
+                    <button onClick={() => setLocale(locale === 'en' ? 'es' : 'en')} className="w-full text-left px-5 py-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition-colors flex items-center gap-2">
+                      <Globe className="w-4 h-4" />{locale === 'en' ? 'Español' : 'English'}
                     </button>
                   </ScrollArea>
-                  <div className="p-4 border-t border-border">
-                    <a href={cs.phoneHref} className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
+                  <div className="p-4 border-t border-gray-800 space-y-3">
+                    <a href={cs.phoneHref} className="flex items-center justify-center gap-2 py-2.5 text-sm text-white font-bold bg-gold/10 rounded-lg hover:bg-gold/20 transition-colors">
                       <Phone className="w-4 h-4 text-gold" />{cs.phone}
                     </a>
-                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">{t('nav.getStarted')}</Button>
+                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold h-11">{t('nav.getStarted')}</Button>
                   </div>
                 </div>
               </SheetContent>
@@ -1604,16 +1623,28 @@ const TrustedBySection = memo(function TrustedBySection() {
    SECTION: HOW IT WORKS
    ═══════════════════════════════════════════════════════════════ */
 
-const MEDIA_LOGOS = ['Forbes', 'CNN', 'Bloomberg Law', 'Reuters', 'USA Today', 'The Wall Street Journal', 'NBC News', 'Legal Times'];
+const MEDIA_LOGOS = [
+  { name: 'Forbes', style: 'font-bold italic tracking-tight text-lg' },
+  { name: 'CNN', style: 'font-black tracking-widest text-xl text-red-500 dark:text-red-400' },
+  { name: 'Bloomberg Law', style: 'font-semibold tracking-tight text-sm' },
+  { name: 'Reuters', style: 'font-bold tracking-wider text-base' },
+  { name: 'USA Today', style: 'font-black text-lg tracking-wide' },
+  { name: 'The Wall Street Journal', style: 'font-bold italic text-sm tracking-tight' },
+  { name: 'NBC News', style: 'font-extrabold text-base tracking-wider' },
+  { name: 'Legal Times', style: 'font-semibold italic text-sm tracking-wide' },
+];
 
 function MediaBarSection() {
   return (
-    <section className="py-6 bg-gray-50 dark:bg-gray-900/50 border-y border-gray-100 dark:border-gray-800">
+    <section className="py-8 bg-gray-950 border-y border-gray-800/50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-xs text-muted-foreground font-medium uppercase tracking-widest mb-4">As Featured In</p>
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 opacity-40 dark:opacity-30">
-          {MEDIA_LOGOS.map((name) => (
-            <span key={name} className="text-sm md:text-base font-bold text-navy dark:text-gray-400 tracking-wide whitespace-nowrap" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{name}</span>
+        <p className="text-center text-[11px] text-gray-500 font-semibold uppercase tracking-[0.2em] mb-6">Trusted & Featured By</p>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+          {MEDIA_LOGOS.map((item) => (
+            <div key={item.name} className="group relative">
+              <span className={`text-gray-500 group-hover:text-gold transition-colors duration-300 whitespace-nowrap select-none ${item.style}`} style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{item.name}</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-px bg-gold group-hover:w-full transition-all duration-300" />
+            </div>
           ))}
         </div>
       </div>
@@ -4373,9 +4404,9 @@ function AboutSection() {
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-3xl mx-auto mb-8">
           <Card className="bg-navy dark:bg-gray-900 text-white border-0 shadow-xl overflow-hidden">
-            <div className="relative">
-              <img src="/about-team.jpg" alt="ClaimGuard Pro team" className="w-full h-48 object-cover opacity-40" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1a2744] to-transparent" />
+            <div className="relative img-skeleton">
+                <img src="/about-team.jpg" alt="ClaimGuard Pro team" className="w-full h-48 object-cover opacity-40" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1a2744] to-transparent z-10" />
             </div>
             <CardContent className="p-8 text-center -mt-12 relative z-10">
               <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Georgia, serif' }}>{t('about.mission')}</h3>
@@ -4568,9 +4599,9 @@ function ContactSection() {
         <div className="grid lg:grid-cols-5 gap-8">
           <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="lg:col-span-3">
             <Card className="border-0 shadow-lg bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden">
-              <div className="relative h-48 overflow-hidden">
-                <img src="/contact-office.jpg" alt="ClaimGuard Pro office" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-800 to-transparent" />
+              <div className="relative h-48 overflow-hidden img-skeleton">
+                <img src="/contact-office.jpg" alt="ClaimGuard Pro office" className="w-full h-full object-cover" onLoad={(e) => e.currentTarget.classList.add('loaded')} />
+                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-800 to-transparent z-10" />
               </div>
               <CardContent className="p-6 md:p-8">
                 <form onSubmit={handleSubmit} className="space-y-5">
@@ -5610,13 +5641,14 @@ function ReferralSection() {
   const { t } = useLanguage();
   const { ref, inView } = useInView(0.1);
   const [form, setForm] = useState({
-    referrerName: '', referrerEmail: '', friendName: '', friendEmail: '', claimType: '',
+    referrerName: '', referrerEmail: '', referrerPhone: '', referralFirst: '', referralLast: '', referralPhone: '', claimType: '',
   });
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
-    if (!form.referrerName || !form.referrerEmail || !form.friendName || !form.friendEmail) {
+    if (!form.referrerName || !form.referrerEmail || !form.referralFirst || !form.referralLast || !form.referralPhone) {
       toast.error(t('referral.fillRequired'));
       return;
     }
@@ -5630,7 +5662,8 @@ function ReferralSection() {
       const data = await res.json();
       if (res.ok) {
         toast.success(data.message);
-        setForm({ referrerName: '', referrerEmail: '', friendName: '', friendEmail: '', claimType: '' });
+        setSubmitted(true);
+        setForm({ referrerName: '', referrerEmail: '', referrerPhone: '', referralFirst: '', referralLast: '', referralPhone: '', claimType: '' });
       } else {
         toast.error(data.error || 'Please try again.');
       }
@@ -5639,75 +5672,173 @@ function ReferralSection() {
     } finally {
       setLoading(false);
     }
-  }, [form]);
+  }, [form, t]);
 
   return (
-    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('referral.badge')}</Badge>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            {t('referral.title')}
+    <section id="referral-program" className="relative py-16 md:py-24 overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1120] via-[#111D33] to-[#1B2A4A]" />
+      <div className="absolute inset-0 opacity-[0.03]" aria-hidden="true">
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(197,165,90,0.3) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+      </div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero header with $5,000 payout */}
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 rounded-full px-5 py-2 mb-6">
+            <DollarSign className="w-4 h-4 text-gold" />
+            <span className="text-gold text-xs font-bold uppercase tracking-wider">Earn $5,000 Per Approved Referral</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Get Paid <span className="gradient-text-gold">$5,000</span> For
+            Every Approved Case You Refer
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('referral.description')}</p>
+          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+            Know someone who may qualify for a mass tort claim? Submit their details below.
+            If their case gets approved, we pay you <span className="text-gold font-bold">$5,000</span> — no limits, no caps.
+          </p>
         </motion.div>
 
-        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }}>
-          <Card className="border-0 shadow-lg bg-[#F4F1EB] dark:bg-gray-800/50 dark:border-gray-700">
-            <CardContent className="p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="ref-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.yourName')}</Label>
-                    <Input id="ref-name" value={form.referrerName} onChange={(e) => setForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Jane Smith" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                  </div>
-                  <div>
-                    <Label htmlFor="ref-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.yourEmail')}</Label>
-                    <Input id="ref-email" type="email" value={form.referrerEmail} onChange={(e) => setForm(f => ({ ...f, referrerEmail: e.target.value }))} placeholder="jane@example.com" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="friend-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.friendName')}</Label>
-                    <Input id="friend-name" value={form.friendName} onChange={(e) => setForm(f => ({ ...f, friendName: e.target.value }))} placeholder="John Doe" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                  </div>
-                  <div>
-                    <Label htmlFor="friend-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.friendEmail')}</Label>
-                    <Input id="friend-email" type="email" value={form.friendEmail} onChange={(e) => setForm(f => ({ ...f, friendEmail: e.target.value }))} placeholder="john@example.com" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="ref-claim-type" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.friendClaimType')}</Label>
-                  <Select value={form.claimType} onValueChange={(v) => setForm(f => ({ ...f, claimType: v }))}>
-                    <SelectTrigger id="ref-claim-type" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                      <SelectValue placeholder={t('referral.selectClaimType')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Other'].map(ct => (
-                        <SelectItem key={ct} value={ct}>{ct}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button type="submit" disabled={loading} className="w-full bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white font-semibold h-12 text-base">
-                  {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('referral.sending')}</> : <><Send className="w-5 h-5 mr-2" />{t('referral.sendReferral')}</>}
-                </Button>
-              </form>
+        {/* Stats row */}
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.1 } } }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          {[
+            { icon: DollarSign, value: '$5,000', label: 'Per Approved Case', color: 'text-gold' },
+            { icon: Users, value: 'Unlimited', label: 'No Cap on Referrals', color: 'text-emerald-400' },
+            { icon: Clock, value: '48hrs', label: 'Quick Review Process', color: 'text-blue-400' },
+            { icon: Lock, value: '100%', label: 'Confidential & Secure', color: 'text-purple-400' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:border-gold/30 transition-all duration-300">
+              <stat.icon className={`w-6 h-6 mx-auto mb-2 ${stat.color}`} />
+              <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+              <div className="text-gray-500 text-xs uppercase tracking-wider">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
 
-              <div className="flex flex-wrap justify-center gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                {[
-                  { icon: Lock, label: t('referral.confidential') },
-                  { icon: CheckCircle2, label: t('referral.noObligation') },
-                  { icon: DollarSign, label: t('referral.freeForBoth') },
-                ].map(badge => (
-                  <div key={badge.label} className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400">
-                    <badge.icon className="w-4 h-4 text-gold" />
-                    <span>{badge.label}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        {/* How it works steps */}
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }} className="grid sm:grid-cols-3 gap-6 mb-12">
+          {[
+            { step: '1', icon: UserPlus, title: 'Submit a Referral', desc: 'Fill in your referral\'s details — first name, last name, and phone number. Takes under 60 seconds.' },
+            { step: '2', icon: ClipboardCheck, title: 'We Review & Contact', desc: 'Our team reaches out to your referral, verifies eligibility, and guides them through the claim process.' },
+            { step: '3', icon: DollarSign, title: 'Get Paid $5,000', desc: 'Once their case is approved, you receive a $5,000 payout. It\'s that simple.' },
+          ].map((item) => (
+            <div key={item.step} className="relative p-6 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:border-gold/30 transition-all duration-300 group">
+              <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center text-navy font-bold text-sm shadow-lg">{item.step}</div>
+              <item.icon className="w-8 h-8 text-gold mb-3 group-hover:scale-110 transition-transform" />
+              <h3 className="text-white font-bold text-base mb-2">{item.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Referral form */}
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.2 } } }}>
+          <div className="max-w-3xl mx-auto">
+            <Card className="border-0 shadow-2xl bg-white/[0.06] backdrop-blur-md border border-white/[0.1] overflow-hidden">
+              {/* Gold gradient top bar */}
+              <div className="h-1.5 bg-gradient-to-r from-gold via-gold-light to-gold" />
+              <CardContent className="p-6 md:p-8">
+                <AnimatePresence mode="wait">
+                  {submitted ? (
+                    <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-12">
+                      <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-3">Referral Submitted Successfully!</h3>
+                      <p className="text-gray-400 mb-6 max-w-md mx-auto">Our team will contact your referral within 48 hours. If their case is approved, you will receive your $5,000 payout.</p>
+                      <Button onClick={() => setSubmitted(false)} className="bg-gold hover:bg-gold-dark text-white font-semibold">
+                        Submit Another Referral
+                      </Button>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="form">
+                      <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-white mb-1">Submit a New Referral</h3>
+                        <p className="text-gray-400 text-sm">All fields marked with * are required</p>
+                      </div>
+
+                      <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Your info section */}
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold text-gold uppercase tracking-wider">Your Information</p>
+                          <div className="grid sm:grid-cols-3 gap-3">
+                            <div>
+                              <Label htmlFor="ref-your-name" className="text-xs font-semibold text-gray-300 mb-1 block">Your Full Name *</Label>
+                              <Input id="ref-your-name" value={form.referrerName} onChange={(e) => setForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Jane Smith" className="bg-white/[0.06] border-white/[0.1] text-white placeholder:text-gray-500 focus:border-gold" />
+                            </div>
+                            <div>
+                              <Label htmlFor="ref-your-email" className="text-xs font-semibold text-gray-300 mb-1 block">Your Email *</Label>
+                              <Input id="ref-your-email" type="email" value={form.referrerEmail} onChange={(e) => setForm(f => ({ ...f, referrerEmail: e.target.value }))} placeholder="jane@email.com" className="bg-white/[0.06] border-white/[0.1] text-white placeholder:text-gray-500 focus:border-gold" />
+                            </div>
+                            <div>
+                              <Label htmlFor="ref-your-phone" className="text-xs font-semibold text-gray-300 mb-1 block">Your Phone</Label>
+                              <Input id="ref-your-phone" value={form.referrerPhone} onChange={(e) => setForm(f => ({ ...f, referrerPhone: e.target.value }))} placeholder="(555) 000-0000" className="bg-white/[0.06] border-white/[0.1] text-white placeholder:text-gray-500 focus:border-gold" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="w-full h-px bg-white/[0.08]" />
+
+                        {/* Referral info section */}
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Referral Details</p>
+                          <div className="grid sm:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor="ref-first" className="text-xs font-semibold text-gray-300 mb-1 block">First Name *</Label>
+                              <Input id="ref-first" value={form.referralFirst} onChange={(e) => setForm(f => ({ ...f, referralFirst: e.target.value }))} placeholder="John" className="bg-white/[0.06] border-white/[0.1] text-white placeholder:text-gray-500 focus:border-gold" />
+                            </div>
+                            <div>
+                              <Label htmlFor="ref-last" className="text-xs font-semibold text-gray-300 mb-1 block">Last Name *</Label>
+                              <Input id="ref-last" value={form.referralLast} onChange={(e) => setForm(f => ({ ...f, referralLast: e.target.value }))} placeholder="Doe" className="bg-white/[0.06] border-white/[0.1] text-white placeholder:text-gray-500 focus:border-gold" />
+                            </div>
+                          </div>
+                          <div className="grid sm:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor="ref-phone" className="text-xs font-semibold text-gray-300 mb-1 block">Phone Number *</Label>
+                              <Input id="ref-phone" value={form.referralPhone} onChange={(e) => setForm(f => ({ ...f, referralPhone: e.target.value }))} placeholder="(555) 123-4567" className="bg-white/[0.06] border-white/[0.1] text-white placeholder:text-gray-500 focus:border-gold" />
+                            </div>
+                            <div>
+                              <Label htmlFor="ref-claim-type" className="text-xs font-semibold text-gray-300 mb-1 block">Claim Type</Label>
+                              <Select value={form.claimType || undefined} onValueChange={(v) => setForm(f => ({ ...f, claimType: v }))}>
+                                <SelectTrigger id="ref-claim-type" className="bg-white/[0.06] border-white/[0.1] text-white">
+                                  <SelectValue placeholder="Select claim type (optional)" />
+                                </SelectTrigger>
+                                <SelectContent className="z-[200] bg-gray-900 border-gray-700">
+                                  {['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam (AFFF)', 'NEC Baby Formula', 'Depo Provera', 'CPAP Machines', 'Social Media Lawsuits', 'Other'].map(ct => (
+                                    <SelectItem key={ct} value={ct} className="text-gray-200">{ct}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button type="submit" disabled={loading} size="lg" className="w-full h-14 bg-gradient-to-r from-gold via-gold-light to-gold hover:from-gold-dark hover:via-gold hover:to-gold-dark text-navy font-bold text-base shadow-xl shadow-gold/20 transition-all hover:shadow-2xl hover:shadow-gold/30 hover:scale-[1.01]">
+                          {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Submitting...</> : <><Send className="w-5 h-5 mr-2" />Submit Referral & Earn $5,000</>}
+                        </Button>
+                      </form>
+
+                      <div className="flex flex-wrap justify-center gap-5 mt-6 pt-5 border-t border-white/[0.08]">
+                        {[
+                          { icon: Lock, label: '100% Confidential' },
+                          { icon: CheckCircle2, label: 'No Obligation' },
+                          { icon: DollarSign, label: '$5,000 Per Approval' },
+                          { icon: Clock, label: '48hr Review' },
+                        ].map(badge => (
+                          <div key={badge.label} className="flex items-center gap-1.5 text-xs text-gray-400">
+                            <badge.icon className="w-3.5 h-3.5 text-gold" />
+                            <span>{badge.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -6144,6 +6275,50 @@ function AdminPanel() {
 
   const handleDownloadExport = useCallback(() => {
     window.open(`/api/admin/export?format=csv&token=${ADMIN_AUTH_TOKEN}`, '_blank');
+  }, []);
+
+  const handleExportPDF = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/claimants?token=${ADMIN_AUTH_TOKEN}&limit=1000`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const claimants = data.claimants || [];
+      if (claimants.length === 0) { toast.error('No claimants to export'); return; }
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text('ClaimGuard Pro — Claimants Report', 14, 20);
+      doc.setFontSize(10);
+      doc.setTextColor(128);
+      doc.text(`Generated: ${new Date().toLocaleDateString()} | Total: ${claimants.length}`, 14, 28);
+      let y = 40;
+      doc.setFontSize(8);
+      doc.setTextColor(60);
+      const headers = ['Tracking ID', 'Name', 'Email', 'Phone', 'Claim Type', 'Status', 'State', 'Filed Date'];
+      const colWidths = [35, 40, 50, 30, 35, 25, 15, 22];
+      doc.setFillColor(27, 42, 74);
+      doc.setTextColor(255);
+      headers.forEach((h, i) => {
+        doc.text(h, 14 + colWidths.slice(0, i).reduce((a, b) => a + b, 0), y);
+      });
+      y += 6;
+      doc.setTextColor(60);
+      doc.setFontSize(7);
+      claimants.forEach((c: Record<string, string>, idx: number) => {
+        if (y > 275) { doc.addPage(); y = 20; }
+      const row = [c.trackingId || '', `${c.firstName || ''} ${c.lastName || ''}`.trim(), c.email || '', c.phone || '', c.claimType || '', c.status || '', c.state || '', c.filedDate || ''];
+      row.forEach((cell: string, i: number) => {
+        doc.text(String(cell).substring(0, 30), 14 + colWidths.slice(0, i).reduce((a, b) => a + b, 0), y);
+      });
+      y += 5;
+      if (idx < claimants.length - 1) {
+        doc.setDrawColor(230, 230, 230);
+        doc.line(14, y - 2, 200, y - 2);
+      }
+      });
+      doc.save(`claimguard-claimants-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success(`Exported ${claimants.length} claimants to PDF`);
+    } catch (err) { toast.error('PDF export failed'); console.error(err); }
   }, []);
 
   const handleDownloadSample = useCallback(() => {
@@ -6941,10 +7116,14 @@ function AdminPanel() {
                         </Card>
 
                         {/* Sample Download */}
-                        <div className="text-center">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                           <Button variant="outline" onClick={handleDownloadSample} className="border-gray-700 text-gray-300 hover:text-[#C5A059] hover:border-[#C5A059] text-xs gap-2">
                             <FileSpreadsheet className="w-4 h-4" />
                             Download Sample CSV Template
+                          </Button>
+                          <Button variant="outline" onClick={handleExportPDF} className="border-gray-700 text-gray-300 hover:text-red-400 hover:border-red-400 text-xs gap-2">
+                            <FileDown className="w-4 h-4" />
+                            Export Claims to PDF
                           </Button>
                         </div>
                       </div>
