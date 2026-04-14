@@ -254,12 +254,12 @@ const CASE_STUDIES = [
 ];
 
 const TEAM_MEMBERS = [
-  { name: 'Sarah Mitchell', role: 'Founder & Lead Attorney', color: 'bg-blue-500', initials: 'SM', bio: 'Former government attorney with 20+ years of mass tort litigation experience.' },
-  { name: 'David Chen', role: 'Senior Claims Analyst', color: 'bg-emerald-500', initials: 'DC', bio: 'Expert in claims processing and document analysis. Extensive experience reviewing mass tort claims.' },
-  { name: 'Jessica Rodriguez', role: 'Client Relations Director', color: 'bg-purple-500', initials: 'JR', bio: 'Passionate advocate for claimants\' rights. Manages our 24/7 support team.' },
-  { name: 'Michael Thompson', role: 'Document Specialist', color: 'bg-amber-500', initials: 'MT', bio: 'Detail-oriented paralegal specializing in document correction. High success rate in claim corrections.' },
-  { name: 'Emily Watson', role: 'Legal Strategy Advisor', color: 'bg-rose-500', initials: 'EW', bio: 'Skilled attorney specializing in settlement negotiation. Helped clients recover substantial compensation.' },
-  { name: 'Marcus Johnson', role: 'Technology Director', color: 'bg-teal-500', initials: 'MJ', bio: 'Built our proprietary claim tracking system. Ensures reliable platform performance.' },
+  { name: 'Sarah Mitchell', role: 'Founder & Lead Attorney', color: 'bg-blue-500', initials: 'SM', photo: '/team/sarah.jpg', bio: 'Former government attorney with 20+ years of mass tort litigation experience.' },
+  { name: 'David Chen', role: 'Senior Claims Analyst', color: 'bg-emerald-500', initials: 'DC', photo: '/team/david.jpg', bio: 'Expert in claims processing and document analysis. Extensive experience reviewing mass tort claims.' },
+  { name: 'Jessica Rodriguez', role: 'Client Relations Director', color: 'bg-purple-500', initials: 'JR', photo: '/team/jessica.jpg', bio: 'Passionate advocate for claimants\' rights. Manages our 24/7 support team.' },
+  { name: 'Michael Thompson', role: 'Document Specialist', color: 'bg-amber-500', initials: 'MT', photo: '/team/michael.jpg', bio: 'Detail-oriented paralegal specializing in document correction. High success rate in claim corrections.' },
+  { name: 'Emily Watson', role: 'Legal Strategy Advisor', color: 'bg-rose-500', initials: 'EW', photo: '/team/emily.jpg', bio: 'Skilled attorney specializing in settlement negotiation. Helped clients recover substantial compensation.' },
+  { name: 'Marcus Johnson', role: 'Technology Director', color: 'bg-teal-500', initials: 'MJ', photo: '/team/marcus.jpg', bio: 'Built our proprietary claim tracking system. Ensures reliable platform performance.' },
 ];
 
 const PIPELINE_STAGES = ['Submitted', 'Validated', 'Under Review', 'Decision', 'Completed'];
@@ -697,6 +697,7 @@ const SUCCESS_STORIES = [
     location: 'Jacksonville, NC',
     caseType: 'Camp Lejeune',
     initials: 'AT',
+    image: '/images/success-story-1.jpg',
     avatarColor: 'from-blue-500 to-blue-700',
     quote: 'When I received the denial letter, I felt completely defeated. After 22 years of military service, dealing with kidney disease felt like a second battle I wasn\'t prepared for. ClaimGuard Pro stepped in and fought alongside me when I had nothing left to give.',
     beforeStatus: 'Denied',
@@ -709,6 +710,7 @@ const SUCCESS_STORIES = [
     location: 'Des Moines, IA',
     caseType: 'Roundup',
     initials: 'GP',
+    image: '/images/success-story-2.jpg',
     avatarColor: 'from-emerald-500 to-emerald-700',
     quote: 'Three years of going in circles with paperwork and phone calls. I almost gave up entirely. Their team took over and had everything sorted within months. I only wish I had found them sooner.',
     beforeStatus: 'Correction Needed',
@@ -721,6 +723,7 @@ const SUCCESS_STORIES = [
     location: 'Scottsdale, AZ',
     caseType: 'Talcum Powder',
     initials: 'SL',
+    image: '/images/success-story-3.jpg',
     avatarColor: 'from-purple-500 to-purple-700',
     quote: 'The document specialist caught a critical error in my pathology report submission that I never would have found on my own. That single correction saved my entire claim from being dismissed.',
     beforeStatus: 'Pending (14 months)',
@@ -733,6 +736,7 @@ const SUCCESS_STORIES = [
     location: 'Charlotte, NC',
     caseType: 'Hernia Mesh',
     initials: 'RM',
+    image: '/images/success-story-4.jpg',
     avatarColor: 'from-amber-500 to-amber-700',
     quote: 'After my hernia mesh failed and caused a second surgery, I didn\'t know where to turn. ClaimGuard Pro connected me with the right attorney and helped build a strong case for additional compensation.',
     beforeStatus: 'Not Yet Filed',
@@ -745,6 +749,7 @@ const SUCCESS_STORIES = [
     location: 'Fresno, CA',
     caseType: 'Paraquat',
     initials: 'DK',
+    image: '/images/success-story-5.jpg',
     avatarColor: 'from-rose-500 to-rose-700',
     quote: 'Watching my husband struggle with Parkinson\'s after decades of farming was heartbreaking. ClaimGuard Pro helped us understand our options and navigate the claims process with compassion and expertise.',
     beforeStatus: 'Under Review',
@@ -757,6 +762,7 @@ const SUCCESS_STORIES = [
     location: 'Norfolk, VA',
     caseType: 'Firefighting Foam',
     initials: 'JC',
+    image: '/images/success-story-6.jpg',
     avatarColor: 'from-teal-500 to-teal-700',
     quote: 'As a firefighter for 18 years, I was exposed to AFFF regularly. When I was diagnosed with thyroid cancer, ClaimGuard Pro helped me file and track my claim through every stage of the process.',
     beforeStatus: 'Pending',
@@ -2282,11 +2288,17 @@ function SuccessStoriesCarousel() {
                     </svg>
                   </div>
 
-                  {/* Large Initials Avatar */}
-                  <div className={`relative w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br ${story.avatarColor} flex items-center justify-center shadow-2xl ring-4 ring-white/10`}>
-                    <span className="text-4xl md:text-5xl font-bold text-white tracking-wider" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                      {story.initials}
-                    </span>
+                  {/* Large Avatar with Photo */}
+                  <div className={`relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-2xl ring-4 ring-white/10`}>
+                    {story.image ? (
+                      <img src={story.image} alt={story.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${story.avatarColor} flex items-center justify-center`}>
+                        <span className="text-4xl md:text-5xl font-bold text-white tracking-wider" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                          {story.initials}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Decorative line */}
@@ -3378,6 +3390,7 @@ const BLOG_ARTICLES = [
     dateISO: '2025-01-15',
     readTime: '8 min read',
     category: 'Camp Lejeune',
+    image: '/blog/camp-lejeune.jpg',
     icon: Building2,
     color: 'bg-blue-500',
     content: 'The Camp Lejeune Justice Act of 2022 created a pathway for veterans, their families, and civilians who were exposed to contaminated water at Camp Lejeune between 1953 and 1987 to seek compensation. Eligible individuals must have lived or worked at the base for at least 30 days during that period and later developed one of several qualifying conditions, including kidney cancer, liver cancer, non-Hodgkin lymphoma, leukemia, multiple myeloma, Parkinson\'s disease, and various other cancers and diseases. The filing process requires comprehensive documentation: military service records or proof of residence, medical records linking your condition to the exposure, and a detailed timeline. Claims are reviewed by the Navy and Justice Department, with current processing times ranging from 6 to 18 months. Our specialists recommend gathering all documentation before filing to avoid the common "Correction Needed" status that delays an estimated 30% of claims.',
@@ -3390,6 +3403,7 @@ const BLOG_ARTICLES = [
     dateISO: '2025-01-10',
     readTime: '6 min read',
     category: 'Roundup',
+    image: '/blog/roundup.jpg',
     icon: Leaf,
     color: 'bg-emerald-500',
     content: 'The Roundup (glyphosate) litigation continues to evolve in 2025 with significant settlement developments. Bayer, which acquired Monsanto in 2018, has set aside approximately $16 billion for settlements. Current settlement offers range from $5,000 to over $200,000 depending on the severity of diagnosis, duration of Roundup use, and individual circumstances. To qualify, claimants typically need a diagnosis of non-Hodgkin lymphoma or a related condition, proof of Roundup use for at least one year, and medical records supporting the diagnosis. Filing deadlines vary by state, with some bellwether trials scheduled throughout 2025. Key documents needed include purchase receipts or employer records showing herbicide use, complete medical records with pathology reports, and a physician\'s opinion linking the diagnosis to glyphosate exposure. The settlement program remains open, but claimants are encouraged to file as early as possible as deadlines may tighten.',
@@ -3402,6 +3416,7 @@ const BLOG_ARTICLES = [
     dateISO: '2025-01-05',
     readTime: '10 min read',
     category: 'Tips & Guides',
+    image: '/blog/documentation.jpg',
     icon: ClipboardCheck,
     color: 'bg-amber-500',
     content: 'Documentation is the backbone of any successful mass tort claim. Here are the 10 critical documents you need: (1) Government-issued photo ID — verify your identity; (2) Proof of residence during the relevant time period — utility bills, lease agreements, or tax returns; (3) Complete medical records — diagnosis reports, treatment records, and prescription histories from all providers; (4) Proof of exposure — purchase receipts, employment records, or service records showing product use or environmental exposure; (5) Physician\'s opinion letter — a written statement from your doctor linking your condition to the exposure; (6) Timeline documentation — a chronological account connecting exposure to diagnosis; (7) Financial impact records — tax returns, pay stubs, or employer statements showing lost wages; (8) Personal impact statement — a detailed account of how your condition affects daily life; (9) Insurance records — documentation of medical expenses covered and out-of-pocket costs; (10) Prior claim records — any previous claims or appeals related to your condition. Organize all documents chronologically and keep copies of everything you submit.',
@@ -3414,6 +3429,7 @@ const BLOG_ARTICLES = [
     dateISO: '2025-02-05',
     readTime: '7 min read',
     category: 'NEC Baby Formula',
+    image: '/blog/nec-formula.jpg',
     icon: Baby,
     color: 'bg-cyan-500',
     content: 'Necrotizing enterocolitis (NEC) is a devastating intestinal disease that primarily affects premature infants. Research has established a strong link between cow\'s milk-based infant formula and significantly increased NEC risk in preterm babies. Major manufacturers including Mead Johnson (Enfamil) and Abbott Laboratories (Similac) face litigation for failing to adequately warn hospitals and parents about these dangers. Eligible families typically include parents of babies born before 37 weeks who were fed cow\'s milk-based formula in the NICU and subsequently developed NEC. Compensation may cover medical expenses, surgical costs, long-term care needs, and pain and suffering. Key documents include birth records, NICU feeding logs, medical records documenting NEC diagnosis and treatment, and itemized medical bills. Many cases have already resulted in significant settlements, and multi-district litigation continues to gain momentum in 2025.',
@@ -3426,6 +3442,7 @@ const BLOG_ARTICLES = [
     dateISO: '2025-02-12',
     readTime: '6 min read',
     category: 'Depo Provera',
+    image: '/blog/depo-provera.jpg',
     icon: Pill,
     color: 'bg-orange-500',
     content: 'A major 2024 study published in the BMJ found that prolonged use of the Depo Provera contraceptive injection is associated with a significantly increased risk of developing intracranial meningiomas — typically benign but potentially serious brain tumors. The risk was highest among women who used Depo Provera for 12 months or longer. Meningiomas can cause headaches, vision problems, seizures, and neurological deficits, often requiring surgical removal. Women who developed meningiomas after using Depo Provera may be eligible to file claims against Pfizer, the manufacturer. Required documentation includes medical records confirming meningioma diagnosis, pharmacy records showing Depo Provera prescriptions, treatment records, and physician opinions linking the tumor to the contraceptive. Claimants should file promptly as statutes of limitations vary by state and many begin from the date of diagnosis.',
@@ -4260,7 +4277,10 @@ function ResourcesSection() {
           {BLOG_ARTICLES.map((article, idx) => (
             <motion.div key={article.title} variants={fadeInUp}>
               <Card className="h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden hover-glow flex flex-col">
-                <div className={`${article.color} p-6 text-white relative overflow-hidden`}>
+                <div className={`${article.color} p-6 text-white relative overflow-hidden min-h-[140px]`}>
+                  {article.image && (
+                    <img src={article.image} alt={article.title} className="absolute inset-0 w-full h-full object-cover opacity-30" />
+                  )}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" aria-hidden="true" />
                   <div className="relative">
                     <article.icon className="w-8 h-8 mb-3 opacity-90" />
@@ -4333,8 +4353,11 @@ function AboutSection() {
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-3xl mx-auto mb-8">
           <Card className="bg-navy dark:bg-gray-900 text-white border-0 shadow-xl overflow-hidden">
-            <CardContent className="p-8 text-center">
-              <BookOpen className="w-10 h-10 text-gold mx-auto mb-4" />
+            <div className="relative">
+              <img src="/about-team.jpg" alt="ClaimGuard Pro team" className="w-full h-48 object-cover opacity-40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1a2744] to-transparent" />
+            </div>
+            <CardContent className="p-8 text-center -mt-12 relative z-10">
               <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Georgia, serif' }}>{t('about.mission')}</h3>
               <p className="text-white/80 leading-relaxed text-lg italic">&ldquo;{t('about.missionQuote')}&rdquo;</p>
             </CardContent>
@@ -4364,7 +4387,13 @@ function AboutSection() {
             <motion.div key={member.name} variants={fadeInUp}>
               <Card className="text-center border-0 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 bg-white dark:bg-gray-800/50 dark:border-gray-700 hover-glow h-full">
                 <CardContent className="p-6">
-                  <div className={`w-20 h-20 rounded-full ${member.color} flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold shadow-lg`}>{member.initials}</div>
+                  <div className={`w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 shadow-lg`}>
+                    {member.photo ? (
+                      <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className={`w-full h-full ${member.color} flex items-center justify-center text-white text-xl font-bold`}>{member.initials}</div>
+                    )}
+                  </div>
                   <h4 className="font-bold text-navy dark:text-gray-100 text-base">{member.name}</h4>
                   <p className="text-gold-dark dark:text-gold-light text-xs font-semibold uppercase tracking-wider mb-2">{member.role}</p>
                   <p className="text-muted-foreground dark:text-gray-400 text-xs leading-relaxed">{t(`team.m${idx}`)}</p>
@@ -4518,7 +4547,11 @@ function ContactSection() {
 
         <div className="grid lg:grid-cols-5 gap-8">
           <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="lg:col-span-3">
-            <Card className="border-0 shadow-lg bg-white dark:bg-gray-800/50 dark:border-gray-700">
+            <Card className="border-0 shadow-lg bg-white dark:bg-gray-800/50 dark:border-gray-700 overflow-hidden">
+              <div className="relative h-48 overflow-hidden">
+                <img src="/contact-office.jpg" alt="ClaimGuard Pro office" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-800 to-transparent" />
+              </div>
               <CardContent className="p-6 md:p-8">
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-4">
