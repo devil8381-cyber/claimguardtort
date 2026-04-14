@@ -1,59 +1,157 @@
-# ClaimGuard Pro - Worklog
+# Worklog — ClaimGuard Pro Shared Code Extraction
+
+## Task: Extract shared code from monolithic page.tsx into lib files
+
+### Date: 2025-07-15
+
+### Files Created
+
+#### 1. `/home/z/my-project/src/lib/constants.ts` (~1,800 lines)
+
+All shared data constants, types, context, and utility functions extracted from page.tsx.
+
+**Exports:**
+
+**Context & Types:**
+- `DEFAULT_COMPANY_SETTINGS` — default company config object
+- `CompanySettingsContext` — React context for company settings
+- `useCompanySettings()` — hook to consume company settings
+- `CompanySettings` — TypeScript type
+
+**Navigation & Hero:**
+- `NAV_LINKS` — main navigation link array (10 items)
+- `HERO_HEADLINES` — rotating hero text array (4 items)
+- `PARTICLE_POSITIONS` — hero background particle positions (20 items)
+
+**Case & Service Data:**
+- `CASE_TYPES` — list of 20 mass tort case types
+- `TRUST_BADGES` — 12 trust indicators
+- `HOW_IT_WORKS_STEPS` — 5-step process with lucide-react icons
+- `SERVICES_DATA` — 6 service cards with icons and details
+- `STATS_DATA` — dynamically generated stats (IIFE with date seed)
+- `STATS_TOOLTIP_DATA` — tooltip text for stat cards
+
+**Testimonials & FAQ:**
+- `TESTIMONIALS_DATA` — 6 testimonial objects
+- `FAQ_DATA` — 10 FAQ items
+
+**Case Studies & Success Stories:**
+- `CASE_STUDIES` — 3 detailed case study objects
+- `SUCCESS_STORIES` — 12 success story objects with full details
+
+**Team & Pipeline:**
+- `TEAM_MEMBERS` — 6 team member profiles
+- `PIPELINE_STAGES` — 5 claim pipeline stages
+- `DOC_CHECKLIST` — 5 document checklist items with icons
+
+**Case Type Details:**
+- `CASE_TYPE_DETAILS` — 20 detailed case type objects with icons, descriptions, statuses
+
+**Comparison & Trust:**
+- `COMPARISON_DATA` — 7 comparison rows (us vs others)
+- `LAW_FIRMS` — 12 law firm objects
+- `TRUST_STATS` — 4 trust statistics
+- `MEDIA_LOGOS` — 8 media outlet names
+
+**Settlement Calculator:**
+- `SETTLEMENT_RANGES` — settlement range data for 24 case types
+
+**Case Colors:**
+- `CASE_COLORS` — Tailwind color classes for 12 case types
+
+**Filing Deadlines:**
+- `FILING_DEADLINES` — 8 deadline entries with icons
+
+**Blog & News:**
+- `BLOG_ARTICLES` — 15 full blog article objects with content
+- `NEWS_HEADLINES` — 8 news headline strings
+
+**Form Data:**
+- `US_STATES` — 50 US state names
+- `CLAIM_FORM_CASE_TYPES` — 21 case types for claim forms
+- `SETTLEMENT_DATA` — 12 settlement tracker entries with icons
+- `VIDEO_TESTIMONIALS` — 6 video testimonial objects
+
+**Mobile Nav:**
+- `MOBILE_NAV_ITEMS` — 5 bottom nav items with lucide-react icons
+
+**Legal Text Generators:**
+- `getPrivacyPolicyText(settings)` — generates privacy policy text
+- `getTermsOfServiceText(settings)` — generates terms of service text
+- `DISCLAIMER_TEXT` — legal disclaimer string
+
+**Social Proof Generator:**
+- `SP_FIRST_NAMES` — 100 first names
+- `SP_LAST_INITIALS` — 26 last initials
+- `SP_CITIES` — 200+ US city/state pairs
+- `SP_ACTIONS` — 29 social proof actions
+- `SP_CASE_TYPES` — 25 case type strings
+- `SP_TIME_PHRASES` — 30 time phrases
+- `shuffleArray(arr)` — Fisher-Yates shuffle
+- `hashString(str)` — deterministic hash function
+- `generateSocialProofPool()` — generates 10,000 unique social proof notifications
+
+**Track Claim Helpers:**
+- `getStatusConfig(status)` — returns badge/icon config for claim status
+- `getStageIndex(status)` — returns pipeline stage index
+
+**Admin Constants:**
+- `ADMIN_AUTH_TOKEN` — admin authentication token
+- `STATUS_COLORS` — badge color map for 10 statuses
+- `STATUS_DOT_COLORS` — dot color map for 10 statuses
+- `VALID_STATUSES` — array of 10 valid claim statuses
+
+**Shared Interfaces:**
+- `ClaimantRecord` — admin claimant record interface
+- `AdminStats` — admin dashboard stats interface
+- `ClaimResult` — track claim result interface
+- `QuizAnswers` — eligibility quiz answers interface
+- `UploadedFile` — file upload interface
+- `ChatMessage` — chat message interface
+
+**Icon Dependencies:** All lucide-react icons used in data arrays are imported directly in constants.ts.
 
 ---
-Task ID: 1
-Agent: Main Agent
-Task: Brand name suggestions, database setup, API routes, admin panel manual add, bug fixes
 
-Work Log:
-- Presented 8 brand name alternatives (ClaimShield Pro, TortGuard, ClaimTrack Pro, etc.)
-- Confirmed address (1429 Walnut St 14th Floor, Philadelphia, PA 19102) and phone (484 968 1529) already correct
-- Created Prisma schema with SQLite + Claimant model (prisma/schema.prisma)
-- Created src/lib/db.ts (Prisma client singleton)
-- Ran prisma generate + db push - database ready at prisma/dev.db
-- Created 5 API routes:
-  - GET /api/claimants?trackingId=X (public claimant lookup for Track Claim)
-  - GET/POST /api/admin/claimants (admin list + manual create claimant)
-  - DELETE /api/admin/claimants/[trackingId] (admin delete claimant)
-  - POST /api/admin/upload-csv (bulk CSV import with smart header parsing)
-  - GET /api/admin/export (stats, sample CSV, full CSV export)
-- Added "Add Claimant" tab to Admin Panel with full form:
-  - Tracking ID, First Name, Last Name, Email (required)
-  - Phone, Claim Type dropdown, Status dropdown, State, Filed Date, Notes
-  - Auto-uppercase tracking ID, clear form button, validation
-  - Quick Tips card with usage hints
-- Added UserPlus icon import
-- Changed activeTab type to include 'add'
-- Fixed CSS bug: removed duplicate badge-scroll keyframe, aliased to marquee
-- Deduplicated SP_CITIES: 376 → 311 entries (65 duplicates removed)
-- ESLint: 0 errors
+#### 2. `/home/z/my-project/src/lib/hooks.tsx` (~165 lines)
 
-Stage Summary:
-- Database fully operational (SQLite with Prisma ORM)
-- Admin Panel now has 4 tabs: Dashboard, Claimants, Add Claimant, Upload CSV
-- All API routes secured with Bearer token auth
-- CSV upload supports flexible header names (trackingId/tracking_id/id, firstName/first_name/fname, etc.)
-- All bugs fixed, lint clean
+All custom hooks, animation variants, and small reusable components.
+
+**Exports:**
+
+**Hooks:**
+- `useInView(threshold)` — IntersectionObserver hook, returns `{ ref, inView }`
+- `useCounter(target, inView, duration)` — animated counter hook
+- `useScrollSpy()` — active section detection based on scroll position
+- `useCountdown(targetDate)` — countdown timer, returns `{ days, hours, minutes }`
+- `useAnimatedCounter(target, duration)` — cubic ease-out animated counter
+
+**Utilities:**
+- `announce(message, priority)` — screen reader live region announcer
+
+**Animation Variants:**
+- `fadeInUp` — fade + slide up variant
+- `staggerContainer` — stagger children variant
+- `scaleIn` — scale-in variant
+
+**Components:**
+- `CountUpNumber({ value })` — renders animated count-up number
+
+**Dependencies:** Imports `NAV_LINKS` from `@/lib/constants` (used by `useScrollSpy`).
 
 ---
-Task ID: 2
-Agent: Main Agent
-Task: Fix dropdowns, add admin settings, full bug audit, production polish
 
-Work Log:
-- Diagnosed dropdown bug: Admin panel modal at z-[100], Radix Select portals render at z-50, dropdowns invisible behind admin panel
-- Added z-[200] to all 4 SelectContent elements inside AdminPanel (status filter, claim type, status, edit status)
-- Created /api/admin/settings/route.ts with GET/PUT endpoints, JSON file persistence in data/company-settings.json
-- Added Settings tab in admin panel with company contact fields (Company Name, Phone, Email, Privacy Email, Legal Email, Address)
-- Created CompanySettingsContext with createContext/useContext for global dynamic contact info
-- Converted PRIVACY_POLICY_TEXT and TERMS_OF_SERVICE_TEXT from static constants to functions accepting dynamic settings
-- Updated Navbar, ContactSection, Footer, CookieConsentBanner to use dynamic settings from context
-- Verified daily stats rotation working correctly (date-seeded pseudo-random)
-- Lint clean - zero errors, zero warnings
+### Verification
 
-Stage Summary:
-- All dropdowns now work in admin panel (z-index fix)
-- Company settings manageable from admin panel without code changes
-- All contact info across website is dynamic and controllable from admin
-- Daily stats already implemented and working
-- Production ready with clean lint
+- ✅ ESLint passes with zero errors
+- ✅ Dev server responds with HTTP 200
+- ✅ All icon references in data arrays have corresponding lucide-react imports
+- ✅ All React hooks use correct imports from 'react'
+- ✅ Type annotations preserved for all interfaces and types
+- ✅ No modifications made to page.tsx
+
+### Notes
+
+- `hooks.ts` was renamed to `hooks.tsx` because it contains JSX (the `CountUpNumber` component uses a React fragment).
+- The `STATS_DATA` constant uses an IIFE with date-based seeding — this is preserved exactly as-is.
+- The `generateSocialProofPool` function uses `sessionStorage` and `window` — kept in constants.ts since it's a data-generation utility, not a React hook.
