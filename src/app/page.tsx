@@ -1283,6 +1283,26 @@ function CountdownBanner() {
    SECTION: HERO
    ═══════════════════════════════════════════════════════════════ */
 
+/* Reusable section divider — visual break between page groups */
+function SectionDivider({ variant = 'default' }: { variant?: 'default' | 'dark' | 'wave' }) {
+  if (variant === 'wave') {
+    return (
+      <div className="w-full overflow-hidden leading-[0] -mt-1" aria-hidden="true">
+        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-[40px] sm:h-[60px]">
+          <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,35 1440,30 L1440,60 L0,60 Z" className="fill-white dark:fill-gray-950" />
+        </svg>
+      </div>
+    );
+  }
+  return (
+    <div className="w-full flex items-center justify-center py-6" aria-hidden="true">
+      <div className="w-12 h-px bg-gray-300 dark:bg-gray-700" />
+      <div className="w-2 h-2 rounded-full bg-[#C5A059]/40 mx-3" />
+      <div className="w-12 h-px bg-gray-300 dark:bg-gray-700" />
+    </div>
+  );
+}
+
 const PARTICLE_POSITIONS = Array.from({ length: 20 }, (_, i) => ({
   left: `${((i * 37 + 13) % 97)}%`,
   top: `${((i * 53 + 7) % 95)}%`,
@@ -1472,7 +1492,7 @@ const TRUST_STATS = [
 const TrustedBySection = memo(function TrustedBySection() {
   const { t } = useLanguage();
   return (
-    <section className="relative py-16 md:py-24 bg-gray-950 overflow-hidden">
+    <section id="trusted-by" className="relative py-16 md:py-24 bg-gray-950 overflow-hidden">
       {/* Animated background grid */}
       <div className="absolute inset-0 opacity-[0.03]" aria-hidden="true">
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,215,0,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.3) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
@@ -1718,7 +1738,7 @@ function WhyDifferentSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
   return (
-    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
+    <section id="why-different" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('whyDiff.badge')}</Badge>
@@ -2431,7 +2451,7 @@ const TestimonialsSection = memo(function TestimonialsSection() {
   const { ref, inView } = useInView(0.1);
   const { t } = useLanguage();
   return (
-    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
+    <section id="testimonials" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
           <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('testimonials.badge')}</Badge>
@@ -3010,7 +3030,7 @@ function CTASection() {
   }, []);
 
   return (
-    <section className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
+    <section id="cta" className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
       <motion.div className="hidden md:block absolute top-0 left-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl" style={{ x: gradShift }} aria-hidden="true" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl" aria-hidden="true" />
@@ -3077,7 +3097,7 @@ function FilingDeadlineTracker() {
   }, [locale, t]);
 
   return (
-    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
+    <section id="filing-deadlines" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 text-xs font-semibold uppercase tracking-wider">
@@ -5120,8 +5140,106 @@ const BackToTopButton = memo(function BackToTopButton() {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   COMPONENT: COOKIE CONSENT BANNER
+   COMPONENT: FLOATING SIDE NAVIGATION DOTS
    ═══════════════════════════════════════════════════════════════ */
+
+const SIDE_NAV_SECTIONS = [
+  { id: 'hero', label: 'Home' },
+  { id: 'how-it-works', label: 'How It Works' },
+  { id: 'services', label: 'Services' },
+  { id: 'eligibility-quiz', label: 'Eligibility' },
+  { id: 'track-claim', label: 'Track Claim' },
+  { id: 'what-we-handle', label: 'Case Types' },
+  { id: 'resources', label: 'Resources' },
+  { id: 'faq', label: 'FAQ' },
+  { id: 'about', label: 'About' },
+  { id: 'contact', label: 'Contact' },
+];
+
+const FloatingSideNav = memo(function FloatingSideNav() {
+  const [activeSection, setActiveSection] = useState('hero');
+  const [visible, setVisible] = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    let ticking = false;
+    const handler = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          setVisible(scrollY > 500);
+          for (let i = SIDE_NAV_SECTIONS.length - 1; i >= 0; i--) {
+            const el = document.getElementById(SIDE_NAV_SECTIONS[i].id);
+            if (el && el.getBoundingClientRect().top <= 200) {
+              setActiveSection(SIDE_NAV_SECTIONS[i].id);
+              break;
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
+
+  const scrollToSection = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 80;
+      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          className="fixed right-4 top-1/2 -translate-y-1/2 z-[60] hidden xl:flex flex-col items-center gap-2"
+        >
+          {SIDE_NAV_SECTIONS.map((section, idx) => {
+            const isActive = activeSection === section.id;
+            return (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                className="relative flex items-center group"
+                aria-label={`Go to ${section.label}`}
+              >
+                <AnimatePresence>
+                  {(hoveredIdx === idx || isActive) && (
+                    <motion.span
+                      initial={{ opacity: 0, x: 8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 8 }}
+                      className="absolute right-full mr-3 px-2.5 py-1 bg-gray-900 text-white text-xs font-medium rounded-lg whitespace-nowrap shadow-lg border border-gray-700 pointer-events-none"
+                    >
+                      {section.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                <div
+                  className={`rounded-full transition-all duration-300 ${
+                    isActive
+                      ? 'w-3 h-3 bg-[#C5A059] shadow-[0_0_8px_rgba(197,160,89,0.6)]'
+                      : 'w-2 h-2 bg-gray-500 hover:bg-gray-300 group-hover:scale-125'
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
 
 function CookieConsentBanner() {
   const { t } = useLanguage();
@@ -7090,36 +7208,47 @@ export default function HomePage() {
         <CountdownBanner />
         <Navbar />
         <HeroSection />
+        <SectionDivider />
         <TrustedBySection />
         <LiveNewsTicker />
         <LiveClaimCounter />
+        <SectionDivider />
         <HowItWorksSection />
         <ServicesSection />
         <WhyDifferentSection />
+        <SectionDivider />
         <SettlementTrackerSection />
         <SettlementCalculatorSection />
         <EligibilityQuizSection />
+        <SectionDivider />
         <WhyChooseUsSection />
         <TestimonialsSection />
         <VideoTestimonialsSection />
+        <SectionDivider />
         <ClaimSubmissionSection />
         <TrackClaimSection />
+        <SectionDivider />
         <ResourcesSection />
         <WhatWeHandleSection />
         <CTASection />
         <FilingDeadlineTracker />
+        <SectionDivider />
         <FAQSection />
         <CaseStudiesSection />
         <ReviewsWidget />
+        <SectionDivider />
         <NewsletterSection />
         <ReferralSection />
         <ClientPortalSection />
+        <SectionDivider />
         <AboutSection />
+        <SectionDivider />
         <ContactSection />
         <Footer />
       </main>
       <LiveChatWidget />
       <BackToTopButton />
+      <FloatingSideNav />
       <AdminPanel />
       <CookieConsentBanner />
       <SocialProofNotification />
