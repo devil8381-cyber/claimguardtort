@@ -6054,18 +6054,16 @@ function AdminPanel() {
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
+    <>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4"
         onClick={handleClose}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.3 }}
           className="w-full max-w-6xl h-[90vh] bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
@@ -6187,7 +6185,7 @@ function AdminPanel() {
                   <div className="p-4 sm:p-6">
                     {/* Dashboard Tab */}
                     {activeTab === 'dashboard' && stats && (
-                      <div className="space-y-6">
+                      <div key="dashboard-content" className="space-y-6">
                         {/* Stats Cards */}
                         {/* Total Claimants — header card */}
                       <Card className="bg-[#C5A059]/10 border-[#C5A059]/30 p-4">
@@ -6283,14 +6281,14 @@ function AdminPanel() {
                     )}
 
                     {activeTab === 'dashboard' && !stats && (
-                      <div className="flex items-center justify-center py-20">
+                      <div key="dashboard-loading" className="flex items-center justify-center py-20">
                         <Loader2 className="w-8 h-8 animate-spin text-[#C5A059]" />
                       </div>
                     )}
 
                     {/* Claimants Tab */}
                     {activeTab === 'claimants' && (
-                      <div className="space-y-4">
+                      <div key="tab-claimants" className="space-y-4">
                         {/* Search & Filter Bar */}
                         <div className="flex flex-col sm:flex-row gap-3">
                           <div className="relative flex-1">
@@ -6892,7 +6890,7 @@ function AdminPanel() {
       </motion.div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog key="delete-dialog" open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent className="bg-gray-900 border-gray-700">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Delete Claimant</AlertDialogTitle>
@@ -6914,7 +6912,7 @@ function AdminPanel() {
       </AlertDialog>
 
       {/* Claimant Detail Dialog */}
-      <Dialog open={!!selectedClaimant} onOpenChange={(open) => { if (!open) { setSelectedClaimant(null); setEditStatus(null); } }}>
+      <Dialog key="detail-dialog" open={!!selectedClaimant} onOpenChange={(open) => { if (!open) { setSelectedClaimant(null); setEditStatus(null); } }}>
         <DialogContent className="bg-gray-900 border-gray-700 max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white">Claimant Details</DialogTitle>
@@ -6992,7 +6990,7 @@ function AdminPanel() {
           )}
         </DialogContent>
       </Dialog>
-    </AnimatePresence>
+    </>
   );
 }
 
