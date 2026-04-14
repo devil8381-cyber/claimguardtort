@@ -3,13 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── GPU Acceleration for Smooth Scrolling ─── */
-html, body, main, section, div, nav, header, footer, article {
-  will-change: transform;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+/* ─── Smooth Scrolling Performance ─── */
+/* Only promote containers that actually animate — NOT every element */
+@keyframes scroll-smooth-fix {
+  from { transform: translateZ(0); }
+  to { transform: translateZ(0); }
 }
 
 /* Only animate elements that are actually animating */
@@ -32,7 +30,15 @@ html, body, main, section, div, nav, header, footer, article {
 
 /* Contain paint for scrolling sections */
 main {
-  contain: layout style;
+  contain: layout style paint;
+  will-change: scroll-position;
+}
+
+/* Only promote animated/transformed elements on demand */
+.moving-element, .particle-dot, .animate-float, .animate-marquee, .animate-badge-scroll {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Optimize scroll performance */
@@ -43,7 +49,18 @@ main {
 /* Smooth momentum scrolling on iOS */
 body {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
+  overscroll-behavior-y: contain;
+  scroll-padding-top: 80px;
+}
+
+/* Smooth 60fps scrolling — reduce paint on scroll */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-overflow-scrolling: touch !important;
+  }
+  section {
+    contain: layout style;
+  }
 }
 
 /* Mobile bottom nav safe area */

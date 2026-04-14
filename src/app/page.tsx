@@ -1254,8 +1254,10 @@ function HeroSection() {
             </Badge>
           </motion.div>
 
-          <motion.h1 initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            <span className="typewriter-cursor">{displayText}</span>
+          <motion.h1 initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 relative" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            {/* Ghost text reserves space for the longest headline — prevents layout shift */}
+            <span className="invisible block" aria-hidden="true">{HERO_HEADLINES.reduce((a, b) => a.length >= b.length ? a : b, '')}</span>
+            <span className="typewriter-cursor absolute top-0 left-0 right-0">{displayText}</span>
           </motion.h1>
 
           <motion.p initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.25 } } }} className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed">
@@ -1603,6 +1605,10 @@ const SETTLEMENT_RANGES: Record<string, { min: number; max: number }> = {
   'Bard PowerPort': { min: 50000, max: 400000 },
   'Elmiron': { min: 25000, max: 350000 },
   'Taxotere': { min: 20000, max: 300000 },
+  'Uber / Lyft Safety': { min: 30000, max: 750000 },
+  'Talcum Powder Cancer': { min: 10000, max: 500000 },
+  'AFFF / PFAS Exposure': { min: 50000, max: 500000 },
+  'Talc Ovarian Cancer': { min: 15000, max: 500000 },
   'Other': { min: 10000, max: 200000 },
 };
 
@@ -1903,7 +1909,7 @@ function WhyChooseUsSection() {
               <CardTitle className="text-white text-base font-bold">Recovery by Case Type</CardTitle>
             </CardHeader>
             <CardContent className="p-4 md:p-6">
-              <div className="space-y-3 max-h-[400px] md:max-h-none overflow-y-auto md:overflow-visible pr-1">
+              <div className="space-y-3 max-h-[500px] md:max-h-none overflow-y-auto md:overflow-visible pr-1">
                 {[
                   { type: 'Camp Lejeune', amount: 18.5, color: 'bg-blue-400' },
                   { type: 'Roundup', amount: 12.3, color: 'bg-emerald-400' },
@@ -1921,6 +1927,12 @@ function WhyChooseUsSection() {
                   { type: 'CPAP Machines', amount: 1.5, color: 'bg-sky-400' },
                   { type: 'Social Media Lawsuits', amount: 1.2, color: 'bg-pink-400' },
                   { type: 'Exactech Implants', amount: 0.9, color: 'bg-stone-400' },
+                  { type: 'Bard PowerPort', amount: 3.6, color: 'bg-red-400' },
+                  { type: 'Elmiron', amount: 1.4, color: 'bg-yellow-400' },
+                  { type: 'Taxotere', amount: 1.1, color: 'bg-green-400' },
+                  { type: 'Uber / Lyft Safety', amount: 2.4, color: 'bg-blue-300' },
+                  { type: 'Talc Ovarian Cancer', amount: 2.8, color: 'bg-purple-300' },
+                  { type: 'Roblox / Gaming', amount: 0.6, color: 'bg-red-300' },
                 ].map((item) => (
                   <div key={item.type}>
                     <div className="flex justify-between text-sm mb-1">
