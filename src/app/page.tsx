@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
+import { useLanguage } from '@/lib/i18n';
 import {
   Shield,
   Search,
@@ -1019,6 +1020,7 @@ const Navbar = memo(function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [countdownDismissed, setCountdownDismissed] = useState(false);
   const activeSection = useScrollSpy();
+  const { locale, setLocale } = useLanguage();
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setCountdownDismissed(sessionStorage.getItem('claimguard-countdown-dismissed') === 'true'));
@@ -1042,13 +1044,26 @@ const Navbar = memo(function Navbar() {
     document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
+  const { t } = useLanguage();
+  const navLinks = useMemo(() => [
+    { label: t('nav.home'), href: '#hero' },
+    { label: t('nav.howItWorks'), href: '#how-it-works' },
+    { label: t('nav.services'), href: '#services' },
+    { label: t('nav.eligibilityQuiz'), href: '#eligibility-quiz' },
+    { label: t('nav.calculator'), href: '#settlement-calculator' },
+    { label: t('nav.trackClaim'), href: '#track-claim' },
+    { label: t('nav.resources'), href: '#resources' },
+    { label: t('nav.faq'), href: '#faq' },
+    { label: t('nav.about'), href: '#about' },
+    { label: t('nav.contact'), href: '#contact' },
+  ], [locale, t]);
   const navbarTop = scrolled || countdownDismissed ? 'top-0' : 'top-10';
 
   return (
     <nav className={`fixed left-0 right-0 z-50 transition-all duration-300 ${navbarTop} ${scrolled ? 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-lg border-b border-gold/20 dark:border-gray-700' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <button onClick={() => handleClick('#hero')} className="flex items-center gap-2 group" aria-label="Go to homepage">
+          <button onClick={() => handleClick('#hero')} className="flex items-center gap-2 group" aria-label={t('nav.goToHomepage')}>
             <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-navy flex items-center justify-center group-hover:bg-navy-light transition-colors">
               <Shield className="w-5 h-5 md:w-6 md:h-6 text-gold" />
             </div>
@@ -1058,7 +1073,7 @@ const Navbar = memo(function Navbar() {
           </button>
 
           <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
+            {navLinks.map((link) => {
               const isActive = activeSection === link.href;
               return (
                 <button
@@ -1072,8 +1087,19 @@ const Navbar = memo(function Navbar() {
               );
             })}
             <Button onClick={() => handleClick('#contact')} size="sm" className="ml-2 bg-gold hover:bg-gold-dark text-white font-semibold animate-pulse-glow">
-              Get Started Now
+              {t('nav.getStarted')}
             </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setLocale(locale === 'en' ? 'es' : 'en')} className="ml-2 flex items-center gap-1 p-2 rounded-lg transition-colors hover:bg-gold/10" aria-label={t('lang.dismiss')}>
+                    <Globe className="w-5 h-5 text-gold" />
+                    <span className="text-xs font-bold">{locale === 'en' ? 'ES' : 'EN'}</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p className="max-w-xs">{locale === 'en' ? 'Cambiar a Español' : 'Switch to English'}</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
           </div>
 
@@ -1085,7 +1111,7 @@ const Navbar = memo(function Navbar() {
                 </button>
               </SheetTrigger>
               <SheetContent side="right" className="w-80 bg-white dark:bg-gray-950 p-0">
-                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <SheetTitle className="sr-only">{t('nav.navigationMenu')}</SheetTitle>
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between p-4 border-b border-border">
                     <div className="flex items-center gap-2">
@@ -1096,14 +1122,14 @@ const Navbar = memo(function Navbar() {
                     </div>
                   </div>
                   <ScrollArea className="flex-1 py-4">
-                    {NAV_LINKS.map((link) => (
+                    {navLinks.map((link) => (
                       <button key={link.href} onClick={() => handleClick(link.href)} className="w-full text-left px-6 py-3 text-base font-medium text-navy dark:text-gray-200 hover:bg-navy/5 dark:hover:bg-gray-800 hover:text-gold transition-colors flex items-center justify-between">
                         {link.label}
                         <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </button>
                     ))}
                     <button onClick={() => handleClick('#track-claim')} className="w-full text-left px-6 py-3 text-base font-bold text-gold hover:bg-gold/5 transition-colors flex items-center justify-between">
-                      <span className="flex items-center gap-2"><Search className="w-4 h-4" />Track My Claim</span>
+                      <span className="flex items-center gap-2"><Search className="w-4 h-4" />{t('nav.trackMyClaim')}</span>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </button>
                   </ScrollArea>
@@ -1111,7 +1137,7 @@ const Navbar = memo(function Navbar() {
                     <a href="tel:8005550199" className="flex items-center justify-center gap-2 mb-3 text-sm text-navy dark:text-gray-300 font-bold">
                       <Phone className="w-4 h-4 text-gold" />(800) 555-0199
                     </a>
-                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">Get Started Now</Button>
+                    <Button onClick={() => handleClick('#contact')} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold">{t('nav.getStarted')}</Button>
                   </div>
                 </div>
               </SheetContent>
@@ -1128,6 +1154,7 @@ const Navbar = memo(function Navbar() {
    ═══════════════════════════════════════════════════════════════ */
 
 function CountdownBanner() {
+  const { t } = useLanguage();
   const deadlines = useMemo(() => [
     { label: 'NEC Baby Formula', deadline: '2026-09-30T23:59:59Z', emoji: '👶' },
     { label: 'Depo Provera', deadline: '2026-12-31T23:59:59Z', emoji: '💊' },
@@ -1189,15 +1216,15 @@ function CountdownBanner() {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 text-sm">
             <AlertCircle className="w-4 h-4 shrink-0 hidden sm:block" aria-hidden="true" />
-            <span className="font-medium hidden sm:inline">{activeDeadline.label} filing deadline approaching!</span>
-            <span className="font-medium sm:hidden">{activeDeadline.label} deadline!</span>
+            <span className="font-medium hidden sm:inline">{activeDeadline.label} {t('countdown.filingDeadline')}</span>
+            <span className="font-medium sm:hidden">{activeDeadline.label} {t('countdown.deadlineShort')}</span>
             <span className="countdown-timer font-bold flex items-center gap-1" aria-label={`${days} days ${hours} hours ${minutes} minutes remaining`}>
               <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{days}d</span>
               <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{hours}h</span>
               <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{minutes}m</span>
             </span>
-            <button onClick={scrollToContact} className="font-bold underline hover:no-underline ml-1 whitespace-nowrap">Get Help Now &rarr;</button>
-            <button onClick={dismiss} className="ml-2 p-0.5 hover:bg-white/20 rounded transition-colors" aria-label="Dismiss deadline banner">
+            <button onClick={scrollToContact} className="font-bold underline hover:no-underline ml-1 whitespace-nowrap">{t('countdown.getHelp')}</button>
+            <button onClick={dismiss} className="ml-2 p-0.5 hover:bg-white/20 rounded transition-colors" aria-label={t('countdown.dismiss')}>
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -1235,9 +1262,11 @@ function HeroSection() {
   const [isDeleting, setIsDeleting] = useState(false);
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 500], [0, 150]);
+  const { t, locale } = useLanguage();
+  const headlines = useMemo(() => [t('hero.headline0'), t('hero.headline1'), t('hero.headline2'), t('hero.headline3')], [locale, t]);
 
   useEffect(() => {
-    const current = HERO_HEADLINES[headlineIdx];
+    const current = headlines[headlineIdx];
     let timeout: ReturnType<typeof setTimeout>;
     if (!isDeleting && charIdx < current.length) {
       timeout = setTimeout(() => setCharIdx(c => c + 1), 50);
@@ -1246,14 +1275,14 @@ function HeroSection() {
     } else if (isDeleting && charIdx > 0) {
       timeout = setTimeout(() => setCharIdx(c => c - 1), 30);
     } else if (isDeleting && charIdx === 0) {
-      const nextIdx = (headlineIdx + 1) % HERO_HEADLINES.length;
+      const nextIdx = (headlineIdx + 1) % headlines.length;
       const id = requestAnimationFrame(() => { setIsDeleting(false); setHeadlineIdx(nextIdx); });
       return () => { clearTimeout(timeout); cancelAnimationFrame(id); };
     }
     return () => clearTimeout(timeout);
-  }, [charIdx, isDeleting, headlineIdx]);
+  }, [charIdx, isDeleting, headlineIdx, headlines]);
 
-  const displayText = HERO_HEADLINES[headlineIdx].slice(0, charIdx);
+  const displayText = headlines[headlineIdx].slice(0, charIdx);
 
   const scrollTo = useCallback((id: string) => {
     document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -1281,29 +1310,29 @@ function HeroSection() {
           <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
             <Badge className="mb-6 px-4 py-1.5 bg-gold/20 text-gold border-gold/30 text-sm font-medium backdrop-blur-sm">
               <Shield className="w-3.5 h-3.5 mr-1.5" />
-              Trusted by 1,250+ Claimants Nationwide
+              {t('hero.badge')}
             </Badge>
           </motion.div>
 
           <motion.h1 initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 relative" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             {/* Ghost text reserves space for the longest headline — prevents layout shift */}
-            <span className="invisible block" aria-hidden="true">{HERO_HEADLINES.reduce((a, b) => a.length >= b.length ? a : b, '')}</span>
+            <span className="invisible block" aria-hidden="true">{headlines.reduce((a, b) => a.length >= b.length ? a : b, '')}</span>
             <span className="typewriter-cursor absolute top-0 left-0 right-0">{displayText}</span>
           </motion.h1>
 
           <motion.p initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.25 } } }} className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed">
-            Mass tort claims can be overwhelming. ClaimGuard Pro guides you through every step — from tracking your claim status to correcting paperwork errors — so you get the compensation you deserve.
+            {t('hero.description')}
           </motion.p>
 
           <motion.div initial="hidden" animate="visible" variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.35 } } }} className="flex flex-col sm:flex-row gap-4">
             <Button onClick={() => scrollTo('#track-claim')} size="lg" className="bg-gold hover:bg-gold-dark text-white font-semibold text-base px-8 py-6 shadow-xl shadow-gold/20 transition-all hover:shadow-2xl hover:shadow-gold/30 hover:scale-[1.02]">
-              <Search className="w-5 h-5 mr-2" />Track My Claim
+              <Search className="w-5 h-5 mr-2" />{t('hero.trackClaim')}
             </Button>
             <Button onClick={() => scrollTo('#eligibility-quiz')} size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold text-base px-8 py-6 backdrop-blur-sm transition-all hover:scale-[1.02]">
-              <Target className="w-5 h-5 mr-2" />Check Eligibility
+              <Target className="w-5 h-5 mr-2" />{t('hero.checkEligibility')}
             </Button>
             <Button onClick={() => scrollTo('#settlement-calculator')} size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold text-base px-8 py-6 backdrop-blur-sm transition-all hover:scale-[1.02]">
-              <DollarSign className="w-5 h-5 mr-2" />Estimate Recovery
+              <DollarSign className="w-5 h-5 mr-2" />{t('hero.estimateRecovery')}
             </Button>
           </motion.div>
 
@@ -1311,25 +1340,25 @@ function HeroSection() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 cursor-help"><Lock className="w-4 h-4 text-gold" /><span>Secure & Confidential</span></div>
+                  <div className="flex items-center gap-2 cursor-help"><Lock className="w-4 h-4 text-gold" /><span>{t('hero.secureLabel')}</span></div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom"><p className="max-w-xs">256-bit encryption protects all your personal and medical information. HIPAA-compliant systems.</p></TooltipContent>
+                <TooltipContent side="bottom"><p className="max-w-xs">{t('hero.secureTooltip')}</p></TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 cursor-help"><CheckCircle2 className="w-4 h-4 text-gold" /><span>100% Free Service</span></div>
+                  <div className="flex items-center gap-2 cursor-help"><CheckCircle2 className="w-4 h-4 text-gold" /><span>{t('hero.freeLabel')}</span></div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom"><p className="max-w-xs">Every service we provide is completely free — tracking, assessments, document correction, and personalized support.</p></TooltipContent>
+                <TooltipContent side="bottom"><p className="max-w-xs">{t('hero.freeTooltip')}</p></TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 cursor-help"><Clock className="w-4 h-4 text-gold" /><span>24/7 Support Available</span></div>
+                  <div className="flex items-center gap-2 cursor-help"><Clock className="w-4 h-4 text-gold" /><span>{t('hero.supportLabel')}</span></div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom"><p className="max-w-xs">Round-the-clock support via phone, email, and live chat. Average response time under 30 seconds.</p></TooltipContent>
+                <TooltipContent side="bottom"><p className="max-w-xs">{t('hero.supportTooltip')}</p></TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </motion.div>
@@ -1338,17 +1367,17 @@ function HeroSection() {
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-8">
             <div className="text-center">
               <div className="text-2xl md:text-3xl font-bold text-white"><CountUpNumber value={12547} />+</div>
-              <div className="text-white/50 text-xs font-medium mt-1">Claims Filed</div>
+              <div className="text-white/50 text-xs font-medium mt-1">{t('hero.claimsFiled')}</div>
             </div>
             <div className="w-px h-10 bg-white/20 hidden md:block" />
             <div className="text-center">
               <div className="text-2xl md:text-3xl font-bold text-gold">$<CountUpNumber value={47} />M+</div>
-              <div className="text-white/50 text-xs font-medium mt-1">Recovered</div>
+              <div className="text-white/50 text-xs font-medium mt-1">{t('hero.recovered')}</div>
             </div>
             <div className="w-px h-10 bg-white/20 hidden md:block" />
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 text-sm font-medium">Live</span>
+              <span className="text-emerald-400 text-sm font-medium">{t('hero.live')}</span>
             </div>
           </div>
         </div>
@@ -1402,6 +1431,7 @@ const TRUST_STATS = [
 ];
 
 const TrustedBySection = memo(function TrustedBySection() {
+  const { t } = useLanguage();
   return (
     <section className="relative py-16 md:py-24 bg-gray-950 overflow-hidden">
       {/* Animated background grid */}
@@ -1424,25 +1454,28 @@ const TrustedBySection = memo(function TrustedBySection() {
                 </div>
               ))}
             </div>
-            <span className="text-gold text-xs font-semibold uppercase tracking-wider">Trusted Partnership</span>
+            <span className="text-gold text-xs font-semibold uppercase tracking-wider">{t('trusted.badge')}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             Trusted by <span className="gradient-text-gold">Top Mass Tort</span> Law Firms
           </h2>
           <p className="text-gray-400 text-lg max-w-3xl mx-auto leading-relaxed">
-            For over 15 years, leading plaintiffs&apos; attorneys across the nation have relied on ClaimGuard Pro to streamline their mass tort case management, enhance client outcomes, and maximize settlement recoveries.
+            {t('trusted.description')}
           </p>
         </motion.div>
 
         {/* Trust Stats Bar */}
         <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 mt-10">
-          {TRUST_STATS.map((stat) => (
+          {TRUST_STATS.map((stat, statIdx) => {
+            const labelKeys = ['trusted.years', 'trusted.lawFirms', 'trusted.casesCoManaged', 'trusted.states'] as const;
+            return (
             <div key={stat.label} className="text-center p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-gold/30 transition-colors duration-300 group">
               <stat.icon className="w-5 h-5 text-gold mx-auto mb-2 group-hover:scale-110 transition-transform" />
               <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
-              <div className="text-gray-500 text-xs uppercase tracking-wider mt-1">{stat.label}</div>
+              <div className="text-gray-500 text-xs uppercase tracking-wider mt-1">{t(labelKeys[statIdx])}</div>
             </div>
-          ))}
+            );
+          })}
         </motion.div>
 
         {/* Law Firms Grid */}
@@ -1476,11 +1509,11 @@ const TrustedBySection = memo(function TrustedBySection() {
                   <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
                     <div className="flex items-center gap-1.5">
                       <CalendarDays className="w-3 h-3 text-gold/60" />
-                      <span className="text-gray-500 text-[11px]">{firm.years} Years</span>
+                      <span className="text-gray-500 text-[11px]">{firm.years} {t('trusted.yearsLabel')}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <FileText className="w-3 h-3 text-gold/60" />
-                      <span className="text-gray-500 text-[11px]">{firm.cases} Cases</span>
+                      <span className="text-gray-500 text-[11px]">{firm.cases} {t('trusted.casesLabel')}</span>
                     </div>
                     <div className="flex items-center gap-0.5">
                       {[1,2,3,4,5].map(s => (
@@ -1498,9 +1531,9 @@ const TrustedBySection = memo(function TrustedBySection() {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.4 }} className="mt-12 text-center">
           <div className="inline-flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-full px-6 py-3">
             <BadgeCheck className="w-5 h-5 text-gold" />
-            <span className="text-gray-300 text-sm font-medium">Verified partnerships with 50+ plaintiffs&apos; firms across all 50 states</span>
+            <span className="text-gray-300 text-sm font-medium">{t('trusted.verified')}</span>
             <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-gold/60" />
-            <span className="hidden sm:inline text-gold text-sm font-semibold">Since 2009</span>
+            <span className="hidden sm:inline text-gold text-sm font-semibold">{t('trusted.since')}</span>
           </div>
         </motion.div>
       </div>
@@ -1531,16 +1564,17 @@ function MediaBarSection() {
 
 function HowItWorksSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   return (
     <section id="how-it-works" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">How It Works</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('howItWorks.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Five Simple Steps to <span className="gradient-text-gold">Resolve Your Claim</span>
+            {t('howItWorks.title')}
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            We&apos;ve streamlined the claims assistance process so you can focus on what matters — getting the compensation you deserve.
+            {t('howItWorks.description')}
           </p>
         </motion.div>
 
@@ -1558,10 +1592,10 @@ function HowItWorksSection() {
                     <item.icon className="w-6 h-6 md:w-7 md:h-7" />
                   </div>
                   <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-navy flex items-center justify-center text-white font-bold text-sm md:text-xs mx-auto -mt-1 mb-2">{item.step}</div>
-                  <CardTitle className="text-sm md:text-base font-bold text-navy dark:text-gray-100">{item.title}</CardTitle>
+                  <CardTitle className="text-sm md:text-base font-bold text-navy dark:text-gray-100">{t(`howItWorks.step${item.step}.title`)}</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-muted-foreground dark:text-gray-400 text-xs md:text-sm leading-relaxed text-center">{item.description}</p>
+                  <p className="text-muted-foreground dark:text-gray-400 text-xs md:text-sm leading-relaxed text-center">{t(`howItWorks.step${item.step}.description`)}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -1579,16 +1613,17 @@ function HowItWorksSection() {
 function ServicesSection() {
   const { ref, inView } = useInView(0.1);
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const { t } = useLanguage();
 
   return (
     <section id="services" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-navy/10 text-navy border-navy/20 text-xs font-semibold uppercase tracking-wider dark:text-gray-300 dark:border-gray-600">Our Services</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-navy/10 text-navy border-navy/20 text-xs font-semibold uppercase tracking-wider dark:text-gray-300 dark:border-gray-600">{t('services.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Comprehensive Claims <span className="gradient-text-gold">Assistance</span>
+            {t('services.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">From tracking to resolution, we provide end-to-end support for your mass tort claim.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('services.description')}</p>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1603,29 +1638,29 @@ function ServicesSection() {
                         <div className="w-12 h-12 rounded-xl bg-navy/5 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-gold/10 transition-colors">
                           <service.icon className="w-6 h-6 text-navy dark:text-gray-300 group-hover:text-gold transition-colors" />
                         </div>
-                        <CardTitle className="text-lg font-bold text-navy dark:text-gray-100">{service.title}</CardTitle>
+                        <CardTitle className="text-lg font-bold text-navy dark:text-gray-100">{t(`services.s${idx}.title`)}</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-0 relative">
-                        <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-3">{service.description}</p>
+                        <p className="text-muted-foreground dark:text-gray-400 text-sm leading-relaxed mb-3">{t(`services.s${idx}.description`)}</p>
                         <button
                           onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
                           aria-expanded={expandedIdx === idx}
                           className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors"
                         >
-                          {expandedIdx === idx ? 'Show Less' : 'Learn More'}
+                          {expandedIdx === idx ? t('services.showLess') : t('services.learnMore')}
                           {expandedIdx === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                         </button>
                         <AnimatePresence>
                           {expandedIdx === idx && (
                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
-                              <p className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">{service.detail}</p>
+                              <p className="text-sm text-navy/70 dark:text-gray-400 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">{t(`services.s${idx}.detail`)}</p>
                             </motion.div>
                           )}
                         </AnimatePresence>
                       </CardContent>
                     </Card>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom"><p className="max-w-xs">{service.detail}</p></TooltipContent>
+                  <TooltipContent side="bottom"><p className="max-w-xs">{t(`services.s${idx}.detail`)}</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </motion.div>
@@ -1642,39 +1677,40 @@ function ServicesSection() {
 
 function WhyDifferentSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   return (
     <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Why We&apos;re Different</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('whyDiff.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            The ClaimGuard <span className="gradient-text-gold">Advantage</span>
+            {t('whyDiff.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">See how our comprehensive approach compares to other claims assistance services.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('whyDiff.description')}</p>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer}>
           {/* Desktop table view */}
           <Card className="border-0 shadow-lg overflow-hidden hidden md:block">
             <div className="grid grid-cols-3 bg-navy dark:bg-gray-900 text-white">
-              <div className="p-4 text-left font-semibold text-sm border-r border-white/10">Feature</div>
+              <div className="p-4 text-left font-semibold text-sm border-r border-white/10">{t('whyDiff.feature')}</div>
               <div className="p-4 text-center font-semibold text-sm border-r border-white/10">
-                <div className="flex items-center justify-center gap-2"><Shield className="w-4 h-4 text-gold" />ClaimGuard Pro</div>
+                <div className="flex items-center justify-center gap-2"><Shield className="w-4 h-4 text-gold" />{t('whyDiff.us')}</div>
               </div>
-              <div className="p-4 text-center font-semibold text-sm">Typical Service</div>
+              <div className="p-4 text-center font-semibold text-sm">{t('whyDiff.typical')}</div>
             </div>
             {COMPARISON_DATA.map((row, idx) => (
               <motion.div key={row.feature} variants={fadeInUp}>
                 <div className={`grid grid-cols-3 ${idx % 2 === 0 ? 'bg-white dark:bg-gray-800/50' : 'bg-gray-50/50 dark:bg-gray-800/30'} border-b border-gray-100 dark:border-gray-700 last:border-0`}>
-                  <div className="p-4 text-sm font-medium text-navy dark:text-gray-200 border-r border-gray-100 dark:border-gray-700">{row.feature}</div>
+                  <div className="p-4 text-sm font-medium text-navy dark:text-gray-200 border-r border-gray-100 dark:border-gray-700">{t(`whyDiff.f${idx}`)}</div>
                   <div className="p-4 text-center border-r border-gray-100 dark:border-gray-700">
                     <div className="flex items-center justify-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" /><span className="text-sm text-navy/80 dark:text-gray-300">{row.us.label}</span>
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" /><span className="text-sm text-navy/80 dark:text-gray-300">{t(`whyDiff.f${idx}.us`)}</span>
                     </div>
                   </div>
                   <div className="p-4 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" /><span className="text-sm text-muted-foreground">{row.others.label}</span>
+                      <X className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" /><span className="text-sm text-muted-foreground">{t(`whyDiff.f${idx}.other`)}</span>
                     </div>
                   </div>
                 </div>
@@ -1687,20 +1723,20 @@ function WhyDifferentSection() {
             {COMPARISON_DATA.map((row) => (
               <Card key={row.feature} className="border-0 shadow-md bg-white dark:bg-gray-800/50 dark:border-gray-700">
                 <CardContent className="p-4">
-                  <h4 className="font-semibold text-navy dark:text-gray-100 text-sm mb-3">{row.feature}</h4>
+                  <h4 className="font-semibold text-navy dark:text-gray-100 text-sm mb-3">{t(`whyDiff.f${COMPARISON_DATA.indexOf(row)}`)}</h4>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2 p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                       <div>
-                        <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">ClaimGuard Pro</span>
-                        <p className="text-xs text-emerald-600/80 dark:text-emerald-400/70">{row.us.label}</p>
+                        <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{t('whyDiff.us')}</span>
+                        <p className="text-xs text-emerald-600/80 dark:text-emerald-400/70">{t(`whyDiff.f${COMPARISON_DATA.indexOf(row)}.us`)}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2 p-2 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
                       <X className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
                       <div>
-                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Typical Service</span>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">{row.others.label}</p>
+                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t('whyDiff.typical')}</span>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{t(`whyDiff.f${COMPARISON_DATA.indexOf(row)}.other`)}</p>
                       </div>
                     </div>
                   </div>
@@ -1750,6 +1786,7 @@ const SETTLEMENT_RANGES: Record<string, { min: number; max: number }> = {
 
 function SettlementCalculatorSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const [caseType, setCaseType] = useState('');
   const [severity, setSeverity] = useState('');
   const [showResult, setShowResult] = useState(false);
@@ -1767,12 +1804,12 @@ function SettlementCalculatorSection() {
     <section id="settlement-calculator" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Settlement Calculator</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('calc.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Estimate Your <span className="gradient-text-gold">Potential Recovery</span>
+            {t('calc.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Get a rough estimate of potential settlement ranges based on your case type and condition severity.</p>
-          <p className="text-xs text-muted-foreground mt-2">This calculator is for informational purposes only and does not guarantee any specific outcome.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('calc.description')}</p>
+          <p className="text-xs text-muted-foreground mt-2">{t('calc.disclaimer')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn}>
           <Card className="border-2 border-gold/20 dark:border-gray-700 shadow-xl bg-white dark:bg-gray-800/50">
@@ -1780,41 +1817,41 @@ function SettlementCalculatorSection() {
               {!showResult ? (
                 <div className="space-y-6">
                   <div>
-                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">Case Type</Label>
+                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">{t('calc.caseType')}</Label>
                     <Select value={caseType} onValueChange={setCaseType}>
-                      <SelectTrigger className="w-full"><SelectValue placeholder="Select your case type..." /></SelectTrigger>
+                      <SelectTrigger className="w-full"><SelectValue placeholder={t('calc.selectCaseType')} /></SelectTrigger>
                       <SelectContent>{Object.keys(SETTLEMENT_RANGES).map((ct) => (<SelectItem key={ct} value={ct}>{ct}</SelectItem>))}</SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">Condition Severity</Label>
+                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">{t('calc.severity')}</Label>
                     <Select value={severity} onValueChange={setSeverity}>
-                      <SelectTrigger className="w-full"><SelectValue placeholder="How severe is your condition?" /></SelectTrigger>
+                      <SelectTrigger className="w-full"><SelectValue placeholder={t('calc.selectSeverity')} /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Mild">Mild — Minor symptoms, minimal treatment</SelectItem>
-                        <SelectItem value="Moderate">Moderate — Ongoing treatment, daily life impact</SelectItem>
-                        <SelectItem value="Severe">Severe — Significant impact, extensive treatment</SelectItem>
-                        <SelectItem value="Life-Threatening">Life-Threatening — Critical, long-term care</SelectItem>
+                        <SelectItem value="Mild">{t('calc.mild')}</SelectItem>
+                        <SelectItem value="Moderate">{t('calc.moderate')}</SelectItem>
+                        <SelectItem value="Severe">{t('calc.severe')}</SelectItem>
+                        <SelectItem value="Life-Threatening">{t('calc.lifeThreatening')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button onClick={calculate} disabled={!caseType || !severity} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3"><Calculator className="w-4 h-4 mr-2" />Calculate Estimate</Button>
+                  <Button onClick={calculate} disabled={!caseType || !severity} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3"><Calculator className="w-4 h-4 mr-2" />{t('calc.calculate')}</Button>
                 </div>
               ) : (
                 <AnimatePresence mode="wait"><motion.div key="result" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
                   <div className="text-center">
                     <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4"><DollarSign className="w-8 h-8 text-gold" /></div>
-                    <h3 className="text-xl font-bold text-navy dark:text-white mb-2">Estimated Range</h3>
+                    <h3 className="text-xl font-bold text-navy dark:text-white mb-2">{t('calc.estimatedRange')}</h3>
                     <p className="text-sm text-muted-foreground mb-4">{caseType} — {severity}</p>
                     <div className="flex items-center justify-center gap-4 mb-6">
-                      <div className="text-center"><p className="text-xs text-muted-foreground uppercase tracking-wider">Low Estimate</p><p className="text-2xl md:text-3xl font-bold text-navy dark:text-white">${(result?.low ?? 0).toLocaleString()}</p></div>
+                      <div className="text-center"><p className="text-xs text-muted-foreground uppercase tracking-wider">{t('calc.lowEstimate')}</p><p className="text-2xl md:text-3xl font-bold text-navy dark:text-white">${(result?.low ?? 0).toLocaleString()}</p></div>
                       <div className="text-gray-300 dark:text-gray-600 text-2xl">—</div>
-                      <div className="text-center"><p className="text-xs text-muted-foreground uppercase tracking-wider">High Estimate</p><p className="text-2xl md:text-3xl font-bold text-gold">${(result?.high ?? 0).toLocaleString()}</p></div>
+                      <div className="text-center"><p className="text-xs text-muted-foreground uppercase tracking-wider">{t('calc.highEstimate')}</p><p className="text-2xl md:text-3xl font-bold text-gold">${(result?.high ?? 0).toLocaleString()}</p></div>
                     </div>
-                    <p className="text-xs text-muted-foreground mb-6">Estimate based on historical settlement data. Actual results vary by individual circumstances.</p>
+                    <p className="text-xs text-muted-foreground mb-6">{t('calc.estimateDisclaimer')}</p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold"><Phone className="w-4 h-4 mr-2" />Get Expert Review</Button>
-                      <Button onClick={resetCalc} variant="outline" className="flex-1 dark:border-gray-600 dark:text-gray-200"><RefreshCw className="w-4 h-4 mr-2" />Recalculate</Button>
+                      <Button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold"><Phone className="w-4 h-4 mr-2" />{t('calc.getExpertReview')}</Button>
+                      <Button onClick={resetCalc} variant="outline" className="flex-1 dark:border-gray-600 dark:text-gray-200"><RefreshCw className="w-4 h-4 mr-2" />{t('calc.recalculate')}</Button>
                     </div>
                   </div>
                 </motion.div></AnimatePresence>
@@ -1832,19 +1869,20 @@ function EligibilityQuizSection() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Partial<QuizAnswers>>({});
   const [showResult, setShowResult] = useState(false);
+  const { t, locale } = useLanguage();
 
   const quizQuestions = useMemo(() => [
-    { question: 'Have you filed a mass tort claim?', type: 'radio' as const, options: ['Yes', 'No'], key: 'q1' as keyof QuizAnswers },
-    { question: 'What type of claim are you interested in?', type: 'select' as const, options: ['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Zantac', 'Hair Relaxer', 'CPAP Machines', 'Social Media Lawsuits', 'Rideshare Assault', 'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention', '3M Earplugs', 'Exactech Implants', 'Other'], key: 'q2' as keyof QuizAnswers },
-    { question: 'What is your current claim status?', type: 'select' as const, options: ['Pending', 'Under Review', 'Approved', 'Denied', 'Correction Needed', 'Not Yet Filed'], key: 'q3' as keyof QuizAnswers },
-    { question: 'Have you received any correspondence about your claim?', type: 'radio' as const, options: ['Yes', 'No'], key: 'q4' as keyof QuizAnswers },
-    { question: 'What is your primary concern?', type: 'select' as const, options: ['Missing documents', 'Denied claim', 'No updates on status', 'Incomplete forms', 'Need help filing', 'Other'], key: 'q5' as keyof QuizAnswers },
-  ], []);
+    { question: t('quiz.q1'), type: 'radio' as const, options: ['Yes', 'No'], key: 'q1' as keyof QuizAnswers },
+    { question: t('quiz.q2'), type: 'select' as const, options: ['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Zantac', 'Hair Relaxer', 'CPAP Machines', 'Social Media Lawsuits', 'Rideshare Assault', 'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention', '3M Earplugs', 'Exactech Implants', 'Other'], key: 'q2' as keyof QuizAnswers },
+    { question: t('quiz.q3'), type: 'select' as const, options: ['Pending', 'Under Review', 'Approved', 'Denied', 'Correction Needed', 'Not Yet Filed'], key: 'q3' as keyof QuizAnswers },
+    { question: t('quiz.q4'), type: 'radio' as const, options: ['Yes', 'No'], key: 'q4' as keyof QuizAnswers },
+    { question: t('quiz.q5'), type: 'select' as const, options: ['Missing documents', 'Denied claim', 'No updates on status', 'Incomplete forms', 'Need help filing', 'Other'], key: 'q5' as keyof QuizAnswers },
+  ], [locale, t]);
 
   const handleNext = useCallback(() => {
     if (step < quizQuestions.length - 1) setStep(s => s + 1);
     else { setShowResult(true); announce('Quiz complete. Your assessment results are shown below.', 'assertive'); }
-  }, [step, quizQuestions.length]);
+  }, [step, quizQuestions.length, locale, t]);
 
   const handleBack = useCallback(() => setStep(s => Math.max(0, s - 1)), []);
 
@@ -1852,17 +1890,17 @@ function EligibilityQuizSection() {
     const a = answers;
     let score = 60;
     const recommendations: string[] = [];
-    if (a.q1 === 'No') { score -= 15; recommendations.push('You may benefit from our claim filing assistance — we can guide you through the entire process.'); }
-    else { recommendations.push("Great that you've already filed! We can help track your progress and resolve any issues."); }
-    if (a.q3 === 'Denied') { score -= 20; recommendations.push('A denied claim can often be appealed. Our specialists have a high success rate with appeals.'); }
-    if (a.q3 === 'Correction Needed') { score -= 10; recommendations.push('We specialize in document correction. Let us help you fix the issues and resubmit quickly.'); }
-    if (a.q3 === 'Not Yet Filed') { score -= 15; recommendations.push('Filing soon is critical — deadlines are approaching for many settlement programs.'); }
-    if (a.q5 === 'Missing documents') { recommendations.push('Our document checklist will help you identify and obtain everything you need.'); score -= 5; }
-    if (a.q5 === 'Denied claim') { recommendations.push("Don't lose hope — we can review your denial and build a strong appeal strategy."); score -= 10; }
-    if (score >= 75) return { score: Math.min(score, 95), label: 'Strong Candidate', recommendations, color: 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-800' };
-    if (score >= 50) return { score: Math.min(score, 74), label: 'Good Potential', recommendations, color: 'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-800' };
-    return { score: Math.max(score, 25), label: 'Needs Assessment', recommendations, color: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-900/20 dark:border-blue-800' };
-  }, [answers]);
+    if (a.q1 === 'No') { score -= 15; recommendations.push(t('quiz.r1')); }
+    else { recommendations.push(t('quiz.r2')); }
+    if (a.q3 === 'Denied') { score -= 20; recommendations.push(t('quiz.r3')); }
+    if (a.q3 === 'Correction Needed') { score -= 10; recommendations.push(t('quiz.r4')); }
+    if (a.q3 === 'Not Yet Filed') { score -= 15; recommendations.push(t('quiz.r5')); }
+    if (a.q5 === 'Missing documents') { recommendations.push(t('quiz.r6')); score -= 5; }
+    if (a.q5 === 'Denied claim') { recommendations.push(t('quiz.r7')); score -= 10; }
+    if (score >= 75) return { score: Math.min(score, 95), label: t('quiz.strongCandidate'), recommendations, color: 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-800' };
+    if (score >= 50) return { score: Math.min(score, 74), label: t('quiz.goodPotential'), recommendations, color: 'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-800' };
+    return { score: Math.max(score, 25), label: t('quiz.needsAssessment'), recommendations, color: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-900/20 dark:border-blue-800' };
+  }, [answers, locale, t]);
 
   const resetQuiz = useCallback(() => { setStep(0); setAnswers({}); setShowResult(false); }, []);
   const currentQ = quizQuestions[step];
@@ -1871,11 +1909,11 @@ function EligibilityQuizSection() {
     <section id="eligibility-quiz" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Eligibility Quiz</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('quiz.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Check Your <span className="gradient-text-gold">Eligibility</span>
+            {t('quiz.title')}
           </h2>
-          <p className="text-muted-foreground text-lg">Answer 5 quick questions to find out if you may qualify for a mass tort claim.</p>
+          <p className="text-muted-foreground text-lg">{t('quiz.description')}</p>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn}>
@@ -1883,7 +1921,7 @@ function EligibilityQuizSection() {
             {!showResult && (
               <div className="bg-navy dark:bg-gray-900 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/70 text-sm font-medium">Question {step + 1} of {quizQuestions.length}</span>
+                  <span className="text-white/70 text-sm font-medium">{t('quiz.question').replace('{n}', String(step + 1)).replace('{total}', String(quizQuestions.length))}</span>
                   <span className="text-gold text-sm font-bold">{Math.round(((step) / quizQuestions.length) * 100)}%</span>
                 </div>
                 <div className="flex gap-2">
@@ -1903,7 +1941,7 @@ function EligibilityQuizSection() {
                         {currentQ.options.map(opt => (
                           <label key={opt} className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${answers[currentQ.key] === opt ? 'border-gold bg-gold/5 shadow-sm' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}>
                             <RadioGroupItem value={opt} />
-                            <span className="text-navy dark:text-gray-200 font-medium">{opt}</span>
+                            <span className="text-navy dark:text-gray-200 font-medium">{opt === 'Yes' ? t('quiz.yes') : opt === 'No' ? t('quiz.no') : opt === 'Other' ? t('quiz.other') : opt}</span>
                           </label>
                         ))}
                       </RadioGroup>
@@ -1914,17 +1952,17 @@ function EligibilityQuizSection() {
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${answers[currentQ.key] === opt ? 'border-gold bg-gold' : 'border-gray-300 dark:border-gray-500'}`}>
                               {answers[currentQ.key] === opt && <div className="w-2 h-2 rounded-full bg-white" />}
                             </div>
-                            <span className="text-navy dark:text-gray-200 font-medium">{opt}</span>
+                            <span className="text-navy dark:text-gray-200 font-medium">{opt === 'Yes' ? t('quiz.yes') : opt === 'No' ? t('quiz.no') : opt === 'Other' ? t('quiz.other') : opt}</span>
                           </label>
                         ))}
                       </div>
                     )}
                     <div className="flex justify-between mt-8">
                       <Button variant="outline" onClick={handleBack} disabled={step === 0} className="px-6">
-                        <ChevronLeft className="w-4 h-4 mr-1" />Back
+                        <ChevronLeft className="w-4 h-4 mr-1" />{t('quiz.back')}
                       </Button>
                       <Button onClick={handleNext} disabled={!answers[currentQ.key]} className="px-6 bg-gold hover:bg-gold-dark text-white font-semibold">
-                        {step === quizQuestions.length - 1 ? 'See Results' : 'Next'}<ChevronRight className="w-4 h-4 ml-1" />
+                        {step === quizQuestions.length - 1 ? t('quiz.seeResults') : t('quiz.next')}<ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
                     </div>
                   </motion.div>
@@ -1934,19 +1972,19 @@ function EligibilityQuizSection() {
                       <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
                         <Sparkles className="w-8 h-8 text-gold" />
                       </div>
-                      <h3 className="text-2xl font-bold text-navy dark:text-white mb-2">Your Assessment</h3>
+                      <h3 className="text-2xl font-bold text-navy dark:text-white mb-2">{t('quiz.yourAssessment')}</h3>
                       {(() => { const rec = getRecommendation(); return (
                         <>
                           <Badge className={`text-sm font-semibold px-4 py-1.5 border ${rec.color} mb-4`}>{rec.label}</Badge>
                           <div className="max-w-xs mx-auto mb-4">
                             <div className="flex justify-between mb-1">
-                              <span className="text-sm text-muted-foreground">Eligibility Score</span>
+                              <span className="text-sm text-muted-foreground">{t('quiz.eligibilityScore')}</span>
                               <span className="text-sm font-bold text-gold">{rec.score}%</span>
                             </div>
                             <Progress value={rec.score} className="h-3 [&>div]:bg-gold progress-animated" />
                           </div>
                           <div className="space-y-3 text-left mt-6">
-                            <p className="text-sm font-semibold text-navy dark:text-gray-200 uppercase tracking-wider">Personalized Recommendations:</p>
+                            <p className="text-sm font-semibold text-navy dark:text-gray-200 uppercase tracking-wider">{t('quiz.personalizedRecs')}</p>
                             {rec.recommendations.map((r, i) => (
                               <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
                                 <CheckCircle2 className="w-5 h-5 text-gold shrink-0 mt-0.5" />
@@ -1956,13 +1994,13 @@ function EligibilityQuizSection() {
                           </div>
                           <div className="flex flex-col sm:flex-row gap-3 mt-8">
                             <Button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold">
-                              <Phone className="w-4 h-4 mr-2" />Contact a Specialist
+                              <Phone className="w-4 h-4 mr-2" />{t('quiz.contactSpecialist')}
                             </Button>
                             <Button onClick={() => document.querySelector('#track-claim')?.scrollIntoView({ behavior: 'smooth' })} variant="outline" className="flex-1 dark:border-gray-600 dark:text-gray-200">
-                              <Search className="w-4 h-4 mr-2" />Track My Claim
+                              <Search className="w-4 h-4 mr-2" />{t('quiz.trackMyClaim')}
                             </Button>
                           </div>
-                          <button onClick={resetQuiz} className="mt-4 text-sm text-muted-foreground hover:text-gold transition-colors">Retake Quiz</button>
+                          <button onClick={resetQuiz} className="mt-4 text-sm text-muted-foreground hover:text-gold transition-colors">{t('quiz.retake')}</button>
                         </>
                       ); })()}
                     </div>
@@ -1990,8 +2028,8 @@ const STATS_TOOLTIP_DATA: Record<string, string> = {
   'Secure & Confidential': 'Bank-level 256-bit encryption with HIPAA-compliant systems. Regular third-party security audits.',
 };
 
-function StatCardComponent({ icon: Icon, value, suffix, label, inView, progress, prefix = '' }: {
-  icon: typeof Users; value: number; suffix: string; label: string; inView: boolean; progress: number; prefix?: string;
+function StatCardComponent({ icon: Icon, value, suffix, label, inView, progress, prefix = '', tooltip }: {
+  icon: typeof Users; value: number; suffix: string; label: string; inView: boolean; progress: number; prefix?: string; tooltip?: string;
 }) {
   const count = useCounter(value, inView);
   return (
@@ -2005,7 +2043,7 @@ function StatCardComponent({ icon: Icon, value, suffix, label, inView, progress,
               <div className="text-white/50 text-sm font-medium mb-3">{label}</div>
             </div>
           </TooltipTrigger>
-          <TooltipContent side="bottom"><p className="max-w-xs">{STATS_TOOLTIP_DATA[label] || 'Learn more about this metric.'}</p></TooltipContent>
+          <TooltipContent side="bottom"><p className="max-w-xs">{tooltip}</p></TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -2018,7 +2056,19 @@ function StatCardComponent({ icon: Icon, value, suffix, label, inView, progress,
 function WhyChooseUsSection() {
   const { ref, inView } = useInView(0.15);
   const { scrollY } = useScroll();
+  const { t, locale } = useLanguage();
   const orbY = useTransform(scrollY, [500, 1200], [0, -40]);
+  const statTooltips = useMemo(() => [
+    t('stats.tooltip0'), t('stats.tooltip1'), t('stats.tooltip2'), t('stats.tooltip3'), t('stats.tooltip4'), t('stats.tooltip5'),
+  ], [locale, t]);
+  const statsData = useMemo(() => [
+    { icon: Users, value: 1250, suffix: '+', label: t('stats.label0'), progress: 92 },
+    { icon: Award, value: 98, suffix: '%', label: t('stats.label1'), progress: 98 },
+    { icon: DollarSign, value: 47, suffix: 'M+', label: t('stats.label2'), progress: 85, prefix: '$' },
+    { icon: CalendarDays, value: 15, suffix: '+', label: t('stats.label3'), progress: 88 },
+    { icon: HeadphonesIcon, value: 24, suffix: '/7', label: t('stats.label4'), progress: 100 },
+    { icon: Lock, value: 100, suffix: '%', label: t('stats.label5'), progress: 100 },
+  ], [locale, t]);
 
   return (
     <section id="why-choose-us" className="py-14 md:py-20 bg-navy dark:bg-gray-950 relative overflow-hidden">
@@ -2026,15 +2076,15 @@ function WhyChooseUsSection() {
       <div className="hidden md:block absolute bottom-0 left-0 w-96 h-96 bg-navy-light/30 rounded-full blur-3xl" aria-hidden="true" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/20 text-gold border-gold/30 text-xs font-semibold uppercase tracking-wider">Why Choose Us</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/20 text-gold border-gold/30 text-xs font-semibold uppercase tracking-wider">{t('stats.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Your Trusted Partner in <span className="text-gold">Claims Recovery</span>
+            {t('stats.title')}
           </h2>
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">We&apos;ve helped thousands of claimants navigate complex mass tort processes with proven results.</p>
+          <p className="text-white/60 text-lg max-w-2xl mx-auto">{t('stats.description')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-          {STATS_DATA.map((stat) => (
-            <StatCardComponent key={stat.label} {...stat} inView={inView} prefix={stat.prefix} />
+          {statsData.map((stat, i) => (
+            <StatCardComponent key={stat.label} {...stat} inView={inView} prefix={stat.prefix} tooltip={statTooltips[i]} />
           ))}
         </motion.div>
 
@@ -2042,7 +2092,7 @@ function WhyChooseUsSection() {
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-10">
           <Card className="border-0 shadow-lg overflow-hidden bg-white/5 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white text-base font-bold">Recovery by Case Type</CardTitle>
+              <CardTitle className="text-white text-base font-bold">{t('stats.recoveryTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 md:p-6">
               <div className="space-y-3 max-h-[500px] md:max-h-none overflow-y-auto md:overflow-visible pr-1">
@@ -2113,6 +2163,7 @@ function SuccessStoriesCarousel() {
   const [direction, setDirection] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const totalSlides = SUCCESS_STORIES.length;
+  const { t } = useLanguage();
 
   const startAutoPlay = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -2236,14 +2287,14 @@ function SuccessStoriesCarousel() {
                   {/* Before → After */}
                   <div className="flex items-center gap-3 mb-5">
                     <div className="flex-1 text-center p-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50">
-                      <p className="text-[10px] uppercase tracking-wider text-red-500 dark:text-red-400 font-semibold mb-0.5">Before</p>
+                      <p className="text-[10px] uppercase tracking-wider text-red-500 dark:text-red-400 font-semibold mb-0.5">{t('stories.before')}</p>
                       <p className="text-sm font-bold text-red-700 dark:text-red-300">{story.beforeStatus}</p>
                     </div>
                     <div className="flex-shrink-0">
                       <ArrowRight className="w-5 h-5 text-gold" />
                     </div>
                     <div className="flex-1 text-center p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50">
-                      <p className="text-[10px] uppercase tracking-wider text-emerald-500 dark:text-emerald-400 font-semibold mb-0.5">After</p>
+                      <p className="text-[10px] uppercase tracking-wider text-emerald-500 dark:text-emerald-400 font-semibold mb-0.5">{t('stories.after')}</p>
                       <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{story.afterStatus}</p>
                     </div>
                   </div>
@@ -2257,7 +2308,7 @@ function SuccessStoriesCarousel() {
                     <span>{story.location}</span>
                     <span className="mx-1 text-gray-300 dark:text-gray-600">|</span>
                     <Clock className="w-3.5 h-3.5" />
-                    <span>Resolved in {story.timeline}</span>
+                    <span>{t('stories.resolved')} {story.timeline}</span>
                   </div>
 
                   {/* Quote */}
@@ -2284,19 +2335,19 @@ function SuccessStoriesCarousel() {
           size="icon"
           onClick={goPrev}
           className="rounded-full w-9 h-9 border-gray-200 dark:border-gray-700 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-colors"
-          aria-label="Previous story"
+          aria-label={t('stories.previous')}
         >
           <ChevronLeft className="w-4 h-4" />
         </Button>
 
-        <div className="flex items-center gap-2" role="tablist" aria-label="Success stories navigation">
+        <div className="flex items-center gap-2" role="tablist" aria-label={t('stories.navigation')}>
           {SUCCESS_STORIES.map((s, i) => (
             <button
               key={s.name}
               onClick={() => goTo(i)}
               role="tab"
               aria-selected={i === activeIndex}
-              aria-label={`View story of ${s.name}`}
+              aria-label={t('stories.viewStory').replace('{name}', s.name)}
               className={`
                 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold
                 ${i === activeIndex
@@ -2313,7 +2364,7 @@ function SuccessStoriesCarousel() {
           size="icon"
           onClick={goNext}
           className="rounded-full w-9 h-9 border-gray-200 dark:border-gray-700 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-colors"
-          aria-label="Next story"
+          aria-label={t('stories.next')}
         >
           <ChevronRight className="w-4 h-4" />
         </Button>
@@ -2321,7 +2372,7 @@ function SuccessStoriesCarousel() {
 
       {/* Counter */}
       <p className="text-center text-xs text-muted-foreground mt-3">
-        {activeIndex + 1} of {totalSlides} stories
+        {activeIndex + 1} {t('stories.of')} {totalSlides} {t('stories.stories')}
       </p>
     </div>
   );
@@ -2333,37 +2384,38 @@ function SuccessStoriesCarousel() {
 
 const TestimonialsSection = memo(function TestimonialsSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   return (
     <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Testimonials</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('testimonials.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            What Our <span className="gradient-text-gold">Clients Say</span>
+            {t('testimonials.title')}
           </h2>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn}>
           <LazySection type="cards">
             <Carousel opts={{ loop: true, align: 'start' }} className="w-full">
             <CarouselContent>
-              {TESTIMONIALS_DATA.map((t) => (
-                <CarouselItem key={t.name} className="md:basis-1/2 lg:basis-1/3 pl-4">
+              {TESTIMONIALS_DATA.map((item) => (
+                <CarouselItem key={item.name} className="md:basis-1/2 lg:basis-1/3 pl-4">
                   <div className="h-full">
                     <Card className="card-gradient-border h-full hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex gap-0.5 mb-3">
-                          {Array.from({ length: t.rating }).map((_, i) => (
+                          {Array.from({ length: item.rating }).map((_, i) => (
                             <Star key={i} className="w-4 h-4 fill-gold text-gold" />
                           ))}
                         </div>
-                        <Badge className="mb-3 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100">{t.caseType}</Badge>
-                        <p className="text-navy/80 dark:text-gray-300 text-sm leading-relaxed mb-5 italic">&ldquo;{t.text}&rdquo;</p>
+                        <Badge className="mb-3 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100">{item.caseType}</Badge>
+                        <p className="text-navy/80 dark:text-gray-300 text-sm leading-relaxed mb-5 italic">&ldquo;{item.text}&rdquo;</p>
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full ${t.color} flex items-center justify-center text-white font-bold text-sm`}>{t.name.charAt(0)}</div>
+                          <div className={`w-10 h-10 rounded-full ${item.color} flex items-center justify-center text-white font-bold text-sm`}>{item.name.charAt(0)}</div>
                           <div>
-                            <div className="font-semibold text-navy dark:text-gray-100 text-sm">{t.name}</div>
+                            <div className="font-semibold text-navy dark:text-gray-100 text-sm">{item.name}</div>
                             <div className="text-muted-foreground text-xs flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />{t.location}
+                              <MapPin className="w-3 h-3" />{item.location}
                             </div>
                           </div>
                         </div>
@@ -2380,15 +2432,15 @@ const TestimonialsSection = memo(function TestimonialsSection() {
           </Carousel>
           </LazySection>
         </motion.div>
-        <p className="text-center text-xs text-muted-foreground mt-6 max-w-2xl mx-auto">Individual results may vary. Testimonials reflect individual experiences and are not indicative of future results.</p>
+        <p className="text-center text-xs text-muted-foreground mt-6 max-w-2xl mx-auto">{t('testimonials.disclaimer')}</p>
 
         {/* Client Success Stories Carousel */}
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-16">
           <h3 className="text-2xl md:text-3xl font-bold text-navy dark:text-white mb-3 text-center" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Client <span className="gradient-text-gold">Success Stories</span>
+            {t('testimonials.successTitle')}
           </h3>
           <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto text-sm md:text-base">
-            Real people, real results. Hear from claimants who turned their situations around with our help.
+            {t('testimonials.successDesc')}
           </p>
           <LazySection type="cards">
             <SuccessStoriesCarousel />
@@ -2467,12 +2519,14 @@ function TrackClaimSkeleton() {
 }
 
 function ClaimPipelineTimeline({ currentStage }: { currentStage: string }) {
+  const { t, locale } = useLanguage();
+  const pipelineStages = useMemo(() => [t('pipeline.submitted'), t('pipeline.validated'), t('pipeline.underReview'), t('pipeline.decision'), t('pipeline.completed')], [locale, t]);
   const stageIndex = PIPELINE_STAGES.indexOf(currentStage);
   const stageColors = ['bg-blue-500', 'bg-gold', 'bg-violet-500', 'bg-amber-500', 'bg-emerald-500'];
   return (
     <div className="relative py-4">
       <div className="flex items-center justify-between relative">
-        {PIPELINE_STAGES.map((stage, i) => {
+        {pipelineStages.map((stage, i) => {
           const isCompleted = i < stageIndex;
           const isCurrent = i === stageIndex;
           return (
@@ -2490,7 +2544,7 @@ function ClaimPipelineTimeline({ currentStage }: { currentStage: string }) {
         })}
       </div>
       <div className="absolute top-4 md:top-5 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700 -z-0 mx-8 md:mx-12 rounded-full">
-        <motion.div initial={{ width: '0%' }} animate={{ width: `${(stageIndex / (PIPELINE_STAGES.length - 1)) * 100}%` }} transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }} className="h-full bg-gradient-to-r from-gold to-gold-light rounded-full" />
+        <motion.div initial={{ width: '0%' }} animate={{ width: `${(stageIndex / (pipelineStages.length - 1)) * 100}%` }} transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }} className="h-full bg-gradient-to-r from-gold to-gold-light rounded-full" />
       </div>
     </div>
   );
@@ -2503,24 +2557,33 @@ function TrackClaimSection() {
   const [result, setResult] = useState<ClaimResult | null>(null);
   const [error, setError] = useState('');
   const [pdfLoading, setPdfLoading] = useState(false);
+  const { t, locale } = useLanguage();
+
+  const docChecklist = useMemo(() => [
+    { name: t('doc.residence'), icon: Building2 },
+    { name: t('doc.medical'), icon: FileText },
+    { name: t('doc.claimForm'), icon: ClipboardCheck },
+    { name: t('doc.authLetter'), icon: FileSignature },
+    { name: t('doc.idVerification'), icon: BadgeCheck },
+  ], [locale, t]);
 
   const handleTrack = useCallback(async () => {
     const trimmed = trackingId.trim();
-    if (!trimmed) { setError('Please enter a tracking ID'); return; }
+    if (!trimmed) { setError(t('track.error')); return; }
     setLoading(true); setError(''); setResult(null);
     try {
       const res = await fetch('/api/claims/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trackingId: trimmed }) });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || 'Claim not found');
-        toast.error('Claim Not Found', { description: data.error || 'Please verify your tracking ID.' });
+        toast.error(t('track.notFound'), { description: data.error || t('track.notFoundDesc') });
         return;
       }
       setResult(data.claim);
-      toast.success('Claim Found', { description: `Successfully retrieved status for ${data.claim.trackingId}` });
+      toast.success(t('track.found'), { description: t('track.foundDesc').replace('{id}', data.claim.trackingId) });
     } catch {
-      setError('Network error. Please try again.');
-      toast.error('Network Error', { description: 'Could not connect to the server.' });
+      setError(t('track.networkErrorDesc').replace('.', ''));
+      toast.error(t('track.networkError'), { description: t('track.networkErrorDesc') });
     } finally { setLoading(false); }
   }, [trackingId, toast]);
 
@@ -2617,9 +2680,9 @@ function TrackClaimSection() {
       doc.text('For legal guidance, please consult with a qualified attorney. © ' + new Date().getFullYear() + ' ClaimGuard Pro. All rights reserved.', 20, 295);
 
       doc.save(`ClaimGuard-Report-${result.trackingId}.pdf`);
-      toast.success('PDF Downloaded', { description: `ClaimGuard-Report-${result.trackingId}.pdf` });
+      toast.success(t('track.pdfDownloaded'), { description: `ClaimGuard-Report-${result.trackingId}.pdf` });
     } catch {
-      toast.error('PDF Error', { description: 'Failed to generate PDF report.' });
+      toast.error(t('track.pdfError'), { description: t('track.pdfErrorDesc') });
     } finally { setPdfLoading(false); }
   }, [result, toast]);
 
@@ -2628,14 +2691,14 @@ function TrackClaimSection() {
     <section id="track-claim" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Track Your Claim</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('track.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Real-Time Claim <span className="gradient-text-gold">Status Check</span>
+            {t('track.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Enter your tracking ID to see where your claim stands, view history, and get clear next steps.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('track.description')}</p>
           <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
             <Search className="w-3 h-3 text-emerald-500" />
-            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">Enter your claim tracking ID to get started</span>
+            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">{t('track.hint')}</span>
           </div>
         </motion.div>
 
@@ -2643,10 +2706,10 @@ function TrackClaimSection() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input value={trackingId} onChange={(e) => { setTrackingId(e.target.value); setError(''); }} onKeyDown={(e) => e.key === 'Enter' && handleTrack()} placeholder="Enter Tracking ID (e.g., CLM-2024-001)" className="pl-12 h-13 text-base border-2 focus:border-gold bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white" disabled={loading} />
+              <Input value={trackingId} onChange={(e) => { setTrackingId(e.target.value); setError(''); }} onKeyDown={(e) => e.key === 'Enter' && handleTrack()} placeholder={t('track.placeholder')} className="pl-12 h-13 text-base border-2 focus:border-gold bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white" disabled={loading} />
             </div>
             <Button onClick={handleTrack} disabled={loading} className="h-13 px-8 bg-navy dark:bg-gray-800 hover:bg-navy-light dark:hover:bg-gray-700 text-white font-semibold text-base">
-              {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Searching...</> : <><Search className="w-5 h-5 mr-2" />Track Claim</>}
+              {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('track.searching')}</> : <><Search className="w-5 h-5 mr-2" />{t('track.trackClaim')}</>}
             </Button>
           </div>
           {error && (
@@ -2654,7 +2717,7 @@ function TrackClaimSection() {
               <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
               <div>
                 <p className="text-red-800 dark:text-red-300 font-medium text-sm">{error}</p>
-                <p className="text-red-600 dark:text-red-400 text-sm mt-1">Need help? <button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="underline font-semibold">Contact our support team</button></p>
+                <p className="text-red-600 dark:text-red-400 text-sm mt-1">{t('track.needHelp')} <button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="underline font-semibold">{t('track.contactSupport')}</button></p>
               </div>
             </div>
           )}
@@ -2668,7 +2731,7 @@ function TrackClaimSection() {
               <div className="bg-navy dark:bg-gray-900 p-6 text-white">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <p className="text-white/60 text-sm font-medium mb-1">Tracking ID</p>
+                    <p className="text-white/60 text-sm font-medium mb-1">{t('track.trackingId')}</p>
                     <p className="text-2xl font-bold flex items-center gap-2"><Shield className="w-6 h-6 text-gold" />{result.trackingId}</p>
                   </div>
                   <Badge className={`text-sm font-semibold px-4 py-1.5 border ${getStatusConfig(result.status).badge}`}>
@@ -2679,14 +2742,14 @@ function TrackClaimSection() {
               </div>
               <CardContent className="p-6 space-y-6">
                 <div role="progressbar" aria-valuenow={result.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Claim progress: ${result.progress}%`}>
-                  <p className="text-sm font-semibold text-navy dark:text-gray-200 mb-4 uppercase tracking-wider">Claim Pipeline</p>
+                  <p className="text-sm font-semibold text-navy dark:text-gray-200 mb-4 uppercase tracking-wider">{t('track.pipeline')}</p>
                   <ClaimPipelineTimeline currentStage={result.status} />
                 </div>
                 <Separator className="dark:bg-gray-700" />
                 <div>
-                  <p className="text-sm font-semibold text-navy dark:text-gray-200 mb-3 uppercase tracking-wider">Document Checklist</p>
+                  <p className="text-sm font-semibold text-navy dark:text-gray-200 mb-3 uppercase tracking-wider">{t('track.checklist')}</p>
                   <div className="grid sm:grid-cols-2 gap-2">
-                    {DOC_CHECKLIST.map((doc, i) => {
+                    {docChecklist.map((doc, i) => {
                       const isChecked = i < 3 || result.status === 'Approved';
                       return (
                         <div key={doc.name} className={`flex items-center gap-3 p-3 rounded-lg border ${isChecked ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'}`}>
@@ -2702,26 +2765,26 @@ function TrackClaimSection() {
                 </div>
                 <Separator className="dark:bg-gray-700" />
                 <div className="grid sm:grid-cols-2 gap-6">
-                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Claimant</p><p className="font-semibold text-navy dark:text-gray-100">{result.claimant.firstName} {result.claimant.lastName}</p></div>
-                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Claim Type</p><p className="font-semibold text-navy dark:text-gray-100">{result.claimType || 'N/A'}</p></div>
-                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Filed Date</p><p className="font-semibold text-navy dark:text-gray-100">{result.filedDate ? new Date(result.filedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p></div>
-                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Estimated Timeline</p><p className="font-semibold text-navy dark:text-gray-100 flex items-center gap-1"><Timer className="w-4 h-4 text-gold" />{result.status === 'Approved' ? 'Complete' : result.status === 'Pending' ? '6-12 months' : result.status === 'Under Review' ? '3-6 months' : result.status === 'Denied' ? 'Appeal: 3-9 months' : '2-4 weeks'}</p></div>
+                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('track.claimant')}</p><p className="font-semibold text-navy dark:text-gray-100">{result.claimant.firstName} {result.claimant.lastName}</p></div>
+                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('track.claimType')}</p><p className="font-semibold text-navy dark:text-gray-100">{result.claimType || 'N/A'}</p></div>
+                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('track.filedDate')}</p><p className="font-semibold text-navy dark:text-gray-100">{result.filedDate ? new Date(result.filedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p></div>
+                  <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('track.estimatedTimeline')}</p><p className="font-semibold text-navy dark:text-gray-100 flex items-center gap-1"><Timer className="w-4 h-4 text-gold" />{result.status === 'Approved' ? t('track.complete') : result.status === 'Pending' ? '6-12 months' : result.status === 'Under Review' ? '3-6 months' : result.status === 'Denied' ? 'Appeal: 3-9 months' : '2-4 weeks'}</p></div>
                 </div>
                 {result.notes && (
                   <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 uppercase tracking-wider mb-1"><AlertCircle className="w-3.5 h-3.5 inline mr-1" />Important Notes</p>
+                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 uppercase tracking-wider mb-1"><AlertCircle className="w-3.5 h-3.5 inline mr-1" />{t('track.importantNotes')}</p>
                     <p className="text-sm text-amber-900 dark:text-amber-200">{result.notes}</p>
                   </div>
                 )}
                 {result.nextSteps && (
                   <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
-                    <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-1"><ArrowRight className="w-3.5 h-3.5 inline mr-1" />Next Steps</p>
+                    <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-1"><ArrowRight className="w-3.5 h-3.5 inline mr-1" />{t('track.nextSteps')}</p>
                     <p className="text-sm text-emerald-900 dark:text-emerald-200">{result.nextSteps}</p>
                   </div>
                 )}
                 {result.history && result.history.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Claim History</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('track.history')}</p>
                     <div className="space-y-3">
                       {result.history.map((h, i) => (
                         <div key={i} className="flex gap-3 items-start">
@@ -2744,11 +2807,11 @@ function TrackClaimSection() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   {(result.status === 'Denied' || result.status === 'Correction Needed') && (
                     <Button onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold" size="lg">
-                      {result.status === 'Denied' ? 'Appeal My Claim' : 'Fix My Documents'}<ArrowRight className="w-5 h-5 ml-2" />
+                      {result.status === 'Denied' ? t('track.appealMyClaim') : t('track.fixDocuments')}<ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                   )}
                   <Button onClick={downloadPDF} disabled={pdfLoading} variant="outline" className="flex-1 border-navy/20 dark:border-gray-600 text-navy dark:text-gray-200 hover:bg-navy/5 dark:hover:bg-gray-700" size="lg">
-                    {pdfLoading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Generating PDF...</> : <><FileDown className="w-5 h-5 mr-2" />Download PDF Report</>}
+                    {pdfLoading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('track.generatingPdf')}</> : <><FileDown className="w-5 h-5 mr-2" />{t('track.downloadPdf')}</>}
                   </Button>
                 </div>
               </CardContent>
@@ -2767,16 +2830,17 @@ function TrackClaimSection() {
 function WhatWeHandleSection() {
   const { ref, inView } = useInView(0.1);
   const [selectedCase, setSelectedCase] = useState<typeof CASE_TYPE_DETAILS[0] | null>(null);
+  const { t } = useLanguage();
 
   return (
     <section id="what-we-handle" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Case Types</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('handle.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Claims We <span className="gradient-text-gold">Handle</span>
+            {t('handle.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">We specialize in the most significant mass tort cases. Click on any case type to learn more.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('handle.description')}</p>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -2796,7 +2860,7 @@ function WhatWeHandleSection() {
                   <div className="flex items-center gap-2 mb-3">
                     <Clock className="w-4 h-4 text-gold shrink-0" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Filing Deadline:</p>
+                      <p className="text-xs text-muted-foreground">{t('handle.filingDeadline')}</p>
                       <p className="text-xs font-semibold text-navy dark:text-gray-200">{ct.deadline}</p>
                     </div>
                   </div>
@@ -2825,11 +2889,11 @@ function WhatWeHandleSection() {
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div>
-                  <h4 className="text-sm font-semibold text-navy dark:text-gray-200 mb-2">Filing Deadline</h4>
+                  <h4 className="text-sm font-semibold text-navy dark:text-gray-200 mb-2">{t('handle.filingDeadline').replace(':', '')}</h4>
                   <p className="text-sm text-muted-foreground dark:text-gray-400">{selectedCase.deadline}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-navy dark:text-gray-200 mb-2">Current Statuses</h4>
+                  <h4 className="text-sm font-semibold text-navy dark:text-gray-200 mb-2">{t('handle.currentStatuses')}</h4>
                   <div className="flex flex-wrap gap-1">
                     {selectedCase.statuses.map(s => (
                       <Badge key={s} variant="secondary" className="dark:bg-gray-700 dark:text-gray-300">{s}</Badge>
@@ -2837,12 +2901,12 @@ function WhatWeHandleSection() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-navy dark:text-gray-200 mb-2">Detailed Information</h4>
+                  <h4 className="text-sm font-semibold text-navy dark:text-gray-200 mb-2">{t('handle.detailedInfo')}</h4>
                   <p className="text-sm text-muted-foreground dark:text-gray-400 leading-relaxed">{selectedCase.detail}</p>
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <Button onClick={() => { setSelectedCase(null); document.querySelector('#eligibility-quiz')?.scrollIntoView({ behavior: 'smooth' }); }} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold">Check Eligibility</Button>
-                  <Button onClick={() => { setSelectedCase(null); document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }); }} variant="outline" className="flex-1 dark:border-gray-600 dark:text-gray-200">Contact Us</Button>
+                  <Button onClick={() => { setSelectedCase(null); document.querySelector('#eligibility-quiz')?.scrollIntoView({ behavior: 'smooth' }); }} className="flex-1 bg-gold hover:bg-gold-dark text-white font-semibold">{t('handle.checkEligibility')}</Button>
+                  <Button onClick={() => { setSelectedCase(null); document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }); }} variant="outline" className="flex-1 dark:border-gray-600 dark:text-gray-200">{t('handle.contactUs')}</Button>
                 </div>
               </div>
             </DialogContent>
@@ -2860,6 +2924,7 @@ function WhatWeHandleSection() {
 function CTASection() {
   const { ref, inView } = useInView(0.1);
   const { scrollY } = useScroll();
+  const { t } = useLanguage();
   const gradShift = useTransform(scrollY, [800, 1500], [0, 30]);
 
   const scrollTo = useCallback((id: string) => {
@@ -2876,24 +2941,24 @@ function CTASection() {
           <Shield className="w-8 h-8 text-gold" />
         </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-          Ready to Take the <span className="text-gold">Next Step</span>?
+          {t('cta.title')}
         </h2>
         <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-          Don&apos;t navigate the complex mass tort process alone. Whether you need to track an existing claim, check your eligibility, or file for the first time — we&apos;re here to help.
+          {t('cta.description')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button onClick={() => scrollTo('#eligibility-quiz')} size="lg" className="bg-gold hover:bg-gold-dark text-white font-semibold text-base px-8 py-6 shadow-xl shadow-gold/20 transition-all hover:shadow-2xl hover:scale-[1.02]">
-            <Target className="w-5 h-5 mr-2" />Check Your Eligibility
+            <Target className="w-5 h-5 mr-2" />{t('cta.checkEligibility')}
           </Button>
           <Button onClick={() => scrollTo('#track-claim')} size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold text-base px-8 py-6 backdrop-blur-sm transition-all hover:scale-[1.02]">
-            <Search className="w-5 h-5 mr-2" />Track My Claim
+            <Search className="w-5 h-5 mr-2" />{t('cta.trackMyClaim')}
           </Button>
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-8 text-white/40 text-sm">
-          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>Get Started Today</span></div>
-          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>Always 100% Free</span></div>
-          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>100% Confidential</span></div>
-          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>98% Success Rate</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>{t('cta.getStarted')}</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>{t('cta.alwaysFree')}</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>{t('cta.confidential')}</span></div>
+          <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>{t('cta.successRate')}</span></div>
         </div>
       </motion.div>
     </section>
@@ -2917,30 +2982,36 @@ const FILING_DEADLINES = [
 
 function FilingDeadlineTracker() {
   const { ref, inView } = useInView(0.1);
+  const { t, locale } = useLanguage();
+
+  const descKeys = useMemo(() => [
+    t('deadlines.desc0'), t('deadlines.desc1'), t('deadlines.desc2'), t('deadlines.desc3'),
+    t('deadlines.desc4'), t('deadlines.desc5'), t('deadlines.desc6'), t('deadlines.desc7'),
+  ], [locale, t]);
 
   const getTimeLeft = useCallback((deadline: string) => {
     const diff = new Date(deadline).getTime() - Date.now();
-    if (diff <= 0) return { text: 'Deadline Passed', urgent: true };
+    if (diff <= 0) return { text: t('deadlines.deadlinePassed'), urgent: true };
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const months = Math.floor(days / 30);
-    if (months > 0) return { text: `${months} month${months > 1 ? 's' : ''} left`, urgent: months <= 3 };
-    return { text: `${days} day${days !== 1 ? 's' : ''} left`, urgent: days <= 30 };
-  }, []);
+    if (months > 0) return { text: months === 1 ? t('deadlines.monthLeft').replace('{n}', '1') : t('deadlines.monthsLeft').replace('{n}', String(months)), urgent: months <= 3 };
+    return { text: days === 1 ? t('deadlines.dayLeft').replace('{n}', '1') : t('deadlines.daysLeft').replace('{n}', String(days)), urgent: days <= 30 };
+  }, [locale, t]);
 
   return (
     <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
           <Badge className="mb-4 px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 text-xs font-semibold uppercase tracking-wider">
-            <Timer className="w-3 h-3 mr-1" />Time-Sensitive
+            <Timer className="w-3 h-3 mr-1" />{t('deadlines.badge')}
           </Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Filing <span className="gradient-text-gold">Deadline Tracker</span>
+            {t('deadlines.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Don&apos;t miss your window. These deadlines are strictly enforced — once they pass, you may permanently lose your right to file.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('deadlines.description')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {FILING_DEADLINES.map((item) => {
+          {FILING_DEADLINES.map((item, idx) => {
             const { text, urgent } = getTimeLeft(item.deadline);
             return (
               <motion.div key={item.caseType} variants={fadeInUp}>
@@ -2955,8 +3026,8 @@ function FilingDeadlineTracker() {
                       </span>
                     </div>
                     <h3 className="font-bold text-navy dark:text-white text-sm mb-1">{item.caseType}</h3>
-                    <p className="text-muted-foreground dark:text-gray-400 text-xs leading-relaxed mb-3">{item.desc}</p>
-                    <div className="text-[10px] text-muted-foreground/60 dark:text-gray-500">Deadline: {new Date(item.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                    <p className="text-muted-foreground dark:text-gray-400 text-xs leading-relaxed mb-3">{descKeys[idx]}</p>
+                    <div className="text-[10px] text-muted-foreground/60 dark:text-gray-500">{t('deadlines.deadline')} {new Date(item.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -2964,7 +3035,7 @@ function FilingDeadlineTracker() {
           })}
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-8 text-center">
-          <p className="text-xs text-muted-foreground">Deadlines vary by jurisdiction and may change. Contact us for the most current information on your specific case.</p>
+          <p className="text-xs text-muted-foreground">{t('deadlines.note')}</p>
         </motion.div>
       </div>
     </section>
@@ -2978,31 +3049,33 @@ function FilingDeadlineTracker() {
 function FAQSection() {
   const { ref, inView } = useInView(0.1);
   const [search, setSearch] = useState('');
+  const { t, locale } = useLanguage();
+  const faqItems = useMemo(() => Array.from({ length: 10 }, (_, i) => ({ q: t(`faq.q${i}` as `faq.q${number}`), a: t(`faq.a${i}` as `faq.a${number}`) })), [locale, t]);
   const filteredFAQ = useMemo(() => {
-    if (!search.trim()) return FAQ_DATA;
+    if (!search.trim()) return faqItems;
     const q = search.toLowerCase();
-    return FAQ_DATA.filter(item => item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q));
-  }, [search]);
+    return faqItems.filter(item => item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q));
+  }, [search, faqItems]);
   return (
     <section id="faq" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">FAQ</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('faq.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Frequently Asked <span className="gradient-text-gold">Questions</span>
+            {t('faq.title')}
           </h2>
-          <p className="text-muted-foreground text-lg">Everything you need to know about mass tort claims and our services.</p>
+          <p className="text-muted-foreground text-lg">{t('faq.description')}</p>
         </motion.div>
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search questions..."
+            placeholder={t('faq.search')}
             className="pl-10 h-11 bg-[#F4F1EB] dark:bg-gray-800 border-0 focus-visible:ring-gold"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-navy transition-colors" aria-label="Clear search">
+            <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-navy transition-colors" aria-label={t('faq.clearSearch')}>
               <X className="w-4 h-4" />
             </button>
           )}
@@ -3021,7 +3094,7 @@ function FAQSection() {
             ))}
           </Accordion>
           {filteredFAQ.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">No questions match your search.</p>
+            <p className="text-center text-muted-foreground py-8">{t('faq.noResults')}</p>
           )}
         </motion.div>
       </div>
@@ -3039,15 +3112,16 @@ function FAQSection() {
 
 function CaseStudiesSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   return (
     <section id="case-studies" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Success Stories</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('caseStudies.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Real <span className="gradient-text-gold">Case Results</span>
+            {t('caseStudies.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">These are real outcomes we&apos;ve helped our clients achieve. Names are partially masked for privacy.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('caseStudies.description')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="space-y-12">
           {CASE_STUDIES.map((cs, i) => (
@@ -3056,20 +3130,20 @@ function CaseStudiesSection() {
                 <div className="grid md:grid-cols-2">
                   <div className={`${cs.badge} p-8 md:p-10 text-white flex flex-col justify-center`}>
                     <Badge className="self-start bg-white/20 text-white border-white/30 text-xs font-medium mb-4">{cs.caseType}</Badge>
-                    <h3 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Georgia, serif' }}>Client: {cs.name}</h3>
+                    <h3 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Georgia, serif' }}>{t('caseStudies.client')} {cs.name}</h3>
                     <div className="text-4xl font-bold mt-4 mb-2">{cs.compensation}</div>
-                    <p className="text-white/70 text-sm">Settlement Amount</p>
+                    <p className="text-white/70 text-sm">{t('caseStudies.settlementAmount')}</p>
                     <div className="flex items-center gap-4 mt-6">
-                      <div className="text-center"><p className="text-xs text-white/50 uppercase tracking-wider mb-1">Before</p><Badge className="bg-white/20 text-white border-white/20 text-sm">{cs.beforeStatus}</Badge></div>
+                      <div className="text-center"><p className="text-xs text-white/50 uppercase tracking-wider mb-1">{t('stories.before')}</p><Badge className="bg-white/20 text-white border-white/20 text-sm">{cs.beforeStatus}</Badge></div>
                       <ArrowRight className="w-5 h-5 text-white/40" aria-hidden="true" />
-                      <div className="text-center"><p className="text-xs text-white/50 uppercase tracking-wider mb-1">After</p><Badge className="bg-emerald-500/30 text-emerald-100 border-emerald-400/30 text-sm">{cs.afterStatus}</Badge></div>
+                      <div className="text-center"><p className="text-xs text-white/50 uppercase tracking-wider mb-1">{t('stories.after')}</p><Badge className="bg-emerald-500/30 text-emerald-100 border-emerald-400/30 text-sm">{cs.afterStatus}</Badge></div>
                     </div>
                   </div>
                   <div className="p-8 md:p-10 bg-white dark:bg-gray-800/50">
                     <div className="space-y-6">
-                      <div><p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />Challenge</p><p className="text-sm text-navy/80 dark:text-gray-300 leading-relaxed">{cs.challenge}</p></div>
-                      <div><p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-1"><Zap className="w-3.5 h-3.5" />Solution</p><p className="text-sm text-navy/80 dark:text-gray-300 leading-relaxed">{cs.solution}</p></div>
-                      <div><p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" />Outcome</p><p className="text-sm text-navy/80 dark:text-gray-300 leading-relaxed">{cs.outcome}</p></div>
+                      <div><p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{t('caseStudies.challenge')}</p><p className="text-sm text-navy/80 dark:text-gray-300 leading-relaxed">{cs.challenge}</p></div>
+                      <div><p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-1"><Zap className="w-3.5 h-3.5" />{t('caseStudies.solution')}</p><p className="text-sm text-navy/80 dark:text-gray-300 leading-relaxed">{cs.solution}</p></div>
+                      <div><p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" />{t('caseStudies.outcome')}</p><p className="text-sm text-navy/80 dark:text-gray-300 leading-relaxed">{cs.outcome}</p></div>
                     </div>
                   </div>
                 </div>
@@ -3077,7 +3151,7 @@ function CaseStudiesSection() {
             </motion.div>
           ))}
         </motion.div>
-        <p className="text-center text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">Case results depend on a variety of factors unique to each case. Past results do not guarantee a similar outcome.</p>
+        <p className="text-center text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">{t('caseStudies.disclaimer')}</p>
       </div>
     </section>
   );
@@ -3089,6 +3163,7 @@ function CaseStudiesSection() {
 
 function ClientPortalSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   return (
     <section className="py-14 md:py-20 bg-gradient-to-br from-navy via-navy-light to-navy dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -3100,16 +3175,16 @@ function ClientPortalSection() {
             <LayoutDashboard className="w-8 h-8 text-gold" />
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Your Personal <span className="text-gold">Claim Dashboard</span>
+            {t('portal.title')}
           </h2>
           <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">
-            Track every detail of your claim in real-time. View documents, deadlines, messages from your specialist, and settlement progress — all from one secure dashboard.
+            {t('portal.description')}
           </p>
           <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
             {[
-              { icon: Eye, label: 'Real-Time Status' },
-              { icon: FileText, label: 'Document Vault' },
-              { icon: Bell, label: 'Deadline Alerts' },
+              { icon: Eye, label: t('portal.realTime') },
+              { icon: FileText, label: t('portal.docVault') },
+              { icon: Bell, label: t('portal.deadlineAlerts') },
             ].map((item) => (
               <div key={item.label} className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
                 <item.icon className="w-5 h-5 text-gold mx-auto mb-2" />
@@ -3118,7 +3193,7 @@ function ClientPortalSection() {
             ))}
           </div>
           <Button size="lg" onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-gold hover:bg-gold-dark text-white font-bold px-8 py-3 text-base">
-            <ArrowRight className="w-4 h-4 mr-2" />Coming Soon — Join the Waitlist
+            <ArrowRight className="w-4 h-4 mr-2" />{t('portal.comingSoon')}
           </Button>
         </motion.div>
       </div>
@@ -3132,6 +3207,7 @@ function ClientPortalSection() {
 
 function NewsletterSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [claimType, setClaimType] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -3143,7 +3219,7 @@ function NewsletterSection() {
 
   const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
-    if (!emailRegex.test(email)) { toast.error('Please enter a valid email address.'); return; }
+    if (!emailRegex.test(email)) { toast.error(t('newsletter.validEmail')); return; }
     setLoading(true);
     try {
       const res = await fetch('/api/newsletter', {
@@ -3154,13 +3230,13 @@ function NewsletterSection() {
       const data = await res.json();
       if (res.ok) {
         setSubmitted(true);
-        toast.success(data.message || 'Welcome to our newsletter!');
+        toast.success(data.message || t('newsletter.welcome'));
         setTimeout(() => { setSubmitted(false); setEmail(''); setClaimType(''); setCheckUpdates(true); setCheckDeadlines(true); setCheckTips(false); }, 4000);
       } else {
-        toast.error(data.error || 'Please try again.');
+        toast.error(data.error || t('newsletter.tryAgain'));
       }
     } catch {
-      toast.error('Please try again.');
+      toast.error(t('newsletter.tryAgain'));
     } finally { setLoading(false); }
   }, [email, claimType, checkUpdates, checkDeadlines, checkTips, emailRegex]);
 
@@ -3174,13 +3250,13 @@ function NewsletterSection() {
             <div className="w-14 h-14 rounded-2xl bg-gold/20 flex items-center justify-center mb-6">
               <Mail className="w-7 h-7 text-gold" />
             </div>
-            <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>Stay Informed</h2>
-            <p className="text-white/60 mb-6 leading-relaxed">Join over 8,000 claimants who receive our weekly newsletter.</p>
+            <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Georgia, serif' }}>{t('newsletter.stayInformed')}</h2>
+            <p className="text-white/60 mb-6 leading-relaxed">{t('newsletter.description')}</p>
             <div className="space-y-3">
               {[
-                { label: 'Claim Status Updates', checked: checkUpdates, onChange: setCheckUpdates, icon: Search },
-                { label: 'Filing Deadline Alerts', checked: checkDeadlines, onChange: setCheckDeadlines, icon: Clock },
-                { label: 'Expert Tips & Guides', checked: checkTips, onChange: setCheckTips, icon: BookOpen },
+                { label: t('newsletter.claimUpdates'), checked: checkUpdates, onChange: setCheckUpdates, icon: Search },
+                { label: t('newsletter.deadlineAlerts'), checked: checkDeadlines, onChange: setCheckDeadlines, icon: Clock },
+                { label: t('newsletter.expertTips'), checked: checkTips, onChange: setCheckTips, icon: BookOpen },
               ].map((item) => (
                 <label key={item.label} onClick={() => item.onChange(!item.checked)} className="flex items-center gap-3 cursor-pointer group">
                   <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${item.checked ? 'bg-gold border-gold' : 'border-white/30 group-hover:border-white/50'}`}>
@@ -3195,24 +3271,24 @@ function NewsletterSection() {
           <div>
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardContent className="p-6 md:p-8">
-                <h3 className="text-lg font-bold text-white mb-2">Get Your Free Newsletter</h3>
-                <p className="text-white/50 text-sm mb-6">Join 8,000+ subscribers staying ahead of deadlines.</p>
+                <h3 className="text-lg font-bold text-white mb-2">{t('newsletter.getNewsletter')}</h3>
+                <p className="text-white/50 text-sm mb-6">{t('newsletter.subscriberCount')}</p>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <Label className="text-white/60 text-xs mb-1 block">Email Address</Label>
+                    <Label className="text-white/60 text-xs mb-1 block">{t('newsletter.emailLabel')}</Label>
                     <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="h-12 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-gold" />
                   </div>
                   <div>
-                    <Label className="text-white/60 text-xs mb-1 block">Claim Type (optional)</Label>
+                    <Label className="text-white/60 text-xs mb-1 block">{t('newsletter.claimType')}</Label>
                     <Input value={claimType} onChange={(e) => setClaimType(e.target.value)} placeholder="e.g., Camp Lejeune, Roundup..." className="h-11 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-gold text-sm" />
                   </div>
                   <Button type="submit" disabled={loading || submitted} className={`w-full h-12 font-semibold transition-all text-base ${submitted ? 'bg-emerald-500' : 'bg-gold hover:bg-gold-dark text-white'}`}>
-                    {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Subscribing...</> : submitted ? <><CheckCircle2 className="w-5 h-5 mr-2" />Successfully Subscribed!</> : <><Send className="w-5 h-5 mr-2" />Subscribe Now — It&apos;s Free</>}
+                    {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('newsletter.subscribing')}</> : submitted ? <><CheckCircle2 className="w-5 h-5 mr-2" />{t('newsletter.subscribed')}</> : <><Send className="w-5 h-5 mr-2" />{t('newsletter.subscribe')}</>}
                   </Button>
                 </form>
                 <div className="flex items-center justify-center gap-4 mt-4 text-white/30 text-xs">
-                  <div className="flex items-center gap-1"><Lock className="w-3 h-3" /><span>Encrypted</span></div>
-                  <div className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /><span>No Spam</span></div>
+                  <div className="flex items-center gap-1"><Lock className="w-3 h-3" /><span>{t('newsletter.encrypted')}</span></div>
+                  <div className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /><span>{t('newsletter.noSpam')}</span></div>
                 </div>
               </CardContent>
             </Card>
@@ -3492,48 +3568,42 @@ const VIDEO_TESTIMONIALS = [
 ];
 
 /* ═══════════════════════════════════════════════════════════════
-   SECTION: SPANISH LANGUAGE BANNER
+   SECTION: LANGUAGE TOGGLE BANNER
    ═══════════════════════════════════════════════════════════════ */
 
-function SpanishLanguageBanner() {
+function LanguageToggleBanner() {
+  const { locale, setLocale, t } = useLanguage();
   const [dismissed, setDismissed] = useState(() => {
-    try { return localStorage.getItem('claimguard-spanish-banner-dismissed') === 'true'; } catch { return false; }
+    try { return localStorage.getItem('claimguard-lang-banner-dismissed') === 'true'; } catch { return false; }
   });
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleDismiss = useCallback(() => {
     setDismissed(true);
-    try { localStorage.setItem('claimguard-spanish-banner-dismissed', 'true'); } catch { /* noop */ }
+    try { localStorage.setItem('claimguard-lang-banner-dismissed', 'true'); } catch { /* noop */ }
   }, []);
+
+  const handleToggle = useCallback(() => {
+    setLocale(locale === 'en' ? 'es' : 'en');
+  }, [locale, setLocale]);
 
   if (dismissed) return null;
 
   return (
-    <>
-      <div className="bg-blue-900/50 text-blue-100 py-2">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-3 text-sm">
-          <Globe className="w-4 h-4 shrink-0" />
-          <span>&iquest;Prefieres espa&ntilde;ol?{' '}
-            <button onClick={() => setDialogOpen(true)} className="underline underline-offset-2 hover:text-white font-medium transition-colors">Switch to Spanish</button>
+    <div className="bg-blue-900/50 text-blue-100 py-2">
+      <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-3 text-sm">
+        <Globe className="w-4 h-4 shrink-0" />
+        {locale === 'en' ? (
+          <span>{t('lang.preferSpanish')}{' '}
+            <button onClick={handleToggle} className="underline underline-offset-2 hover:text-white font-medium transition-colors">{t('lang.switchSpanish')}</button>
           </span>
-          <button onClick={handleDismiss} className="ml-4 text-blue-300 hover:text-white transition-colors" aria-label="Dismiss">&times;</button>
-        </div>
+        ) : (
+          <span>{t('lang.preferEnglish')}{' '}
+            <button onClick={handleToggle} className="underline underline-offset-2 hover:text-white font-medium transition-colors">{t('lang.switchEnglish')}</button>
+          </span>
+        )}
+        <button onClick={handleDismiss} className="ml-4 text-blue-300 hover:text-white transition-colors" aria-label={t('lang.dismiss')}>×</button>
       </div>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="dark:bg-gray-900 border-gray-800 sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2"><Globe className="w-5 h-5 text-gold" /> Spanish Language Support</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Spanish language support coming soon! Our team of bilingual specialists is available at{' '}
-              <a href="tel:8005550199" className="text-gold hover:text-gold/80 underline underline-offset-2">(800) 555-0199</a>.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-4 flex justify-end">
-            <Button onClick={() => setDialogOpen(false)} className="bg-gold text-gray-950 hover:bg-gold/90 font-semibold">Close</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    </div>
   );
 }
 
@@ -3542,6 +3612,7 @@ function SpanishLanguageBanner() {
    ═══════════════════════════════════════════════════════════════ */
 
 function LiveNewsTicker() {
+  const { t } = useLanguage();
   useEffect(() => {
     if (document.getElementById('claimguard-ticker-keyframes')) return;
     const style = document.createElement('style');
@@ -3555,7 +3626,7 @@ function LiveNewsTicker() {
       <div className="flex items-center">
         <div className="shrink-0 flex items-center gap-2 px-4 border-r border-gray-800">
           <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" /></span>
-          <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Breaking</span>
+          <span className="text-xs font-bold text-red-400 uppercase tracking-wider">{t('news.breaking')}</span>
         </div>
         <div className="overflow-hidden flex-1">
           <div className="animate-news-scroll flex whitespace-nowrap">
@@ -3594,15 +3665,16 @@ function useAnimatedCounter(target: number, duration: number = 2000) {
 
 function LiveClaimCounter() {
   const { ref, inView } = useInView(0.2);
+  const { t } = useLanguage();
   const claimsMonth = useAnimatedCounter(inView ? 1247 : 0, 2000);
   const activeCases = useAnimatedCounter(inView ? 8432 : 0, 2200);
   const approvedToday = useAnimatedCounter(inView ? 34 : 0, 1500);
 
   const stats = [
-    { label: "Claims Filed This Month", value: claimsMonth.toLocaleString(), icon: FileText },
-    { label: "Active Cases", value: activeCases.toLocaleString(), icon: Gavel },
-    { label: "Claims Approved Today", value: approvedToday.toLocaleString(), icon: CheckCircle2 },
-    { label: "Average Processing Time", value: "4.2 Days", icon: Clock },
+    { label: t('liveCounter.claimsMonth'), value: claimsMonth.toLocaleString(), icon: FileText },
+    { label: t('liveCounter.activeCases'), value: activeCases.toLocaleString(), icon: Gavel },
+    { label: t('liveCounter.approvedToday'), value: approvedToday.toLocaleString(), icon: CheckCircle2 },
+    { label: t('liveCounter.processingTime'), value: "4.2 Days", icon: Clock },
   ];
 
   return (
@@ -3628,6 +3700,7 @@ function LiveClaimCounter() {
 
 function ClaimSubmissionSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
@@ -3638,7 +3711,7 @@ function ClaimSubmissionSection() {
 
   const updateField = useCallback((field: string, value: string | boolean) => setForm((p) => ({ ...p, [field]: value })), []);
 
-  const stepLabels = ['Personal Info', 'Case Details', 'Documentation', 'Review & Submit'];
+  const stepLabels = [t('claim.step0'), t('claim.step1'), t('claim.step2'), t('claim.step3')];
   const canProceed = useMemo(() => {
     if (step === 0) return form.firstName.trim() && form.lastName.trim() && form.email.trim() && form.phone.trim() && form.state;
     if (step === 1) return form.caseType && form.dateOfExposure && form.description.trim();
@@ -3658,11 +3731,11 @@ function ClaimSubmissionSection() {
             Claim Submitted <span className="gradient-text-gold">Successfully!</span>
           </motion.h2>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-gray-500 dark:text-gray-400 text-lg mb-8">
-            Our team will review your submission and contact you within 24 hours. Check your email at <span className="text-gold-dark dark:text-gold-light font-medium">{form.email}</span> for confirmation.
+            {t('claim.submittedDesc').replace('{email}', form.email)}
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
             <Button onClick={() => { setSubmitted(false); setStep(0); setForm({ firstName: '', lastName: '', email: '', phone: '', state: '', caseType: '', dateOfExposure: '', description: '', hasMedicalRecords: false, hasProofOfExposure: false, hasPhysicianLetter: false, hasId: false }); }} variant="outline" className="border-gold/30 text-gold-dark dark:text-gold hover:bg-gold/10">
-              File Another Claim
+              {t('claim.fileAnother')}
             </Button>
           </motion.div>
         </div>
@@ -3674,11 +3747,11 @@ function ClaimSubmissionSection() {
     <section id="file-claim" className="py-20 bg-white dark:bg-gray-950">
       <div className="max-w-4xl mx-auto px-4" ref={ref}>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-12">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Free Claim Filing</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('claim.badge')}</Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            File Your <span className="gradient-text-gold">Claim</span>
+            {t('claim.title')}
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Complete our guided intake form in 4 simple steps. Most claims are reviewed within 24–48 hours.</p>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">{t('claim.description')}</p>
         </motion.div>
 
         {/* Step indicators */}
@@ -3701,14 +3774,14 @@ function ClaimSubmissionSection() {
             <AnimatePresence mode="wait">
               {step === 0 && (
                 <motion.div key="s0" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
-                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Personal Information</h3>
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">{t('claim.personalInfo')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2"><Label htmlFor="cf-fn" className="text-gray-600 dark:text-gray-300">First Name</Label><Input id="cf-fn" placeholder="John" value={form.firstName} onChange={(e) => updateField('firstName', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
-                    <div className="space-y-2"><Label htmlFor="cf-ln" className="text-gray-600 dark:text-gray-300">Last Name</Label><Input id="cf-ln" placeholder="Doe" value={form.lastName} onChange={(e) => updateField('lastName', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
-                    <div className="space-y-2"><Label htmlFor="cf-em" className="text-gray-600 dark:text-gray-300">Email Address</Label><Input id="cf-em" type="email" placeholder="john@example.com" value={form.email} onChange={(e) => updateField('email', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
-                    <div className="space-y-2"><Label htmlFor="cf-ph" className="text-gray-600 dark:text-gray-300">Phone Number</Label><Input id="cf-ph" type="tel" placeholder="(555) 123-4567" value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-fn" className="text-gray-600 dark:text-gray-300">{t('claim.firstName')}</Label><Input id="cf-fn" placeholder="John" value={form.firstName} onChange={(e) => updateField('firstName', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-ln" className="text-gray-600 dark:text-gray-300">{t('claim.lastName')}</Label><Input id="cf-ln" placeholder="Doe" value={form.lastName} onChange={(e) => updateField('lastName', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-em" className="text-gray-600 dark:text-gray-300">{t('claim.email')}</Label><Input id="cf-em" type="email" placeholder="john@example.com" value={form.email} onChange={(e) => updateField('email', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-ph" className="text-gray-600 dark:text-gray-300">{t('claim.phoneNumber')}</Label><Input id="cf-ph" type="tel" placeholder="(555) 123-4567" value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
                   </div>
-                  <div className="space-y-2"><Label className="text-gray-600 dark:text-gray-300">State</Label>
+                  <div className="space-y-2"><Label className="text-gray-600 dark:text-gray-300">{t('claim.state')}</Label>
                     <Select value={form.state} onValueChange={(v) => updateField('state', v)}>
                       <SelectTrigger className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select your state" /></SelectTrigger>
                       <SelectContent className="dark:bg-gray-800 dark:border-gray-700">{US_STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
@@ -3718,33 +3791,33 @@ function ClaimSubmissionSection() {
               )}
               {step === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
-                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Case Details</h3>
-                  <div className="space-y-2"><Label className="text-gray-600 dark:text-gray-300">Case Type</Label>
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">{t('claim.caseDetails')}</h3>
+                  <div className="space-y-2"><Label className="text-gray-600 dark:text-gray-300">{t('claim.caseType')}</Label>
                     <Select value={form.caseType} onValueChange={(v) => updateField('caseType', v)}>
                       <SelectTrigger className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select case type" /></SelectTrigger>
                       <SelectContent className="dark:bg-gray-800 dark:border-gray-700 max-h-72 overflow-y-auto">{CLAIM_FORM_CASE_TYPES.map((ct) => <SelectItem key={ct} value={ct}>{ct}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2"><Label htmlFor="cf-doe" className="text-gray-600 dark:text-gray-300">Date of Exposure / Use</Label><Input id="cf-doe" type="date" value={form.dateOfExposure} onChange={(e) => updateField('dateOfExposure', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
-                  <div className="space-y-2"><Label htmlFor="cf-desc" className="text-gray-600 dark:text-gray-300">Case Description</Label><Textarea id="cf-desc" placeholder="Describe your situation, injuries, and how the product or exposure affected you..." value={form.description} onChange={(e) => updateField('description', e.target.value)} className="min-h-[140px] dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 resize-y" /></div>
+                  <div className="space-y-2"><Label htmlFor="cf-doe" className="text-gray-600 dark:text-gray-300">{t('claim.dateOfExposure')}</Label><Input id="cf-doe" type="date" value={form.dateOfExposure} onChange={(e) => updateField('dateOfExposure', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                  <div className="space-y-2"><Label htmlFor="cf-desc" className="text-gray-600 dark:text-gray-300">{t('claim.caseDescription')}</Label><Textarea id="cf-desc" placeholder="Describe your situation, injuries, and how the product or exposure affected you..." value={form.description} onChange={(e) => updateField('description', e.target.value)} className="min-h-[140px] dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 resize-y" /></div>
                 </motion.div>
               )}
               {step === 2 && (
                 <motion.div key="s2" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
-                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Documentation</h3>
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">{t('claim.documentation')}</h3>
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-10 text-center hover:border-gold/50 transition-colors duration-300 cursor-pointer group">
                     <Upload className="w-10 h-10 mx-auto mb-4 text-gray-400 group-hover:text-gold transition-colors" />
-                    <p className="text-gray-600 dark:text-gray-300 font-medium mb-1">Drag & drop your files here</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm">PDF, JPG, PNG up to 10MB each</p>
-                    <Button type="button" variant="outline" size="sm" className="mt-4 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:text-gold hover:border-gold/50">Browse Files</Button>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium mb-1">{t('claim.dragDrop')}</p>
+                    <p className="text-gray-400 dark:text-gray-500 text-sm">{t('claim.fileLimits')}</p>
+                    <Button type="button" variant="outline" size="sm" className="mt-4 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:text-gold hover:border-gold/50">{t('claim.browseFiles')}</Button>
                   </div>
                   <div className="space-y-4">
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">Which documents do you currently have?</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">{t('claim.whichDocs')}</p>
                     {([
-                      { key: 'hasMedicalRecords', label: 'Medical records related to my claim' },
-                      { key: 'hasProofOfExposure', label: 'Proof of product use or exposure' },
-                      { key: 'hasPhysicianLetter', label: 'Physician letter or diagnosis documentation' },
-                      { key: 'hasId', label: 'Government-issued photo ID' },
+                      { key: 'hasMedicalRecords', label: t('claim.medRecords') },
+                      { key: 'hasProofOfExposure', label: t('claim.proofExposure') },
+                      { key: 'hasPhysicianLetter', label: t('claim.physicianLetter') },
+                      { key: 'hasId', label: t('claim.govId') },
                     ] as const).map(({ key, label }) => (
                       <label key={key} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                         <input type="checkbox" checked={form[key]} onChange={(e) => updateField(key, e.target.checked)} className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 accent-yellow-500" />
@@ -3756,10 +3829,10 @@ function ClaimSubmissionSection() {
               )}
               {step === 3 && (
                 <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
-                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Review & Submit</h3>
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">{t('claim.reviewSubmit')}</h3>
                   <div className="space-y-4">
                     <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-3">
-                      <h4 className="text-gold-dark dark:text-gold font-semibold text-sm uppercase tracking-wider">Personal Information</h4>
+                      <h4 className="text-gold-dark dark:text-gold font-semibold text-sm uppercase tracking-wider">{t('claim.personalInfo')}</h4>
                       <div className="grid grid-cols-2 gap-2 text-sm"><span className="text-gray-400">Name</span><span className="text-navy dark:text-gray-200">{form.firstName} {form.lastName}</span><span className="text-gray-400">Email</span><span className="text-navy dark:text-gray-200">{form.email}</span><span className="text-gray-400">Phone</span><span className="text-navy dark:text-gray-200">{form.phone}</span><span className="text-gray-400">State</span><span className="text-navy dark:text-gray-200">{form.state}</span></div>
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-3">
@@ -3805,6 +3878,7 @@ function ClaimSubmissionSection() {
 
 function SettlementTrackerSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const statusColor = useCallback((status: string) => {
     switch (status) {
       case 'Active': return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -3817,11 +3891,11 @@ function SettlementTrackerSection() {
     <section id="settlement-tracker" className="py-20 bg-white dark:bg-gray-900/50">
       <div className="max-w-7xl mx-auto px-4" ref={ref}>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-14">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Live Data</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('settlement.badge')}</Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Settlement Recovery <span className="gradient-text-gold">Tracker</span>
+            {t('settlement.title')}
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Real-time progress across the largest active mass tort litigations in the United States.</p>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">{t('settlement.description')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {SETTLEMENT_DATA.map((item) => (
@@ -3836,9 +3910,9 @@ function SettlementTrackerSection() {
                     <Badge variant="outline" className={`text-[10px] ${statusColor(item.status)}`}>{item.status}</Badge>
                   </div>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span className="text-gray-400">Total Claims</span><span className="text-navy dark:text-gray-200 font-medium">{item.claims.toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Approved</span><span className="text-gold font-medium">{item.approved}%</span></div>
-                    <div className="flex justify-between"><span className="text-gray-400">Avg. Recovery</span><span className="text-green-500 dark:text-green-400 font-medium">{item.avgRecovery}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">{t('settlement.totalClaims')}</span><span className="text-navy dark:text-gray-200 font-medium">{item.claims.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">{t('settlement.approved')}</span><span className="text-gold font-medium">{item.approved}%</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">{t('settlement.avgRecovery')}</span><span className="text-green-500 dark:text-green-400 font-medium">{item.avgRecovery}</span></div>
                   </div>
                   <Progress value={item.progress} className="h-2 bg-gray-200 dark:bg-gray-800 [&>div]:bg-gold" />
                 </CardContent>
@@ -3847,7 +3921,7 @@ function SettlementTrackerSection() {
           ))}
         </motion.div>
         <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 0.8 }} className="text-center text-xs text-gray-400 mt-10 max-w-xl mx-auto">
-          Data represents aggregate estimates. Individual results vary significantly based on case specifics.
+          {t('settlement.disclaimer')}
         </motion.p>
       </div>
     </section>
@@ -3860,35 +3934,36 @@ function SettlementTrackerSection() {
 
 function VideoTestimonialsSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
 
   return (
     <section id="video-testimonials" className="py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4" ref={ref}>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-14">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Video Stories</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('video.badge')}</Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Hear From <span className="gradient-text-gold">Real Claimants</span>
+            {t('video.title')}
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Real stories from real people who found justice through mass tort litigation.</p>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">{t('video.description')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {VIDEO_TESTIMONIALS.map((t) => (
-            <motion.div key={t.name} variants={fadeInUp}>
+          {VIDEO_TESTIMONIALS.map((item) => (
+            <motion.div key={item.name} variants={fadeInUp}>
               <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-900 overflow-hidden hover:border-gold/30 transition-all duration-300 group h-full flex flex-col">
-                <div className={`relative h-48 bg-gradient-to-br ${t.gradient} flex items-center justify-center cursor-pointer`}>
+                <div className={`relative h-48 bg-gradient-to-br ${item.gradient} flex items-center justify-center cursor-pointer`}>
                   <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
                     <Play className="w-7 h-7 text-white ml-1" />
                   </div>
-                  <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md">{t.duration}</div>
+                  <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md">{item.duration}</div>
                 </div>
                 <CardContent className="p-5 flex-1 flex flex-col">
                   <div className="flex items-center justify-between mb-3">
-                    <div><h3 className="font-semibold text-navy dark:text-white">{t.name}</h3><p className="text-xs text-gold">{t.caseType}</p></div>
+                    <div><h3 className="font-semibold text-navy dark:text-white">{item.name}</h3><p className="text-xs text-gold">{item.caseType}</p></div>
                     <BadgeCheck className="w-5 h-5 text-blue-400" />
                   </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed flex-1 mb-4">&ldquo;{t.quote}&rdquo;</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed flex-1 mb-4">&ldquo;{item.quote}&rdquo;</p>
                   <button className="flex items-center gap-2 text-sm text-gold-dark dark:text-gold hover:text-gold font-medium transition-colors">
-                    Watch Story <ArrowRight className="w-4 h-4" />
+                    {t('video.watchStory')} <ArrowRight className="w-4 h-4" />
                   </button>
                 </CardContent>
               </Card>
@@ -3906,6 +3981,7 @@ function VideoTestimonialsSection() {
 
 function ReviewsWidget() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const reviews = [
     { text: "ClaimGuard Pro made the entire process effortless. They handled everything from start to finish.", author: "Sarah M.", caseType: "Camp Lejeune claim" },
     { text: "Professional, responsive, and truly cares about clients. I felt supported every step of the way.", author: "Michael T.", caseType: "Roundup claim" },
@@ -3918,12 +3994,12 @@ function ReviewsWidget() {
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer}>
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <p className="text-5xl font-bold gradient-text-gold mb-2">4.8</p>
-            <p className="text-gray-400 text-sm mb-2">out of 5</p>
+            <p className="text-gray-400 text-sm mb-2">{t('reviews.outOf')}</p>
             <div className="flex items-center justify-center gap-1 mb-3">{[1,2,3,4,5].map((s) => <Star key={s} className="w-5 h-5 fill-gold text-gold" />)}</div>
-            <p className="text-gray-400 dark:text-gray-500 text-sm">Based on 2,400+ verified reviews</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">{t('reviews.basedOn')}</p>
           </motion.div>
           <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center gap-4 mb-10 text-xs text-gray-400">
-            <span className="text-gray-500">As seen on:</span>
+            <span className="text-gray-500">{t('reviews.asSeenOn')}</span>
             {["Trustpilot", "Google Reviews", "Better Business Bureau"].map((platform) => (
               <span key={platform} className="px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">{platform}</span>
             ))}
@@ -3956,17 +4032,18 @@ function ReviewsWidget() {
 
 function ResourcesSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const [expandedArticle, setExpandedArticle] = useState<number | null>(null);
 
   return (
     <section id="resources" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Resources & Insights</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('resources.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Expert <span className="gradient-text-gold">Guides</span> for Claimants
+            {t('resources.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">In-depth articles to help you understand your rights, prepare your claim, and maximize your compensation.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('resources.description')}</p>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid md:grid-cols-3 gap-6">
@@ -3996,7 +4073,7 @@ function ResourcesSection() {
                     aria-expanded={expandedArticle === idx}
                     className="text-gold-dark dark:text-gold-light text-sm font-semibold hover:text-gold flex items-center gap-1 transition-colors mt-auto"
                   >
-                    {expandedArticle === idx ? 'Show Less' : 'Read Full Article'}
+                    {expandedArticle === idx ? t('services.showLess') : t('resources.readFull')}
                     {expandedArticle === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
                 </CardContent>
@@ -4015,11 +4092,12 @@ function ResourcesSection() {
 
 function AboutSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const VALUES = [
-    { icon: Shield, title: 'Integrity First', desc: 'We operate with complete transparency and always put our claimants\' interests first.' },
-    { icon: Scale, title: 'Justice for All', desc: 'Every claimant deserves fair representation and equal access to compensation.' },
-    { icon: Users, title: 'Personalized Care', desc: 'No cookie-cutter solutions. Every claim gets individualized attention.' },
-    { icon: Award, title: 'Proven Results', desc: 'With a 98% success rate and $47M+ recovered, our track record speaks for itself.' },
+    { icon: Shield, title: t('about.v0'), desc: t('about.v0d') },
+    { icon: Scale, title: t('about.v1'), desc: t('about.v1d') },
+    { icon: Users, title: t('about.v2'), desc: t('about.v2d') },
+    { icon: Award, title: t('about.v3'), desc: t('about.v3d') },
   ];
   const TIMELINE_MILESTONES = [
     { year: '2009', title: 'Founded', desc: 'ClaimGuard Pro was established with a mission to help mass tort claimants.' },
@@ -4034,12 +4112,12 @@ function AboutSection() {
     <section id="about" className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">About Us</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('about.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Fighting for <span className="gradient-text-gold">Justice</span> Since 2009
+            {t('about.title')}
           </h2>
           <p className="text-muted-foreground text-lg max-w-3xl mx-auto leading-relaxed">
-            ClaimGuard Pro was founded with a single mission: to ensure every person affected by corporate negligence has access to fair compensation.
+            {t('about.description')}
           </p>
         </motion.div>
 
@@ -4047,8 +4125,8 @@ function AboutSection() {
           <Card className="bg-navy dark:bg-gray-900 text-white border-0 shadow-xl overflow-hidden">
             <CardContent className="p-8 text-center">
               <BookOpen className="w-10 h-10 text-gold mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Georgia, serif' }}>Our Mission</h3>
-              <p className="text-white/80 leading-relaxed text-lg italic">&ldquo;To level the playing field between everyday people and powerful corporations by providing expert guidance, transparent communication, and unwavering advocacy throughout the mass tort claims process.&rdquo;</p>
+              <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Georgia, serif' }}>{t('about.mission')}</h3>
+              <p className="text-white/80 leading-relaxed text-lg italic">&ldquo;{t('about.missionQuote')}&rdquo;</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -4068,18 +4146,18 @@ function AboutSection() {
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-navy dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>Meet Our Team</h3>
-          <p className="text-muted-foreground">Dedicated professionals fighting for your rights.</p>
+          <h3 className="text-2xl font-bold text-navy dark:text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>{t('about.meetTeam')}</h3>
+          <p className="text-muted-foreground">{t('about.teamDesc')}</p>
         </motion.div>
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {TEAM_MEMBERS.map((member) => (
+          {TEAM_MEMBERS.map((member, idx) => (
             <motion.div key={member.name} variants={fadeInUp}>
               <Card className="text-center border-0 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 bg-white dark:bg-gray-800/50 dark:border-gray-700 hover-glow h-full">
                 <CardContent className="p-6">
                   <div className={`w-20 h-20 rounded-full ${member.color} flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold shadow-lg`}>{member.initials}</div>
                   <h4 className="font-bold text-navy dark:text-gray-100 text-base">{member.name}</h4>
                   <p className="text-gold-dark dark:text-gold-light text-xs font-semibold uppercase tracking-wider mb-2">{member.role}</p>
-                  <p className="text-muted-foreground dark:text-gray-400 text-xs leading-relaxed">{member.bio}</p>
+                  <p className="text-muted-foreground dark:text-gray-400 text-xs leading-relaxed">{t(`team.m${idx}`)}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -4087,7 +4165,7 @@ function AboutSection() {
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-12 mb-8">
-          <h3 className="text-2xl font-bold text-navy dark:text-white mb-8 text-center" style={{ fontFamily: 'Georgia, serif' }}>Our Journey</h3>
+          <h3 className="text-2xl font-bold text-navy dark:text-white mb-8 text-center" style={{ fontFamily: 'Georgia, serif' }}>{t('about.journey')}</h3>
           <div className="relative">
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gold/20 -translate-x-1/2" aria-hidden="true" />
             <div className="md:hidden absolute left-6 top-0 bottom-0 w-0.5 bg-gold/20" aria-hidden="true" />
@@ -4107,11 +4185,11 @@ function AboutSection() {
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="flex flex-wrap justify-center gap-4">
           {[
-            { icon: Shield, label: 'BBB Accredited A+' },
-            { icon: Lock, label: '256-bit SSL Encrypted' },
-            { icon: CheckCircle2, label: 'HIPAA Compliant' },
-            { icon: Award, label: 'Top Rated 2024' },
-            { icon: Users, label: '8,000+ Subscribers' },
+            { icon: Shield, label: t('about.bbb') },
+            { icon: Lock, label: t('about.ssl') },
+            { icon: CheckCircle2, label: t('about.hipaa') },
+            { icon: Award, label: t('about.topRated') },
+            { icon: Users, label: t('about.subscribers') },
           ].map((badge) => (
             <div key={badge.label} className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#F4F1EB] dark:bg-gray-800 text-sm text-navy/70 dark:text-gray-300 hover:bg-gold/10 transition-colors cursor-default">
               <badge.icon className="w-4 h-4 text-gold" /><span>{badge.label}</span>
@@ -4131,6 +4209,7 @@ interface UploadedFile { file: File; id: string; }
 
 function ContactSection() {
   const { ref, inView } = useInView(0.1);
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -4144,9 +4223,9 @@ function ContactSection() {
 
   const validate = useCallback(() => {
     const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = 'Name is required';
-    if (!emailRegex.test(form.email)) e.email = 'Valid email is required';
-    if (!form.message.trim()) e.message = 'Message is required';
+    if (!form.name.trim()) e.name = t('contact.nameRequired');
+    if (!emailRegex.test(form.email)) e.email = t('contact.emailRequired');
+    if (!form.message.trim()) e.message = t('contact.messageRequired');
     setErrors(e);
     return Object.keys(e).length === 0;
   }, [form, emailRegex]);
@@ -4175,7 +4254,7 @@ function ContactSection() {
     e.preventDefault();
     if (!validate()) return;
     // Form throttling: prevent rapid re-submissions
-    if (Date.now() - lastSubmit < 3000) { toast.error('Please wait a moment before submitting again.'); return; }
+    if (Date.now() - lastSubmit < 3000) { toast.error(t('contact.throttle')); return; }
     setLoading(true);
     setLastSubmit(Date.now());
     try {
@@ -4196,16 +4275,16 @@ function ContactSection() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success(data.message || 'We will get back to you shortly.');
-        announce('Message sent successfully. Our team will respond within 24 hours.');
+        toast.success(data.message || t('contact.success'));
+        announce(t('contact.announce'));
         setForm({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
         setUploadedFiles([]);
         setPrefs({ emailUpdates: true, smsAlerts: false, newsletter: false });
       } else {
-        toast.error(data.error || 'Please try again.');
+        toast.error(data.error || t('newsletter.tryAgain'));
       }
     } catch {
-      toast.error('Please try again.');
+      toast.error(t('newsletter.tryAgain'));
     } finally { setLoading(false); }
   }, [form, validate, uploadedFiles, prefs, lastSubmit]);
 
@@ -4219,11 +4298,11 @@ function ContactSection() {
     <section id="contact" className="py-14 md:py-20 bg-[#F4F1EB] dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Contact Us</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('contact.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Get Your <span className="gradient-text-gold">Free Assessment</span>
+            {t('contact.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Speak with our team today. 100% free, no strings attached.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('contact.description')}</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-5 gap-8">
@@ -4233,29 +4312,29 @@ function ContactSection() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="contact-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Full Name *</Label>
+                      <Label htmlFor="contact-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('contact.fullName')}</Label>
                       <Input id="contact-name" value={form.name} onChange={(e) => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })); }} placeholder="John Doe" aria-describedby={errors.name ? 'contact-name-error' : undefined} aria-invalid={!!errors.name} className={errors.name ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
                       {errors.name && <p id="contact-name-error" className="text-xs text-red-500 mt-1" role="alert">{errors.name}</p>}
                     </div>
                     <div>
-                      <Label htmlFor="contact-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Email *</Label>
+                      <Label htmlFor="contact-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('contact.email')}</Label>
                       <Input id="contact-email" type="email" value={form.email} onChange={(e) => { setForm(f => ({ ...f, email: e.target.value })); setErrors(er => ({ ...er, email: '' })); }} placeholder="john@example.com" aria-describedby={errors.email ? 'contact-email-error' : undefined} aria-invalid={!!errors.email} className={errors.email ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
                       {errors.email && <p id="contact-email-error" className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}
                     </div>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="contact-phone" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Phone</Label>
+                      <Label htmlFor="contact-phone" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('contact.phone')}</Label>
                       <Input id="contact-phone" value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="(555) 000-0000" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                     </div>
                     <div>
-                      <Label htmlFor="contact-claimId" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Claim ID (optional)</Label>
+                      <Label htmlFor="contact-claimId" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('contact.claimId')}</Label>
                       <Input id="contact-claimId" value={form.claimId} onChange={(e) => setForm(f => ({ ...f, claimId: e.target.value }))} placeholder="CLM-2024-XXX" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">Preferred Contact Method</Label>
+                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">{t('contact.preferredMethod')}</Label>
                     <RadioGroup value={form.contactMethod} onValueChange={(v) => setForm(f => ({ ...f, contactMethod: v }))} className="flex gap-4">
                       {[
                         { value: 'email', label: 'Email', icon: Mail },
@@ -4270,13 +4349,13 @@ function ContactSection() {
                   </div>
 
                   <div>
-                    <Label htmlFor="contact-message" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Message *</Label>
+                    <Label htmlFor="contact-message" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('contact.message')}</Label>
                     <Textarea id="contact-message" value={form.message} onChange={(e) => { setForm(f => ({ ...f, message: e.target.value })); setErrors(er => ({ ...er, message: '' })); }} placeholder="Tell us about your situation..." rows={4} aria-describedby={errors.message ? 'contact-message-error' : undefined} aria-invalid={!!errors.message} className={errors.message ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
                     {errors.message && <p id="contact-message-error" className="text-xs text-red-500 mt-1" role="alert">{errors.message}</p>}
                   </div>
 
                   <div>
-                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">Attach Documents (optional)</Label>
+                    <Label className="text-sm font-semibold text-navy dark:text-gray-200 mb-2 block">{t('contact.attachDocs')}</Label>
                     <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => addFiles(e.target.files)} />
                     <div
                       onClick={() => fileInputRef.current?.click()}
@@ -4290,8 +4369,8 @@ function ContactSection() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
                     >
                       <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground dark:text-gray-400">Click to upload or drag files here</p>
-                      <p className="text-xs text-muted-foreground dark:text-gray-500 mt-1">PDF, DOC, JPG, PNG up to 10MB each (max 3 files)</p>
+                      <p className="text-sm text-muted-foreground dark:text-gray-400">{t('contact.uploadHint')}</p>
+                      <p className="text-xs text-muted-foreground dark:text-gray-500 mt-1">{t('contact.uploadLimits')}</p>
                     </div>
                     {uploadedFiles.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-3">
@@ -4311,12 +4390,12 @@ function ContactSection() {
 
                   {/* Notification Preferences */}
                   <div className="space-y-3 mt-2">
-                    <p className="text-sm font-semibold text-navy dark:text-gray-200">How would you like to receive updates?</p>
+                    <p className="text-sm font-semibold text-navy dark:text-gray-200">{t('contact.notificationPrefs')}</p>
                     <div className="space-y-2">
                       {[
-                        { id: 'emailUpdates', label: 'Email updates on claim status changes', key: 'emailUpdates' as const },
-                        { id: 'smsAlerts', label: 'SMS alerts for important deadlines', key: 'smsAlerts' as const },
-                        { id: 'newsletter', label: 'Newsletter with mass tort news', key: 'newsletter' as const },
+                        { id: 'emailUpdates', label: t('contact.emailPrefs'), key: 'emailUpdates' as const },
+                        { id: 'smsAlerts', label: t('contact.smsPrefs'), key: 'smsAlerts' as const },
+                        { id: 'newsletter', label: t('contact.newsletterPrefs'), key: 'newsletter' as const },
                       ].map((pref) => (
                         <label key={pref.id} className="flex items-center gap-2.5 cursor-pointer">
                           <input type="checkbox" checked={prefs[pref.key]} onChange={(e) => setPrefs(p => ({ ...p, [pref.key]: e.target.checked }))} className="w-4 h-4 rounded border-gray-300 text-gold focus:ring-gold" />
@@ -4327,7 +4406,7 @@ function ContactSection() {
                   </div>
 
                   <Button type="submit" disabled={loading} className="w-full bg-gold hover:bg-gold-dark text-white font-semibold h-12 text-base">
-                    {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Sending...</> : <><Send className="w-5 h-5 mr-2" />Send Message</>}
+                    {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('contact.sending')}</> : <><Send className="w-5 h-5 mr-2" />{t('contact.sendMessage')}</>}
                   </Button>
                 </form>
               </CardContent>
@@ -4352,15 +4431,15 @@ function ContactSection() {
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><MapPin className="w-5 h-5 text-gold" /></div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Office Address</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('contact.officeAddress')}</p>
                     <p className="text-sm font-medium text-navy dark:text-gray-200">123 Justice Avenue</p>
                     <p className="text-sm text-muted-foreground dark:text-gray-400">Washington, DC 20001</p>
                   </div>
                 </div>
                 {[
-                  { icon: Phone, label: 'Call Us', value: '(800) 555-0199', href: 'tel:8005550199' },
+                  { icon: Phone, label: t('contact.callUs'), value: '(800) 555-0199', href: 'tel:8005550199' },
                   { icon: Mail, label: 'Email', value: 'info@claimguardpro.com', href: 'mailto:info@claimguardpro.com' },
-                  { icon: Clock, label: 'Office Hours', value: 'Mon-Fri: 8AM-8PM EST\nSat: 9AM-5PM EST', href: '' },
+                  { icon: Clock, label: t('contact.officeHours'), value: 'Mon-Fri: 8AM-8PM EST\nSat: 9AM-5PM EST', href: '' },
                 ].map((item) => (
                   <div key={item.label} className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><item.icon className="w-5 h-5 text-gold" /></div>
@@ -4375,7 +4454,7 @@ function ContactSection() {
                   </div>
                 ))}
                 <div className="flex items-center gap-3 pt-2">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Follow Us</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('contact.followUs')}</span>
                   <div className="flex gap-2">
                     {[
                               { icon: Facebook, href: 'https://facebook.com/claimguardpro', label: 'Facebook' },
@@ -4392,8 +4471,8 @@ function ContactSection() {
             <Card className="bg-navy dark:bg-gray-900 text-white border-0 shadow-md">
               <CardContent className="p-6 text-center">
                 <HeadphonesIcon className="w-8 h-8 text-gold mx-auto mb-3" />
-                <h4 className="font-bold text-lg mb-1">Need Immediate Help?</h4>
-                <p className="text-white/60 text-sm mb-4">Our specialists are standing by 24/7.</p>
+                <h4 className="font-bold text-lg mb-1">{t('contact.needHelp')}</h4>
+                <p className="text-white/60 text-sm mb-4">{t('contact.specialistsStandingBy')}</p>
                 <a href="tel:8005550199" className="block w-full bg-gold hover:bg-gold-dark text-white font-semibold py-3 rounded-lg transition-colors mb-3"><Phone className="w-4 h-4 inline mr-2" />(800) 555-0199</a>
                 <a href="mailto:info@claimguardpro.com" className="block w-full bg-white/10 hover:bg-white/15 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"><Mail className="w-4 h-4 inline mr-2" />info@claimguardpro.com</a>
               </CardContent>
@@ -4401,12 +4480,12 @@ function ContactSection() {
 
             <Card className="bg-white dark:bg-gray-800/50 border-0 shadow-md dark:border-gray-700">
               <CardContent className="p-5">
-                <h4 className="font-bold text-navy dark:text-gray-100 text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-gold" />Why Contact Us?</h4>
+                <h4 className="font-bold text-navy dark:text-gray-100 text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-gold" />{t('contact.whyContact')}</h4>
                 <ul className="space-y-3">
                   {[
-                    { title: 'Expert Case Evaluation', desc: 'Get a thorough, expert assessment of your claim at absolutely no cost.' },
-                    { title: 'Personalized Guidance', desc: 'A dedicated specialist assigned to your specific case.' },
-                    { title: 'Faster Resolution', desc: 'Our team helps resolve issues in days, not months.' },
+                    { title: t('contact.whyItem0'), desc: t('contact.whyItem0d') },
+                    { title: t('contact.whyItem1'), desc: t('contact.whyItem1d') },
+                    { title: t('contact.whyItem2'), desc: t('contact.whyItem2d') },
                   ].map(item => (
                     <li key={item.title} className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
@@ -4422,12 +4501,12 @@ function ContactSection() {
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0"><Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /></div>
                   <div>
-                    <h4 className="font-bold text-navy dark:text-gray-100 text-sm mb-1">Our Response Guarantee</h4>
+                    <h4 className="font-bold text-navy dark:text-gray-100 text-sm mb-1">{t('contact.responseGuarantee')}</h4>
                     <ul className="space-y-1.5 text-xs text-muted-foreground dark:text-gray-400">
-                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />Email: Response within 2 hours</li>
-                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />Phone: Connect within 30 seconds</li>
-                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />Chat: Instant during business hours</li>
-                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />Claims: Status update within 24 hours</li>
+                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />{t('contact.responseEmail')}</li>
+                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />{t('contact.responsePhone')}</li>
+                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />{t('contact.responseChat')}</li>
+                      <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3 text-emerald-500" />{t('contact.responseClaims')}</li>
                     </ul>
                   </div>
                 </div>
@@ -4445,6 +4524,7 @@ function ContactSection() {
    ═══════════════════════════════════════════════════════════════ */
 
 function Footer() {
+  const { t } = useLanguage();
   const scrollTo = useCallback((id: string) => {
     document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
   }, []);
@@ -4459,10 +4539,10 @@ function Footer() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { icon: Shield, title: 'Secure & Encrypted', desc: '256-bit SSL encryption protects all your data' },
-                { icon: CheckCircle2, title: '100% Free', desc: 'Every service is provided at no cost to you, ever' },
-                { icon: Award, title: 'BBB A+ Rated', desc: 'Accredited by the Better Business Bureau since 2012' },
-                { icon: Users, title: 'Expert Team', desc: '50+ specialists dedicated to your claim' },
+                { icon: Shield, title: t('footer.secure'), desc: t('footer.secureDesc') },
+                { icon: CheckCircle2, title: t('footer.free'), desc: t('footer.freeDesc') },
+                { icon: Award, title: t('footer.bbb'), desc: t('footer.bbbDesc') },
+                { icon: Users, title: t('footer.team'), desc: t('footer.teamDesc') },
               ].map((item) => (
                 <div key={item.title} className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><item.icon className="w-5 h-5 text-gold" /></div>
@@ -4479,28 +4559,28 @@ function Footer() {
                 <div className="w-9 h-9 rounded-lg bg-gold/20 flex items-center justify-center"><Shield className="w-5 h-5 text-gold" /></div>
                 <span className="text-lg font-bold">Claim<span className="text-gold">Guard</span> Pro</span>
               </div>
-              <p className="text-white/50 text-sm leading-relaxed">Your trusted partner in mass tort claims recovery. Guiding claimants to fair compensation since 2009.</p>
+              <p className="text-white/50 text-sm leading-relaxed">{t('footer.tagline')}</p>
             </div>
             <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">Quick Links</h4>
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">{t('footer.quickLinks')}</h4>
               <div className="space-y-2">
                 {[
-                  { label: 'Track My Claim', href: '#track-claim' },
-                  { label: 'Eligibility Quiz', href: '#eligibility-quiz' },
-                  { label: 'Our Services', href: '#services' },
-                  { label: 'Claims We Handle', href: '#what-we-handle' },
-                  { label: 'Resources', href: '#resources' },
-                  { label: 'FAQ', href: '#faq' },
-                  { label: 'Case Studies', href: '#case-studies' },
-                  { label: 'Contact Us', href: '#contact' },
-                  { label: 'Newsletter', href: '#newsletter' },
+                  { label: t('footer.trackMyClaim'), href: '#track-claim' },
+                  { label: t('footer.eligibilityQuiz'), href: '#eligibility-quiz' },
+                  { label: t('footer.ourServices'), href: '#services' },
+                  { label: t('footer.claimsWeHandle'), href: '#what-we-handle' },
+                  { label: t('footer.resources'), href: '#resources' },
+                  { label: t('footer.faq'), href: '#faq' },
+                  { label: t('footer.caseStudies'), href: '#case-studies' },
+                  { label: t('footer.contactUs'), href: '#contact' },
+                  { label: t('footer.newsletter'), href: '#newsletter' },
                 ].map(link => (
                   <button key={link.href + link.label} onClick={() => scrollTo(link.href)} className="block text-sm text-white/50 hover:text-gold transition-colors text-left">{link.label}</button>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">Practice Areas</h4>
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">{t('footer.practiceAreas')}</h4>
               <div className="space-y-2">
                 {['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam'].map(area => (
                   <p key={area} className="text-sm text-white/50">{area}</p>
@@ -4508,7 +4588,7 @@ function Footer() {
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">Contact</h4>
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-4 text-gold">{t('footer.contact')}</h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" /><span className="text-sm text-white/50">123 Justice Avenue<br />Washington, DC 20001</span></div>
                 <a href="tel:8005550199" className="flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"><Phone className="w-4 h-4 text-gold" />(800) 555-0199</a>
@@ -4524,23 +4604,23 @@ function Footer() {
           <Separator className="bg-white/10 my-10" />
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-white/30 text-center md:text-left">
-              © {new Date().getFullYear()} ClaimGuard Pro. All rights reserved. This website is for informational purposes only and does not constitute legal advice.
+              {t('footer.copyright').replace('{year}', String(new Date().getFullYear()))}
             </p>
             <div className="flex gap-4 text-xs text-white/30">
-              <button onClick={() => setPrivacyOpen(true)} className="hover:text-gold transition-colors">Privacy Policy</button>
-              <button onClick={() => setTermsOpen(true)} className="hover:text-gold transition-colors">Terms of Service</button>
-              <button onClick={() => setDisclaimerOpen(true)} className="hover:text-gold transition-colors">Disclaimer</button>
+              <button onClick={() => setPrivacyOpen(true)} className="hover:text-gold transition-colors">{t('footer.privacyPolicy')}</button>
+              <button onClick={() => setTermsOpen(true)} className="hover:text-gold transition-colors">{t('footer.termsOfService')}</button>
+              <button onClick={() => setDisclaimerOpen(true)} className="hover:text-gold transition-colors">{t('footer.disclaimer')}</button>
             </div>
           </div>
           <p className="text-center text-xs text-white/20 mt-6 max-w-4xl mx-auto leading-relaxed">
-            Attorney Advertising. Prior results do not guarantee a similar outcome. The information on this site is not legal advice. ClaimGuard Pro is not a law firm.
+            {t('footer.attorneyAd')}
           </p>
         </div>
       </footer>
 
       <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
-          <DialogHeader><DialogTitle className="text-navy dark:text-white">Privacy Policy</DialogTitle><DialogDescription className="text-muted-foreground dark:text-gray-400">Last Updated: January 2025</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle className="text-navy dark:text-white">{t('footer.privacyTitle')}</DialogTitle><DialogDescription className="text-muted-foreground dark:text-gray-400">{t('footer.lastUpdated')}</DialogDescription></DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
             <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{PRIVACY_POLICY_TEXT}</div>
           </ScrollArea>
@@ -4549,7 +4629,7 @@ function Footer() {
 
       <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
-          <DialogHeader><DialogTitle className="text-navy dark:text-white">Terms of Service</DialogTitle><DialogDescription className="text-muted-foreground dark:text-gray-400">Last Updated: January 2025</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle className="text-navy dark:text-white">{t('footer.termsTitle')}</DialogTitle><DialogDescription className="text-muted-foreground dark:text-gray-400">{t('footer.lastUpdated')}</DialogDescription></DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
             <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{TERMS_OF_SERVICE_TEXT}</div>
           </ScrollArea>
@@ -4558,7 +4638,7 @@ function Footer() {
 
       <Dialog open={disclaimerOpen} onOpenChange={setDisclaimerOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:border-gray-700">
-          <DialogHeader><DialogTitle className="text-navy dark:text-white">Legal Disclaimer</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-navy dark:text-white">{t('footer.disclaimerTitle')}</DialogTitle></DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
             <div className="text-sm text-muted-foreground dark:text-gray-300 leading-relaxed whitespace-pre-line">{DISCLAIMER_TEXT}</div>
           </ScrollArea>
@@ -4575,9 +4655,10 @@ function Footer() {
 interface ChatMessage { id: number; text: string; sender: 'bot' | 'user'; }
 
 function LiveChatWidget() {
+  const { t, locale } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 0, text: "Hi! I'm the Claims Assistant. How can I help you today?\n\nYou can try asking: \"How do I track my claim?\" or \"What happens if my claim is denied?\"", sender: 'bot' },
+    { id: 0, text: t('chat.greeting'), sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -4616,7 +4697,7 @@ function LiveChatWidget() {
       const minDelay = Math.max(0, 1500 - elapsed);
 
       setTimeout(() => {
-        const botMsg: ChatMessage = { id: Date.now() + 1, text: data.reply || "Thank you for your message. A specialist will respond shortly. For immediate help, call (800) 555-0199.", sender: 'bot' };
+        const botMsg: ChatMessage = { id: Date.now() + 1, text: data.reply || t('chat.fallback'), sender: 'bot' };
         setMessages(prev => [...prev, botMsg]);
         setIsTyping(false);
       }, minDelay);
@@ -4624,14 +4705,14 @@ function LiveChatWidget() {
       const elapsed = Date.now() - typingStart;
       const minDelay = Math.max(0, 1500 - elapsed);
       setTimeout(() => {
-        const fallbackMsg: ChatMessage = { id: Date.now() + 1, text: "I'm sorry, I'm having trouble connecting. Please try again or call us at (800) 555-0199 for immediate assistance.", sender: 'bot' };
+        const fallbackMsg: ChatMessage = { id: Date.now() + 1, text: t('chat.error'), sender: 'bot' };
         setMessages(prev => [...prev, fallbackMsg]);
         setIsTyping(false);
       }, minDelay);
     }
-  }, [messages]);
+  }, [messages, t]);
 
-  const quickReplies = useMemo(() => ['How do I track my claim?', 'What if my claim is denied?', 'What documents do I need?', 'Is this really free?'], []);
+  const quickReplies = useMemo(() => [t('chat.quickReply0'), t('chat.quickReply1'), t('chat.quickReply2'), t('chat.quickReply3')], [locale, t]);
   const maxChars = 500;
 
   return (
@@ -4645,7 +4726,7 @@ function LiveChatWidget() {
               style={{ background: 'linear-gradient(135deg, #C5A55A, #A88A3F)' }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              aria-label="Open live chat support"
+              aria-label={t('chat.openLabel')}
             >
               {msgCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-chat-pulse">{msgCount}</span>
@@ -4653,7 +4734,7 @@ function LiveChatWidget() {
               <MessageCircle className="w-6 h-6 text-white" />
             </motion.button>
           </TooltipTrigger>
-          <TooltipContent side="left"><p>Claims Assistant</p></TooltipContent>
+          <TooltipContent side="left"><p>{t('chat.title')}</p></TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
@@ -4672,14 +4753,14 @@ function LiveChatWidget() {
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center"><HeadphonesIcon className="w-5 h-5 text-gold" /></div>
                 <div>
-                  <p className="text-white font-semibold text-sm">Claims Assistant</p>
+                  <p className="text-white font-semibold text-sm">{t('chat.title')}</p>
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true" />
-                    <span className="text-white/60 text-xs">Online</span>
+                    <span className="text-white/60 text-xs">{t('chat.online')}</span>
                   </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white transition-colors p-1" aria-label="Close chat">
+              <button onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white transition-colors p-1" aria-label={t('chat.close')}>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -4716,7 +4797,7 @@ function LiveChatWidget() {
             )}
 
             <div className="bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center mb-2">This is an automated assistant. For legal advice, please consult a qualified attorney.</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center mb-2">{t('chat.typing')}</p>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
@@ -4724,7 +4805,7 @@ function LiveChatWidget() {
                     value={input}
                     onChange={(e) => setInput(e.target.value.slice(0, maxChars))}
                     onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
-                    placeholder="Type your message..."
+                    placeholder={t('chat.placeholder')}
                     className="pr-10 h-10 text-sm border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     maxLength={maxChars}
                   />
@@ -4747,6 +4828,7 @@ function LiveChatWidget() {
    ═══════════════════════════════════════════════════════════════ */
 
 const BackToTopButton = memo(function BackToTopButton() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -4780,7 +4862,7 @@ const BackToTopButton = memo(function BackToTopButton() {
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={scrollToTop}
           className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full bg-gold hover:bg-gold-dark text-white shadow-lg flex items-center justify-center transition-colors"
-          aria-label="Back to top"
+          aria-label={t('backToTop')}
         >
           <svg className="absolute inset-0 w-12 h-12 -rotate-90" viewBox="0 0 40 40">
             <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
@@ -4798,6 +4880,7 @@ const BackToTopButton = memo(function BackToTopButton() {
    ═══════════════════════════════════════════════════════════════ */
 
 function CookieConsentBanner() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -4840,7 +4923,7 @@ function CookieConsentBanner() {
             <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 pb-4">
               <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl shadow-2xl border border-emerald-200 dark:border-emerald-800 p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <p className="text-sm text-emerald-800 dark:text-emerald-200 font-medium">Preferences saved successfully.</p>
+                <p className="text-sm text-emerald-800 dark:text-emerald-200 font-medium">{t('cookie.saved')}</p>
               </div>
             </div>
           </motion.div>
@@ -4863,10 +4946,10 @@ function CookieConsentBanner() {
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0"><Cookie className="w-5 h-5 text-gold" /></div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-navy dark:text-white mb-1">We value your privacy</p>
+                  <p className="text-sm font-semibold text-navy dark:text-white mb-1">{t('cookie.title')}</p>
                   <p className="text-xs text-muted-foreground dark:text-gray-400 leading-relaxed">
-                    We use cookies to improve your experience. Choose which cookies you'd like to allow.{' '}
-                    <button onClick={() => setPrivacyOpen(true)} className="text-gold underline hover:text-gold-dark">Privacy Policy</button>
+                    {t('cookie.description')}{' '}
+                    <button onClick={() => setPrivacyOpen(true)} className="text-gold underline hover:text-gold-dark">{t('cookie.privacyPolicy')}</button>
                   </p>
                 </div>
               </div>
@@ -4874,9 +4957,9 @@ function CookieConsentBanner() {
               {prefsOpen && (
                 <div className="space-y-3 mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
                   {[
-                    { key: 'analytics' as const, label: 'Analytics', desc: 'Help us understand how visitors interact with the site.' },
-                    { key: 'marketing' as const, label: 'Marketing', desc: 'Used to deliver relevant ads and track campaigns.' },
-                    { key: 'functional' as const, label: 'Functional', desc: 'Required for the site to work properly.' },
+                    { key: 'analytics' as const, label: t('cookie.analytics'), desc: t('cookie.analyticsDesc') },
+                    { key: 'marketing' as const, label: t('cookie.marketing'), desc: t('cookie.marketingDesc') },
+                    { key: 'functional' as const, label: t('cookie.functional'), desc: t('cookie.functionalDesc') },
                   ].map(pref => (
                     <label key={pref.key} className="flex items-center justify-between cursor-pointer group">
                       <div>
@@ -4895,10 +4978,10 @@ function CookieConsentBanner() {
               )}
 
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button onClick={handleDecline} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300 flex-1">Decline Non-Essential</Button>
-                {!prefsOpen && <Button onClick={() => setPrefsOpen(true)} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300 flex-1">Customize</Button>}
-                {prefsOpen && <Button onClick={handleSavePrefs} size="sm" className="text-xs h-9 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex-1">Save Preferences</Button>}
-                <Button onClick={handleAcceptAll} size="sm" className="text-xs h-9 bg-gold hover:bg-gold-dark text-white font-semibold flex-1">Accept All Cookies</Button>
+                <Button onClick={handleDecline} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300 flex-1">{t('cookie.decline')}</Button>
+                {!prefsOpen && <Button onClick={() => setPrefsOpen(true)} variant="outline" size="sm" className="text-xs h-9 border-gray-300 dark:border-gray-600 dark:text-gray-300 flex-1">{t('cookie.customize')}</Button>}
+                {prefsOpen && <Button onClick={handleSavePrefs} size="sm" className="text-xs h-9 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold flex-1">{t('cookie.savePrefs')}</Button>}
+                <Button onClick={handleAcceptAll} size="sm" className="text-xs h-9 bg-gold hover:bg-gold-dark text-white font-semibold flex-1">{t('cookie.acceptAll')}</Button>
               </div>
             </div>
           </div>
@@ -4928,6 +5011,7 @@ function CookieConsentBanner() {
    ═══════════════════════════════════════════════════════════════ */
 
 function SplashScreen() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
@@ -4956,7 +5040,7 @@ function SplashScreen() {
       <h2 className="text-white text-xl font-bold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
         Claim<span className="text-gold">Guard</span> Pro
       </h2>
-      <p className="text-white/50 text-sm mt-2">Loading...</p>
+      <p className="text-white/50 text-sm mt-2">{t('splash.loading')}</p>
     </div>
   );
 }
@@ -4966,6 +5050,7 @@ function SplashScreen() {
    ═══════════════════════════════════════════════════════════════ */
 
 function SocialProofNotification() {
+  const { t } = useLanguage();
   const [pool] = useState(() => generateSocialProofPool());
   const [current, setCurrent] = useState(() => Math.floor(Math.random() * Math.min(pool.length, 200)));
   const [visible, setVisible] = useState(false);
@@ -5021,7 +5106,7 @@ function SocialProofNotification() {
               </div>
               <div className="pr-6">
                 <p className="text-sm text-navy dark:text-gray-100">
-                  <span className="font-semibold">{data.name}</span> from {data.location}
+                  <span className="font-semibold">{data.name}</span> {t('sp.from')} {data.location}
                 </p>
                 <p className="text-xs text-muted-foreground dark:text-gray-400 mt-0.5">{data.action}</p>
                 <Badge className="mt-1.5 text-[10px] px-1.5 py-0 bg-gold/10 text-gold-dark dark:text-gold-light border-gold/20 font-medium">{data.caseType}</Badge>
@@ -5040,6 +5125,7 @@ function SocialProofNotification() {
    ═══════════════════════════════════════════════════════════════ */
 
 function ExitIntentPopup() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -5105,26 +5191,26 @@ function ExitIntentPopup() {
                 <Shield className="w-7 h-7 text-[#C5A55A]" />
               </div>
               <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                Wait! Don&apos;t Leave Yet
+                {t('exit.title')}
               </h3>
-              <p className="text-white/70 text-sm mt-1">Get Your Free Case Evaluation</p>
+              <p className="text-white/70 text-sm mt-1">{t('exit.subtitle')}</p>
             </div>
             <div className="p-6">
               {submitted ? (
                 <div className="text-center py-4">
                   <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-                  <p className="font-semibold text-navy dark:text-gray-100">You&apos;re in!</p>
-                  <p className="text-sm text-muted-foreground mt-1">We&apos;ll reach out shortly with your assessment.</p>
+                  <p className="font-semibold text-navy dark:text-gray-100">{t('exit.youreIn')}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{t('exit.youreInDesc')}</p>
                 </div>
               ) : (
                 <>
                   <p className="text-sm text-muted-foreground dark:text-gray-400 mb-4">
-                    Enter your email and our team will provide a complimentary case evaluation — no strings attached.
+                    {t('exit.description')}
                   </p>
                   <div className="space-y-3">
                     <Input
                       type="email"
-                      placeholder="Enter your email address"
+                      placeholder={t('exit.placeholder')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
@@ -5134,14 +5220,14 @@ function ExitIntentPopup() {
                       onClick={handleSubmit}
                       className="w-full bg-[#C5A55A] hover:bg-[#A88A3F] text-white font-semibold"
                     >
-                      Get My Assessment
+                      {t('exit.submit')}
                     </Button>
                   </div>
                   <button
                     onClick={() => setVisible(false)}
                     className="block mx-auto mt-4 text-xs text-muted-foreground hover:text-navy dark:hover:text-gray-300 transition-colors underline"
                   >
-                    No thanks, I&apos;ll handle it alone
+                    {t('exit.decline')}
                   </button>
                 </>
               )}
@@ -5158,6 +5244,7 @@ function ExitIntentPopup() {
    ═══════════════════════════════════════════════════════════════ */
 
 function ReferralSection() {
+  const { t } = useLanguage();
   const { ref, inView } = useInView(0.1);
   const [form, setForm] = useState({
     referrerName: '', referrerEmail: '', friendName: '', friendEmail: '', claimType: '',
@@ -5167,7 +5254,7 @@ function ReferralSection() {
   const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
     if (!form.referrerName || !form.referrerEmail || !form.friendName || !form.friendEmail) {
-      toast.error('Please fill in all required fields.');
+      toast.error(t('referral.fillRequired'));
       return;
     }
     setLoading(true);
@@ -5195,11 +5282,11 @@ function ReferralSection() {
     <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
-          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Referral Program</Badge>
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">{t('referral.badge')}</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Help Others Get the <span className="gradient-text-gold">Compensation</span> They Deserve
+            {t('referral.title')}
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Refer a friend or family member and help them navigate their mass tort claim.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('referral.description')}</p>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={{ ...fadeInUp, visible: { ...fadeInUp.visible, transition: { delay: 0.15 } } }}>
@@ -5208,29 +5295,29 @@ function ReferralSection() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="ref-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Your Name *</Label>
+                    <Label htmlFor="ref-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.yourName')}</Label>
                     <Input id="ref-name" value={form.referrerName} onChange={(e) => setForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Jane Smith" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                   </div>
                   <div>
-                    <Label htmlFor="ref-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Your Email *</Label>
+                    <Label htmlFor="ref-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.yourEmail')}</Label>
                     <Input id="ref-email" type="email" value={form.referrerEmail} onChange={(e) => setForm(f => ({ ...f, referrerEmail: e.target.value }))} placeholder="jane@example.com" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="friend-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Friend&apos;s Name *</Label>
+                    <Label htmlFor="friend-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.friendName')}</Label>
                     <Input id="friend-name" value={form.friendName} onChange={(e) => setForm(f => ({ ...f, friendName: e.target.value }))} placeholder="John Doe" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                   </div>
                   <div>
-                    <Label htmlFor="friend-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Friend&apos;s Email *</Label>
+                    <Label htmlFor="friend-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.friendEmail')}</Label>
                     <Input id="friend-email" type="email" value={form.friendEmail} onChange={(e) => setForm(f => ({ ...f, friendEmail: e.target.value }))} placeholder="john@example.com" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="ref-claim-type" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Friend&apos;s Claim Type</Label>
+                  <Label htmlFor="ref-claim-type" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">{t('referral.friendClaimType')}</Label>
                   <Select value={form.claimType} onValueChange={(v) => setForm(f => ({ ...f, claimType: v }))}>
                     <SelectTrigger id="ref-claim-type" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                      <SelectValue placeholder="Select a claim type" />
+                      <SelectValue placeholder={t('referral.selectClaimType')} />
                     </SelectTrigger>
                     <SelectContent>
                       {['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Other'].map(ct => (
@@ -5240,15 +5327,15 @@ function ReferralSection() {
                   </Select>
                 </div>
                 <Button type="submit" disabled={loading} className="w-full bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white font-semibold h-12 text-base">
-                  {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Sending...</> : <><Send className="w-5 h-5 mr-2" />Send Referral</>}
+                  {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t('referral.sending')}</> : <><Send className="w-5 h-5 mr-2" />{t('referral.sendReferral')}</>}
                 </Button>
               </form>
 
               <div className="flex flex-wrap justify-center gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 {[
-                  { icon: Lock, label: '100% Confidential' },
-                  { icon: CheckCircle2, label: 'No Obligation' },
-                  { icon: DollarSign, label: 'Free for Both Parties' },
+                  { icon: Lock, label: t('referral.confidential') },
+                  { icon: CheckCircle2, label: t('referral.noObligation') },
+                  { icon: DollarSign, label: t('referral.freeForBoth') },
                 ].map(badge => (
                   <div key={badge.label} className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400">
                     <badge.icon className="w-4 h-4 text-gold" />
@@ -5269,32 +5356,34 @@ function ReferralSection() {
    ═══════════════════════════════════════════════════════════════ */
 
 const MOBILE_NAV_ITEMS = [
-  { icon: Home, label: 'Home', href: '#hero' },
-  { icon: Search, label: 'Track', href: '#track-claim' },
-  { icon: Target, label: 'Quiz', href: '#eligibility-quiz' },
-  { icon: DollarSign, label: 'Calc', href: '#settlement-calculator' },
-  { icon: Phone, label: 'Contact', href: '#contact' },
+  { icon: Home, labelKey: 'mobile.home', href: '#hero' },
+  { icon: Search, labelKey: 'mobile.track', href: '#track-claim' },
+  { icon: Target, labelKey: 'mobile.quiz', href: '#eligibility-quiz' },
+  { icon: DollarSign, labelKey: 'mobile.calc', href: '#settlement-calculator' },
+  { icon: Phone, labelKey: 'mobile.contact', href: '#contact' },
 ];
 
 function MobileNavItems() {
+  const { t } = useLanguage();
   const activeSection = useScrollSpy();
   return (
     <div className="flex items-center justify-around">
       {MOBILE_NAV_ITEMS.map((item) => {
+        const label = t(item.labelKey);
         const isActive = activeSection === item.href;
         return (
           <button
-            key={item.label}
+            key={item.labelKey}
             onClick={() => document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' })}
             className={`flex flex-col items-center gap-0.5 py-1 px-2 transition-colors ${isActive ? 'text-gold' : 'text-gray-500 hover:text-gray-300'}`}
-            aria-label={item.label}
+            aria-label={label}
             aria-current={isActive ? 'true' : undefined}
           >
             <div className="relative">
               <item.icon className="w-5 h-5" />
               {isActive && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold" />}
             </div>
-            <span className={`text-[10px] font-medium ${isActive ? 'text-gold' : ''}`}>{item.label}</span>
+            <span className={`text-[10px] font-medium ${isActive ? 'text-gold' : ''}`}>{label}</span>
           </button>
         );
       })}
@@ -5335,7 +5424,7 @@ export default function HomePage() {
         Skip to main content
       </a>
       <SplashScreen />
-      <SpanishLanguageBanner />
+      <LanguageToggleBanner />
       <main id="main-content" className="min-h-screen flex flex-col">
         <div className="scroll-progress-bar" id="scroll-progress-bar" role="status" aria-label="Page scroll progress" />
         <div aria-live="polite" className="sr-only" id="sr-announcer" />
