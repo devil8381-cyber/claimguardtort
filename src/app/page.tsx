@@ -91,6 +91,9 @@ import {
   Activity,
   Heart,
   Brain,
+  Globe,
+  Play,
+  ExternalLink,
 
   Trash2,
   Plus,
@@ -133,15 +136,11 @@ const HERO_HEADLINES = [
 
 const CASE_TYPES = [
   'Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh',
-  'Paraquat', 'Firefighting Foam', 'Zantac', 'Hair Relaxer',
+  'Paraquat', 'Firefighting Foam (AFFF)', 'Zantac', 'Hair Relaxer',
   'CPAP Machines', 'Social Media Lawsuits', 'Rideshare Assault',
   'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention',
-  'Uber / Lyft Safety', 'Talcum Powder Cancer', 'AFFF / PFAS Exposure',
   '3M Earplugs', 'Exactech Implants', 'Bard PowerPort',
-  'Elmiron', 'Taxotere', 'Talc Ovarian Cancer',
-  'Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh',
-  'Paraquat', 'Firefighting Foam', 'Social Media Lawsuits', 'Rideshare Assault',
-  'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention',
+  'Elmiron', 'Taxotere',
 ];
 
 const TRUST_BADGES = [
@@ -423,13 +422,13 @@ const SP_CITIES = [
   { city: 'Harrisburg', st: 'PA' },{ city: 'Hartford', st: 'CT' },{ city: 'Providence', st: 'RI' },
   { city: 'Des Moines', st: 'IA' },{ city: 'Madison', st: 'WI' },{ city: 'Lansing', st: 'MI' },
   { city: 'Cheyenne', st: 'WY' },{ city: 'Bismarck', st: 'ND' },{ city: 'Helena', st: 'MT' },
-  { city: 'Boise', st: 'ID' },{ city: 'Salem', st: 'OR' },{ city: 'Olympia', st: 'WA' },
+  { city: 'Pocatello', st: 'ID' },{ city: 'Salem', st: 'OR' },{ city: 'Olympia', st: 'WA' },
   { city: 'Carson City', st: 'NV' },{ city: 'Springfield', st: 'IL' },{ city: 'Jefferson City', st: 'MO' },
   { city: 'Annapolis', st: 'MD' },{ city: 'Trenton', st: 'NJ' },{ city: 'Dover', st: 'DE' },
   { city: 'Concord', st: 'NH' },{ city: 'Augusta', st: 'ME' },{ city: 'Montpelier', st: 'VT' },
-  { city: 'Albany', st: 'NY' },{ city: 'Harrisburg', st: 'PA' },{ city: 'Pierre', st: 'SD' },
+  { city: 'Albany', st: 'NY' },{ city: 'Scranton', st: 'PA' },{ city: 'Pierre', st: 'SD' },
   { city: 'Frankfort', st: 'KY' },{ city: 'Topeka', st: 'KS' },{ city: 'Santa Fe', st: 'NM' },
-  { city: 'Phoenix', st: 'AZ' },{ city: 'Tallahassee', st: 'FL' },{ city: 'Atlanta', st: 'GA' },
+  { city: 'Scottsdale', st: 'AZ' },{ city: 'Tallahassee', st: 'FL' },{ city: 'Atlanta', st: 'GA' },
   { city: 'Honolulu', st: 'HI' },{ city: 'Anchorage', st: 'AK' },{ city: 'Fairbanks', st: 'AK' },
   { city: 'Burlington', st: 'VT' },{ city: 'Portland', st: 'ME' },{ city: 'Manchester', st: 'NH' },
   { city: 'New Haven', st: 'CT' },{ city: 'Newark', st: 'NJ' },{ city: 'Buffalo', st: 'NY' },
@@ -493,7 +492,7 @@ const SP_CITIES = [
   { city: 'Salt Lake City', st: 'UT' },{ city: 'West Valley City', st: 'UT' },{ city: 'Provo', st: 'UT' },
   { city: 'West Jordan', st: 'UT' },{ city: 'Orem', st: 'UT' },{ city: 'Ogden', st: 'UT' },
   { city: 'St. George', st: 'UT' },{ city: 'Layton', st: 'UT' },{ city: 'Logan', st: 'UT' },
-  { city: 'Boise', st: 'ID' },{ city: 'Meridian', st: 'ID' },{ city: 'Nampa', st: 'ID' },
+  { city: 'Coeur d\'Alene', st: 'ID' },{ city: 'Meridian', st: 'ID' },{ city: 'Nampa', st: 'ID' },
   { city: 'Idaho Falls', st: 'ID' },{ city: 'Caldwell', st: 'ID' },{ city: 'Pocatello', st: 'ID' },
   { city: 'Twin Falls', st: 'ID' },{ city: 'Lewiston', st: 'ID' },{ city: 'Coeur d\'Alene', st: 'ID' },
   { city: 'Billings', st: 'MT' },{ city: 'Missoula', st: 'MT' },{ city: 'Great Falls', st: 'MT' },
@@ -502,7 +501,7 @@ const SP_CITIES = [
   { city: 'Gillette', st: 'WY' },{ city: 'Rock Springs', st: 'WY' },{ city: 'Sheridan', st: 'WY' },
   { city: 'Reno', st: 'NV' },{ city: 'Henderson', st: 'NV' },{ city: 'North Las Vegas', st: 'NV' },
   { city: 'Sparks', st: 'NV' },{ city: 'Carson City', st: 'NV' },{ city: 'Elko', st: 'NV' },
-  { city: 'Fernley', st: 'NV' },{ city: 'Mesquite', st: 'NV' },{ city: 'Phoenix', st: 'AZ' },
+  { city: 'Fernley', st: 'NV' },{ city: 'Mesquite', st: 'NV' },{ city: 'Peoria', st: 'AZ' },
   { city: 'Tucson', st: 'AZ' },{ city: 'Mesa', st: 'AZ' },{ city: 'Chandler', st: 'AZ' },
   { city: 'Scottsdale', st: 'AZ' },{ city: 'Glendale', st: 'AZ' },{ city: 'Gilbert', st: 'AZ' },
   { city: 'Peoria', st: 'AZ' },{ city: 'Surprise', st: 'AZ' },{ city: 'Yuma', st: 'AZ' },
@@ -2634,9 +2633,9 @@ function TrackClaimSection() {
             Real-Time Claim <span className="gradient-text-gold">Status Check</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Enter your tracking ID to see where your claim stands, view history, and get clear next steps.</p>
-          <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-            <Sparkles className="w-3 h-3 text-blue-500" />
-            <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">Demo Mode — Try IDs: CLM-2024-001, CLM-2024-002, CLM-2024-003</span>
+          <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+            <Search className="w-3 h-3 text-emerald-500" />
+            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">Enter your claim tracking ID to get started</span>
           </div>
         </motion.div>
 
@@ -3435,6 +3434,526 @@ const BLOG_ARTICLES = [
   },
 ];
 
+/* ═══════════════════════════════════════════════════════════════
+   DATA: NEW SECTIONS CONSTANTS
+   ═══════════════════════════════════════════════════════════════ */
+
+const NEWS_HEADLINES = [
+  "NEC Baby Formula: $1.2B settlement fund reaches 40% payout milestone",
+  "3M Earplugs: Second phase claims window expected to open Q3 2026",
+  "Hair Relaxer: MDL bellwether trial date set for September 2026",
+  "Camp Lejeune: Navy processes record 500+ claims per month",
+  "CPAP Recall: Philips agrees to additional $100M compensation fund",
+  "Social Media: Meta faces 5,000+ pending claims from school districts",
+  "Depo Provera: FDA orders new black box warning label review",
+  "Roundup: Bayer announces $2B supplemental settlement fund",
+];
+
+const US_STATES = [
+  "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut",
+  "Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa",
+  "Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan",
+  "Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire",
+  "New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio",
+  "Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota",
+  "Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia",
+  "Wisconsin","Wyoming",
+];
+
+const CLAIM_FORM_CASE_TYPES = [
+  "Camp Lejeune","Roundup","Talc/Baby Powder","Hernia Mesh","Paraquat",
+  "Firefighting Foam (AFFF)","Zantac","Hair Relaxer","CPAP Machines","Social Media",
+  "Rideshare Assault","NEC Baby Formula","Depo Provera","Roblox/Gaming",
+  "3M Earplugs","Exactech Implants","Bard PowerPort","Elmiron","Taxotere","Other",
+];
+
+const SETTLEMENT_DATA = [
+  { name: "Camp Lejeune", icon: Building2, claims: 4821, approved: 78, avgRecovery: "$142,000", status: "Active" as const, progress: 78 },
+  { name: "3M Earplugs", icon: Shield, claims: 315600, approved: 52, avgRecovery: "$77,400", status: "Settling" as const, progress: 85 },
+  { name: "Roundup", icon: Leaf, claims: 124700, approved: 89, avgRecovery: "$175,000", status: "Settling" as const, progress: 92 },
+  { name: "Talc / Baby Powder", icon: Baby, claims: 38900, approved: 64, avgRecovery: "$234,500", status: "Active" as const, progress: 64 },
+  { name: "Hernia Mesh", icon: Activity, claims: 21500, approved: 71, avgRecovery: "$98,700", status: "Active" as const, progress: 71 },
+  { name: "Paraquat", icon: Zap, claims: 6840, approved: 45, avgRecovery: "$156,200", status: "Active" as const, progress: 45 },
+  { name: "NEC Baby Formula", icon: Baby, claims: 14320, approved: 83, avgRecovery: "$312,000", status: "Settling" as const, progress: 40 },
+  { name: "CPAP Machines", icon: Brain, claims: 56100, approved: 67, avgRecovery: "$42,800", status: "Active" as const, progress: 67 },
+  { name: "Hair Relaxer", icon: Heart, claims: 9240, approved: 38, avgRecovery: "$89,300", status: "Active" as const, progress: 38 },
+  { name: "Social Media", icon: Globe, claims: 28700, approved: 22, avgRecovery: "$54,100", status: "Active" as const, progress: 22 },
+  { name: "Zantac", icon: Pill, claims: 78400, approved: 58, avgRecovery: "$126,800", status: "Settling" as const, progress: 58 },
+  { name: "Depo Provera", icon: Pill, claims: 3210, approved: 15, avgRecovery: "$198,500", status: "Active" as const, progress: 15 },
+];
+
+const VIDEO_TESTIMONIALS = [
+  { name: "Maria S.", caseType: "Camp Lejeune", duration: "2:34", quote: "After years of illness with no answers, ClaimGuard Pro connected me with specialists who finally got to the bottom of my condition.", gradient: "from-emerald-900/40 to-gray-900" },
+  { name: "David W.", caseType: "Roundup", duration: "3:12", quote: "I never thought a gardening product could cause so much harm. The team at ClaimGuard Pro fought tirelessly for our family.", gradient: "from-green-900/40 to-gray-900" },
+  { name: "Angela T.", caseType: "Talc", duration: "1:58", quote: "The compassion and professionalism I experienced was incredible. They made a very difficult time much more manageable.", gradient: "from-purple-900/40 to-gray-900" },
+  { name: "James R.", caseType: "Hernia Mesh", duration: "4:21", quote: "My surgery left me with complications no one warned me about. ClaimGuard Pro helped me understand my rights and get compensated.", gradient: "from-blue-900/40 to-gray-900" },
+  { name: "Patricia M.", caseType: "Paraquat", duration: "2:47", quote: "As a farmer's widow, I didn't know where to turn. ClaimGuard Pro handled everything and secured a settlement we desperately needed.", gradient: "from-amber-900/40 to-gray-900" },
+  { name: "Robert L.", caseType: "3M Earplugs", duration: "3:05", quote: "After serving my country, losing my hearing was devastating. ClaimGuard Pro ensured the VA and manufacturers were held accountable.", gradient: "from-red-900/40 to-gray-900" },
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: SPANISH LANGUAGE BANNER
+   ═══════════════════════════════════════════════════════════════ */
+
+function SpanishLanguageBanner() {
+  const [dismissed, setDismissed] = useState(() => {
+    try { return localStorage.getItem('claimguard-spanish-banner-dismissed') === 'true'; } catch { return false; }
+  });
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleDismiss = useCallback(() => {
+    setDismissed(true);
+    try { localStorage.setItem('claimguard-spanish-banner-dismissed', 'true'); } catch { /* noop */ }
+  }, []);
+
+  if (dismissed) return null;
+
+  return (
+    <>
+      <div className="bg-blue-900/50 text-blue-100 py-2">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-3 text-sm">
+          <Globe className="w-4 h-4 shrink-0" />
+          <span>&iquest;Prefieres espa&ntilde;ol?{' '}
+            <button onClick={() => setDialogOpen(true)} className="underline underline-offset-2 hover:text-white font-medium transition-colors">Switch to Spanish</button>
+          </span>
+          <button onClick={handleDismiss} className="ml-4 text-blue-300 hover:text-white transition-colors" aria-label="Dismiss">&times;</button>
+        </div>
+      </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="dark:bg-gray-900 border-gray-800 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2"><Globe className="w-5 h-5 text-gold" /> Spanish Language Support</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Spanish language support coming soon! Our team of bilingual specialists is available at{' '}
+              <a href="tel:8005550199" className="text-gold hover:text-gold/80 underline underline-offset-2">(800) 555-0199</a>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex justify-end">
+            <Button onClick={() => setDialogOpen(false)} className="bg-gold text-gray-950 hover:bg-gold/90 font-semibold">Close</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT: LIVE NEWS TICKER
+   ═══════════════════════════════════════════════════════════════ */
+
+function LiveNewsTicker() {
+  useEffect(() => {
+    if (document.getElementById('claimguard-ticker-keyframes')) return;
+    const style = document.createElement('style');
+    style.id = 'claimguard-ticker-keyframes';
+    style.textContent = `@keyframes news-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}.animate-news-scroll{animation:news-scroll 45s linear infinite}`;
+    document.head.appendChild(style);
+  }, []);
+
+  return (
+    <div className="bg-gray-900 py-2 border-y border-gray-800 overflow-hidden">
+      <div className="flex items-center">
+        <div className="shrink-0 flex items-center gap-2 px-4 border-r border-gray-800">
+          <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" /></span>
+          <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Breaking</span>
+        </div>
+        <div className="overflow-hidden flex-1">
+          <div className="animate-news-scroll flex whitespace-nowrap">
+            {[...NEWS_HEADLINES, ...NEWS_HEADLINES].map((headline, i) => (
+              <span key={i} className="inline-flex items-center">
+                <span className="text-xs text-gray-400 mx-8">{headline}</span>
+                <span className="text-gray-700 mx-1">&bull;</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT: LIVE CLAIM COUNTER
+   ═══════════════════════════════════════════════════════════════ */
+
+function useAnimatedCounter(target: number, duration: number = 2000) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(target * eased));
+      if (progress >= 1) clearInterval(interval);
+    }, 16);
+    return () => clearInterval(interval);
+  }, [target, duration]);
+  return count;
+}
+
+function LiveClaimCounter() {
+  const { ref, inView } = useInView(0.2);
+  const claimsMonth = useAnimatedCounter(inView ? 1247 : 0, 2000);
+  const activeCases = useAnimatedCounter(inView ? 8432 : 0, 2200);
+  const approvedToday = useAnimatedCounter(inView ? 34 : 0, 1500);
+
+  const stats = [
+    { label: "Claims Filed This Month", value: claimsMonth.toLocaleString(), icon: FileText },
+    { label: "Active Cases", value: activeCases.toLocaleString(), icon: Gavel },
+    { label: "Claims Approved Today", value: approvedToday.toLocaleString(), icon: CheckCircle2 },
+    { label: "Average Processing Time", value: "4.2 Days", icon: Clock },
+  ];
+
+  return (
+    <div ref={ref} className="bg-gray-900/50 border-y border-gray-800 py-6">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1 text-gold"><stat.icon className="w-4 h-4" /></div>
+              <p className="text-2xl md:text-3xl font-bold text-gold">{stat.value}</p>
+              <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: CLAIM SUBMISSION INTAKE FORM
+   ═══════════════════════════════════════════════════════════════ */
+
+function ClaimSubmissionSection() {
+  const { ref, inView } = useInView(0.1);
+  const [step, setStep] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    firstName: '', lastName: '', email: '', phone: '', state: '',
+    caseType: '', dateOfExposure: '', description: '',
+    hasMedicalRecords: false, hasProofOfExposure: false, hasPhysicianLetter: false, hasId: false,
+  });
+
+  const updateField = useCallback((field: string, value: string | boolean) => setForm((p) => ({ ...p, [field]: value })), []);
+
+  const stepLabels = ['Personal Info', 'Case Details', 'Documentation', 'Review & Submit'];
+  const canProceed = useMemo(() => {
+    if (step === 0) return form.firstName.trim() && form.lastName.trim() && form.email.trim() && form.phone.trim() && form.state;
+    if (step === 1) return form.caseType && form.dateOfExposure && form.description.trim();
+    return true;
+  }, [step, form]);
+
+  const handleSubmit = useCallback((_e: FormEvent) => setSubmitted(true), []);
+
+  if (submitted) {
+    return (
+      <section id="file-claim" className="py-20 bg-white dark:bg-gray-950">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 15 }} className="mb-8 inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/20">
+            <CheckCircle2 className="w-14 h-14 text-green-400" />
+          </motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-3xl md:text-4xl font-bold mb-4 text-navy dark:text-white">
+            Claim Submitted <span className="gradient-text-gold">Successfully!</span>
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-gray-500 dark:text-gray-400 text-lg mb-8">
+            Our team will review your submission and contact you within 24 hours. Check your email at <span className="text-gold-dark dark:text-gold-light font-medium">{form.email}</span> for confirmation.
+          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+            <Button onClick={() => { setSubmitted(false); setStep(0); setForm({ firstName: '', lastName: '', email: '', phone: '', state: '', caseType: '', dateOfExposure: '', description: '', hasMedicalRecords: false, hasProofOfExposure: false, hasPhysicianLetter: false, hasId: false }); }} variant="outline" className="border-gold/30 text-gold-dark dark:text-gold hover:bg-gold/10">
+              File Another Claim
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="file-claim" className="py-20 bg-white dark:bg-gray-950">
+      <div className="max-w-4xl mx-auto px-4" ref={ref}>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-12">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Free Claim Filing</Badge>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            File Your <span className="gradient-text-gold">Claim</span>
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Complete our guided intake form in 4 simple steps. Most claims are reviewed within 24–48 hours.</p>
+        </motion.div>
+
+        {/* Step indicators */}
+        <div className="flex items-center justify-center mb-10">
+          {stepLabels.map((label, i) => (
+            <div key={label} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 ${i < step ? 'bg-green-500 text-white' : i === step ? 'bg-gold text-gray-950' : 'bg-gray-700 text-gray-400'}`}>
+                  {i < step ? <CheckCircle2 className="w-5 h-5" /> : i + 1}
+                </div>
+                <span className={`text-xs mt-2 hidden sm:block ${i === step ? 'text-gold font-medium' : 'text-gray-500'}`}>{label}</span>
+              </div>
+              {i < stepLabels.length - 1 && <div className={`w-12 sm:w-20 h-0.5 mx-1 transition-colors duration-300 ${i < step ? 'bg-green-500' : 'bg-gray-700'}`} />}
+            </div>
+          ))}
+        </div>
+
+        <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-900 shadow-2xl">
+          <CardContent className="p-6 md:p-10">
+            <AnimatePresence mode="wait">
+              {step === 0 && (
+                <motion.div key="s0" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Personal Information</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-2"><Label htmlFor="cf-fn" className="text-gray-600 dark:text-gray-300">First Name</Label><Input id="cf-fn" placeholder="John" value={form.firstName} onChange={(e) => updateField('firstName', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-ln" className="text-gray-600 dark:text-gray-300">Last Name</Label><Input id="cf-ln" placeholder="Doe" value={form.lastName} onChange={(e) => updateField('lastName', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-em" className="text-gray-600 dark:text-gray-300">Email Address</Label><Input id="cf-em" type="email" placeholder="john@example.com" value={form.email} onChange={(e) => updateField('email', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                    <div className="space-y-2"><Label htmlFor="cf-ph" className="text-gray-600 dark:text-gray-300">Phone Number</Label><Input id="cf-ph" type="tel" placeholder="(555) 123-4567" value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                  </div>
+                  <div className="space-y-2"><Label className="text-gray-600 dark:text-gray-300">State</Label>
+                    <Select value={form.state} onValueChange={(v) => updateField('state', v)}>
+                      <SelectTrigger className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select your state" /></SelectTrigger>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">{US_STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </motion.div>
+              )}
+              {step === 1 && (
+                <motion.div key="s1" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Case Details</h3>
+                  <div className="space-y-2"><Label className="text-gray-600 dark:text-gray-300">Case Type</Label>
+                    <Select value={form.caseType} onValueChange={(v) => updateField('caseType', v)}>
+                      <SelectTrigger className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select case type" /></SelectTrigger>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700 max-h-72 overflow-y-auto">{CLAIM_FORM_CASE_TYPES.map((ct) => <SelectItem key={ct} value={ct}>{ct}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2"><Label htmlFor="cf-doe" className="text-gray-600 dark:text-gray-300">Date of Exposure / Use</Label><Input id="cf-doe" type="date" value={form.dateOfExposure} onChange={(e) => updateField('dateOfExposure', e.target.value)} className="dark:bg-gray-800 dark:border-gray-700 dark:text-white" /></div>
+                  <div className="space-y-2"><Label htmlFor="cf-desc" className="text-gray-600 dark:text-gray-300">Case Description</Label><Textarea id="cf-desc" placeholder="Describe your situation, injuries, and how the product or exposure affected you..." value={form.description} onChange={(e) => updateField('description', e.target.value)} className="min-h-[140px] dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 resize-y" /></div>
+                </motion.div>
+              )}
+              {step === 2 && (
+                <motion.div key="s2" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Documentation</h3>
+                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-10 text-center hover:border-gold/50 transition-colors duration-300 cursor-pointer group">
+                    <Upload className="w-10 h-10 mx-auto mb-4 text-gray-400 group-hover:text-gold transition-colors" />
+                    <p className="text-gray-600 dark:text-gray-300 font-medium mb-1">Drag & drop your files here</p>
+                    <p className="text-gray-400 dark:text-gray-500 text-sm">PDF, JPG, PNG up to 10MB each</p>
+                    <Button type="button" variant="outline" size="sm" className="mt-4 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:text-gold hover:border-gold/50">Browse Files</Button>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">Which documents do you currently have?</p>
+                    {([
+                      { key: 'hasMedicalRecords', label: 'Medical records related to my claim' },
+                      { key: 'hasProofOfExposure', label: 'Proof of product use or exposure' },
+                      { key: 'hasPhysicianLetter', label: 'Physician letter or diagnosis documentation' },
+                      { key: 'hasId', label: 'Government-issued photo ID' },
+                    ] as const).map(({ key, label }) => (
+                      <label key={key} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <input type="checkbox" checked={form[key]} onChange={(e) => updateField(key, e.target.checked)} className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 accent-yellow-500" />
+                        <span className="text-gray-600 dark:text-gray-300 group-hover:text-navy dark:group-hover:text-white transition-colors">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              {step === 3 && (
+                <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.3 }} className="space-y-6">
+                  <h3 className="text-xl font-semibold text-navy dark:text-white mb-6">Review & Submit</h3>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-3">
+                      <h4 className="text-gold-dark dark:text-gold font-semibold text-sm uppercase tracking-wider">Personal Information</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm"><span className="text-gray-400">Name</span><span className="text-navy dark:text-gray-200">{form.firstName} {form.lastName}</span><span className="text-gray-400">Email</span><span className="text-navy dark:text-gray-200">{form.email}</span><span className="text-gray-400">Phone</span><span className="text-navy dark:text-gray-200">{form.phone}</span><span className="text-gray-400">State</span><span className="text-navy dark:text-gray-200">{form.state}</span></div>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-3">
+                      <h4 className="text-gold-dark dark:text-gold font-semibold text-sm uppercase tracking-wider">Case Details</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm"><span className="text-gray-400">Case Type</span><span className="text-navy dark:text-gray-200">{form.caseType}</span><span className="text-gray-400">Date of Exposure</span><span className="text-navy dark:text-gray-200">{form.dateOfExposure}</span></div>
+                      <div className="mt-2"><span className="text-gray-400 text-sm">Description</span><p className="text-navy dark:text-gray-200 text-sm mt-1 bg-white dark:bg-gray-900/50 rounded-lg p-3">{form.description}</p></div>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-3">
+                      <h4 className="text-gold-dark dark:text-gold font-semibold text-sm uppercase tracking-wider">Documents</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {([
+                          [form.hasMedicalRecords, 'Medical Records'],
+                          [form.hasProofOfExposure, 'Proof of Exposure'],
+                          [form.hasPhysicianLetter, 'Physician Letter'],
+                          [form.hasId, 'Photo ID'],
+                        ] as [boolean, string][]).map(([has, label]) => (
+                          <Badge key={label} variant={has ? 'default' : 'outline'} className={has ? 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30' : 'border-gray-300 dark:border-gray-600 text-gray-400'}>
+                            {has && <CheckCircle2 className="w-3 h-3 mr-1" />}{label}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 text-center">By submitting, you agree to our Terms of Service and Privacy Policy. Your information is protected by attorney-client privilege.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div className="flex justify-between mt-10">
+              {step > 0 ? <Button type="button" variant="outline" onClick={() => setStep((s) => s - 1)} className="border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-navy dark:hover:text-white">Back</Button> : <div />}
+              {step < 3 ? <Button type="button" disabled={!canProceed} onClick={() => setStep((s) => s + 1)} className="bg-gold text-gray-950 hover:bg-gold-dark font-semibold disabled:opacity-40">Continue <ChevronRight className="w-4 h-4 ml-1" /></Button>
+              : <Button type="button" onClick={handleSubmit} className="bg-green-500 text-white hover:bg-green-600 font-semibold"><Send className="w-4 h-4 mr-2" /> Submit Claim</Button>}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: SETTLEMENT TRACKER
+   ═══════════════════════════════════════════════════════════════ */
+
+function SettlementTrackerSection() {
+  const { ref, inView } = useInView(0.1);
+  const statusColor = useCallback((status: string) => {
+    switch (status) {
+      case 'Active': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'Settling': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  }, []);
+
+  return (
+    <section id="settlement-tracker" className="py-20 bg-white dark:bg-gray-900/50">
+      <div className="max-w-7xl mx-auto px-4" ref={ref}>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-14">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Live Data</Badge>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Settlement Recovery <span className="gradient-text-gold">Tracker</span>
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Real-time progress across the largest active mass tort litigations in the United States.</p>
+        </motion.div>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {SETTLEMENT_DATA.map((item) => (
+            <motion.div key={item.name} variants={fadeInUp}>
+              <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-900 hover:border-gold/30 transition-all duration-300 h-full hover:-translate-y-1 hover:shadow-lg">
+                <CardContent className="p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold"><item.icon className="w-5 h-5" /></div>
+                      <h3 className="font-semibold text-navy dark:text-white text-sm">{item.name}</h3>
+                    </div>
+                    <Badge variant="outline" className={`text-[10px] ${statusColor(item.status)}`}>{item.status}</Badge>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-gray-400">Total Claims</span><span className="text-navy dark:text-gray-200 font-medium">{item.claims.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Approved</span><span className="text-gold font-medium">{item.approved}%</span></div>
+                    <div className="flex justify-between"><span className="text-gray-400">Avg. Recovery</span><span className="text-green-500 dark:text-green-400 font-medium">{item.avgRecovery}</span></div>
+                  </div>
+                  <Progress value={item.progress} className="h-2 bg-gray-200 dark:bg-gray-800 [&>div]:bg-gold" />
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 0.8 }} className="text-center text-xs text-gray-400 mt-10 max-w-xl mx-auto">
+          Data represents aggregate estimates. Individual results vary significantly based on case specifics.
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: VIDEO TESTIMONIALS
+   ═══════════════════════════════════════════════════════════════ */
+
+function VideoTestimonialsSection() {
+  const { ref, inView } = useInView(0.1);
+
+  return (
+    <section id="video-testimonials" className="py-20 bg-white dark:bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4" ref={ref}>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="text-center mb-14">
+          <Badge className="mb-4 px-3 py-1 bg-gold/10 text-gold-dark border-gold/20 text-xs font-semibold uppercase tracking-wider dark:text-gold-light">Video Stories</Badge>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-navy dark:text-white" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Hear From <span className="gradient-text-gold">Real Claimants</span>
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Real stories from real people who found justice through mass tort litigation.</p>
+        </motion.div>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {VIDEO_TESTIMONIALS.map((t) => (
+            <motion.div key={t.name} variants={fadeInUp}>
+              <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-900 overflow-hidden hover:border-gold/30 transition-all duration-300 group h-full flex flex-col">
+                <div className={`relative h-48 bg-gradient-to-br ${t.gradient} flex items-center justify-center cursor-pointer`}>
+                  <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
+                    <Play className="w-7 h-7 text-white ml-1" />
+                  </div>
+                  <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md">{t.duration}</div>
+                </div>
+                <CardContent className="p-5 flex-1 flex flex-col">
+                  <div className="flex items-center justify-between mb-3">
+                    <div><h3 className="font-semibold text-navy dark:text-white">{t.name}</h3><p className="text-xs text-gold">{t.caseType}</p></div>
+                    <BadgeCheck className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed flex-1 mb-4">&ldquo;{t.quote}&rdquo;</p>
+                  <button className="flex items-center gap-2 text-sm text-gold-dark dark:text-gold hover:text-gold font-medium transition-colors">
+                    Watch Story <ArrowRight className="w-4 h-4" />
+                  </button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: REVIEWS WIDGET
+   ═══════════════════════════════════════════════════════════════ */
+
+function ReviewsWidget() {
+  const { ref, inView } = useInView(0.1);
+  const reviews = [
+    { text: "ClaimGuard Pro made the entire process effortless. They handled everything from start to finish.", author: "Sarah M.", caseType: "Camp Lejeune claim" },
+    { text: "Professional, responsive, and truly cares about clients. I felt supported every step of the way.", author: "Michael T.", caseType: "Roundup claim" },
+    { text: "They caught an error that would have cost me my entire claim. I'm forever grateful.", author: "Jennifer K.", caseType: "Hernia Mesh claim" },
+  ];
+
+  return (
+    <div ref={ref} className="py-16 bg-white dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto px-4">
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer}>
+          <motion.div variants={fadeInUp} className="text-center mb-10">
+            <p className="text-5xl font-bold gradient-text-gold mb-2">4.8</p>
+            <p className="text-gray-400 text-sm mb-2">out of 5</p>
+            <div className="flex items-center justify-center gap-1 mb-3">{[1,2,3,4,5].map((s) => <Star key={s} className="w-5 h-5 fill-gold text-gold" />)}</div>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">Based on 2,400+ verified reviews</p>
+          </motion.div>
+          <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center gap-4 mb-10 text-xs text-gray-400">
+            <span className="text-gray-500">As seen on:</span>
+            {["Trustpilot", "Google Reviews", "Better Business Bureau"].map((platform) => (
+              <span key={platform} className="px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">{platform}</span>
+            ))}
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {reviews.map((review, i) => (
+              <motion.div key={i} variants={fadeInUp}>
+                <Card className="border-gray-200 dark:border-gray-800 dark:bg-gray-800/50 h-full hover:-translate-y-1 transition-all duration-300">
+                  <CardContent className="p-5">
+                    <div className="flex gap-0.5 mb-3">{[1,2,3,4,5].map((s) => <Star key={s} className="w-3.5 h-3.5 fill-gold text-gold" />)}</div>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">&ldquo;{review.text}&rdquo;</p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-bold">{review.author.charAt(0)}</div>
+                      <div><p className="text-navy dark:text-white text-sm font-medium">{review.author}</p><p className="text-gray-400 dark:text-gray-500 text-xs">{review.caseType}</p></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: RESOURCES & INSIGHTS
+   ═══════════════════════════════════════════════════════════════ */
+
 function ResourcesSection() {
   const { ref, inView } = useInView(0.1);
   const [expandedArticle, setExpandedArticle] = useState<number | null>(null);
@@ -3859,9 +4378,9 @@ function ContactSection() {
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Follow Us</span>
                   <div className="flex gap-2">
                     {[
-                      { icon: Facebook, href: '#', label: 'Facebook' },
-                      { icon: Twitter, href: '#', label: 'Twitter' },
-                      { icon: Linkedin, href: '#', label: 'LinkedIn' },
+                              { icon: Facebook, href: 'https://facebook.com/claimguardpro', label: 'Facebook' },
+                      { icon: Twitter, href: 'https://x.com/claimguardpro', label: 'X (Twitter)' },
+                      { icon: Linkedin, href: 'https://linkedin.com/company/claimguardpro', label: 'LinkedIn' },
                     ].map(s => (
                       <a key={s.label} href={s.href} aria-label={s.label} className="w-9 h-9 rounded-lg bg-navy/5 dark:bg-gray-900 flex items-center justify-center hover:bg-gold/10 hover:text-gold transition-colors text-muted-foreground"><s.icon className="w-4 h-4" /></a>
                     ))}
@@ -4403,880 +4922,6 @@ function CookieConsentBanner() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ADMIN PANEL (Hidden - Ctrl+Shift+A)
-   ═══════════════════════════════════════════════════════════════ */
-
-const ADMIN_PIN = '0000';
-const ADMIN_HEADERS = { headers: { Authorization: 'Bearer claimguard-admin-2025' } };
-
-const CLAIM_STATUSES = ['Pending', 'Under Review', 'Approved', 'Denied', 'Correction Needed'];
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'Pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-    case 'Under Review': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
-    case 'Approved': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
-    case 'Denied': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-    case 'Correction Needed': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
-    default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
-  }
-}
-
-function AdminPanel() {
-  const [open, setOpen] = useState(false);
-  const [pinOpen, setPinOpen] = useState(false);
-  const [pinInput, setPinInput] = useState('');
-  const [authenticated, setAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [dashboardData, setDashboardData] = useState<Record<string, unknown> | null>(null);
-  const [claims, setClaims] = useState<unknown[]>([]);
-  const [claimants, setClaimants] = useState<unknown[]>([]);
-  const [messages, setMessages] = useState<unknown[]>([]);
-  const [newsletter, setNewsletter] = useState<unknown[]>([]);
-  const [selectedClaim, setSelectedClaim] = useState<Record<string, unknown> | null>(null);
-  const [claimDetailOpen, setClaimDetailOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [newClaimOpen, setNewClaimOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [editNotes, setEditNotes] = useState('');
-  const [editNextSteps, setEditNextSteps] = useState('');
-  const [newClaimForm, setNewClaimForm] = useState({
-    firstName: '', lastName: '', email: '', phone: '', trackingId: '',
-    claimType: '', status: 'Pending', description: '',
-  });
-  const [selectedClaimIds, setSelectedClaimIds] = useState<Set<string>>(new Set());
-  const [bulkStatus, setBulkStatus] = useState('');
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        if (authenticated) {
-          setOpen(true);
-          setLoading(true);
-        } else {
-          setPinOpen(true);
-        }
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [authenticated]);
-
-  const handlePinSubmit = () => {
-    if (pinInput === ADMIN_PIN) {
-      setAuthenticated(true);
-      setPinOpen(false);
-      setPinInput('');
-      setOpen(true);
-      setLoading(true);
-      toast.success('Welcome to the admin panel.');
-    } else {
-      toast.error('Invalid PIN. Please try again.');
-      setPinInput('');
-    }
-  };
-
-  const fetchDashboard = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/dashboard', ADMIN_HEADERS);
-      const data = await res.json();
-      setDashboardData(data);
-    } catch { /* silent */ }
-  }, []);
-
-  const fetchClaims = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/claims', ADMIN_HEADERS);
-      const data = await res.json();
-      setClaims(data);
-    } catch { /* silent */ }
-  }, []);
-
-  const fetchClaimants = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/claimants', ADMIN_HEADERS);
-      const data = await res.json();
-      setClaimants(data);
-    } catch { /* silent */ }
-  }, []);
-
-  const fetchMessages = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/messages', ADMIN_HEADERS);
-      const data = await res.json();
-      setMessages(data);
-    } catch { /* silent */ }
-  }, []);
-
-  const fetchNewsletter = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/newsletter', ADMIN_HEADERS);
-      const data = await res.json();
-      setNewsletter(data);
-    } catch { /* silent */ }
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    let cancelled = false;
-    (async () => {
-      await Promise.all([
-        fetchDashboard(), fetchClaims(), fetchClaimants(), fetchMessages(), fetchNewsletter()
-      ]);
-      if (!cancelled) setLoading(false);
-    })().catch(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [open, fetchDashboard, fetchClaims, fetchClaimants, fetchMessages, fetchNewsletter]);
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
-
-  const handleStatusChange = async (claimId: string, newStatus: string) => {
-    try {
-      const res = await fetch(`/api/admin/claims/${claimId}`, {
-        ...ADMIN_HEADERS, method: 'PUT',
-        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (res.ok) {
-        toast.success(`Claim status changed to ${newStatus}.`);
-        fetchClaims();
-        fetchDashboard();
-        if (selectedClaim && (selectedClaim as Record<string, unknown>).id === claimId) {
-          const updated = await res.json();
-          setSelectedClaim(updated);
-        }
-      }
-    } catch {
-      toast.error('Update Failed', { description: 'Failed to update status.' });
-    }
-  };
-
-  const handleUpdateNotes = async () => {
-    if (!selectedClaim) return;
-    const id = (selectedClaim as Record<string, string>).id;
-    try {
-      const res = await fetch(`/api/admin/claims/${id}`, {
-        ...ADMIN_HEADERS, method: 'PUT',
-        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: editNotes, nextSteps: editNextSteps }),
-      });
-      if (res.ok) {
-        toast.success('Claim notes and next steps saved.');
-        const updated = await res.json();
-        setSelectedClaim(updated);
-        fetchClaims();
-      }
-    } catch {
-      toast.error('Failed to update notes.');
-    }
-  };
-
-  const handleDeleteClaim = async () => {
-    if (!selectedClaim) return;
-    const id = (selectedClaim as Record<string, string>).id;
-    try {
-      const res = await fetch(`/api/admin/claims/${id}`, { ...ADMIN_HEADERS, method: 'DELETE' });
-      if (res.ok) {
-        toast.success('Claim has been deleted.');
-        setDeleteDialogOpen(false);
-        setClaimDetailOpen(false);
-        setSelectedClaim(null);
-        fetchClaims();
-        fetchDashboard();
-      }
-    } catch {
-      toast.error('Failed to delete claim.');
-    }
-  };
-
-  const handleMarkMessage = async (msgId: string, read: boolean) => {
-    try {
-      await fetch(`/api/admin/messages/${msgId}`, {
-        ...ADMIN_HEADERS, method: 'PUT',
-        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ read }),
-      });
-      fetchMessages();
-      fetchDashboard();
-    } catch { /* silent */ }
-  };
-
-  const handleCreateClaim = async () => {
-    const f = newClaimForm;
-    if (!f.firstName || !f.lastName || !f.email || !f.trackingId) {
-      toast.error('First name, last name, email, and tracking ID are required.');
-      return;
-    }
-    try {
-      const res = await fetch('/api/admin/claims', {
-        ...ADMIN_HEADERS, method: 'POST',
-        headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify(f),
-      });
-      if (res.ok) {
-        toast.success(`New claim ${f.trackingId} has been created.`);
-        setNewClaimOpen(false);
-        setNewClaimForm({ firstName: '', lastName: '', email: '', phone: '', trackingId: '', claimType: '', status: 'Pending', description: '' });
-        fetchClaims();
-        fetchDashboard();
-        fetchClaimants();
-      } else {
-        const data = await res.json();
-        toast.error(data.error || 'Failed to create claim.');
-      }
-    } catch {
-      toast.error('Failed to create claim.');
-    }
-  };
-
-  const openClaimDetail = (claim: unknown) => {
-    const c = claim as Record<string, unknown>;
-    setSelectedClaim(c);
-    setEditNotes((c.notes as string) || '');
-    setEditNextSteps((c.nextSteps as string) || '');
-    setClaimDetailOpen(true);
-  };
-
-  const filteredClaims = Array.isArray(claims)
-    ? claims.filter((c: unknown) => {
-        const cl = c as Record<string, unknown>;
-        const q = searchQuery.toLowerCase();
-        const claimant = cl.claimant as Record<string, unknown> | undefined;
-        return (
-          ((cl.trackingId as string) || '').toLowerCase().includes(q) ||
-          ((cl.status as string) || '').toLowerCase().includes(q) ||
-          ((cl.claimType as string) || '').toLowerCase().includes(q) ||
-          (claimant ? ((claimant.firstName as string) || '').toLowerCase().includes(q) : false) ||
-          (claimant ? ((claimant.lastName as string) || '').toLowerCase().includes(q) : false)
-        );
-      })
-    : [];
-
-  const fmtDate = (d: string) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
-
-  const handleBulkStatusUpdate = async () => {
-    if (selectedClaimIds.size === 0 || !bulkStatus) return;
-    try {
-      const results = await Promise.all(
-        Array.from(selectedClaimIds).map(async (id) => {
-          const res = await fetch(`/api/admin/claims/${id}`, {
-            ...ADMIN_HEADERS, method: 'PUT',
-            headers: { ...ADMIN_HEADERS.headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: bulkStatus }),
-          });
-          return res.ok;
-        })
-      );
-      const successCount = results.filter(Boolean).length;
-      toast.success(`Updated ${successCount} claim(s) to ${bulkStatus}.`);
-      setSelectedClaimIds(new Set());
-      setBulkStatus('');
-      fetchClaims();
-      fetchDashboard();
-    } catch {
-      toast.error('Bulk update failed.');
-    }
-  };
-
-  const toggleClaimSelection = (id: string) => {
-    setSelectedClaimIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const toggleAllClaims = () => {
-    if (selectedClaimIds.size === filteredClaims.length) {
-      setSelectedClaimIds(new Set());
-    } else {
-      setSelectedClaimIds(new Set(filteredClaims.map(c => (c as Record<string, unknown>).id as string)));
-    }
-  };
-
-  return (
-    <>
-      {/* PIN Dialog */}
-      <Dialog open={pinOpen} onOpenChange={setPinOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5 text-gold" />
-              Admin Access
-            </DialogTitle>
-            <DialogDescription>Enter the admin PIN to continue.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter PIN"
-              value={pinInput}
-              onChange={(e) => setPinInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handlePinSubmit()}
-              className="text-center text-2xl tracking-widest"
-            />
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setPinOpen(false)}>Cancel</Button>
-              <Button className="flex-1 bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={handlePinSubmit}>Unlock</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Admin Panel Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="w-[95vw] max-w-5xl h-[85vh] sm:h-[90vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b bg-[#1B2A4A] text-white rounded-t-lg">
-            <div className="flex items-center justify-between">
-              <DialogTitle className="flex items-center gap-3 text-xl">
-                <LayoutDashboard className="w-6 h-6 text-[#C5A55A]" />
-                ClaimGuard Pro Admin
-              </DialogTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-300 hover:text-white hover:bg-white/10"
-                onClick={() => { setOpen(false); setAuthenticated(false); }}
-              >
-                <X className="w-4 h-4 mr-1" /> Lock
-              </Button>
-            </div>
-          </DialogHeader>
-
-          {loading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-[#C5A55A]" />
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-                <div className="px-6 pt-4 border-b bg-gray-50 dark:bg-gray-900/50">
-                  <TabsList className="bg-white dark:bg-gray-800 border shadow-sm w-full justify-start overflow-x-auto">
-                    <TabsTrigger value="dashboard" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
-                      <BarChart3 className="w-4 h-4" /> Dashboard
-                    </TabsTrigger>
-                    <TabsTrigger value="claims" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
-                      <FileText className="w-4 h-4" /> Claims
-                    </TabsTrigger>
-                    <TabsTrigger value="claimants" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
-                      <Users className="w-4 h-4" /> Claimants
-                    </TabsTrigger>
-                    <TabsTrigger value="messages" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
-                      <Mail className="w-4 h-4" /> Messages
-                      {dashboardData && (dashboardData as Record<string, Record<string, number>>).messages?.unread > 0 && (
-                        <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
-                          {(dashboardData as Record<string, Record<string, number>>).messages!.unread}
-                        </span>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger value="newsletter" className="gap-1.5 data-[state=active]:bg-[#1B2A4A] data-[state=active]:text-white">
-                      <Bell className="w-4 h-4" /> Newsletter
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-6">
-                  {/* Dashboard Tab */}
-                  <TabsContent value="dashboard">
-                    {dashboardData && (
-                      <div className="space-y-6">
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                          <Card className="border-l-4 border-l-[#1B2A4A]">
-                            <CardContent className="p-4">
-                              <p className="text-sm text-muted-foreground">Total Claims</p>
-                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).claims)?.total ?? 0}</p>
-                            </CardContent>
-                          </Card>
-                          <Card className="border-l-4 border-l-emerald-500">
-                            <CardContent className="p-4">
-                              <p className="text-sm text-muted-foreground">Claimants</p>
-                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).claimants)?.total ?? 0}</p>
-                            </CardContent>
-                          </Card>
-                          <Card className="border-l-4 border-l-amber-500">
-                            <CardContent className="p-4">
-                              <p className="text-sm text-muted-foreground">Messages</p>
-                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).messages)?.total ?? 0}</p>
-                              {(((dashboardData as Record<string, Record<string, number>>).messages)?.unread ?? 0) > 0 && (
-                                <p className="text-xs text-amber-600 mt-1">{((dashboardData as Record<string, Record<string, number>>).messages)!.unread} unread</p>
-                              )}
-                            </CardContent>
-                          </Card>
-                          <Card className="border-l-4 border-l-purple-500">
-                            <CardContent className="p-4">
-                              <p className="text-sm text-muted-foreground">Newsletter</p>
-                              <p className="text-3xl font-bold mt-1">{((dashboardData as Record<string, Record<string, number>>).newsletter)?.total ?? 0}</p>
-                            </CardContent>
-                          </Card>
-                        </div>
-                        <Card>
-                          <CardHeader><CardTitle className="text-base">Claims by Status</CardTitle></CardHeader>
-                          <CardContent>
-                            <div className="space-y-3">
-                              {Object.entries(((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.byStatus ?? {}).map(([status, count]) => {
-                                const total = ((dashboardData as Record<string, Record<string, Record<string, number>>>).claims)?.total ?? 1;
-                                const pct = Math.round(((count as number) / total) * 100);
-                                const barColors: Record<string, string> = {
-                                  'Pending': 'bg-yellow-400',
-                                  'Under Review': 'bg-blue-400',
-                                  'Approved': 'bg-emerald-400',
-                                  'Denied': 'bg-red-400',
-                                  'Correction Needed': 'bg-amber-400',
-                                };
-                                return (
-                                  <div key={status} className="space-y-1">
-                                    <div className="flex items-center justify-between text-sm">
-                                      <Badge className={`${getStatusColor(status)} text-xs`}>{status}</Badge>
-                                      <span className="text-muted-foreground text-xs">{count as number} ({pct}%)</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                                      <div
-                                        className={`h-3 rounded-full transition-all duration-500 ${barColors[status] || 'bg-[#1B2A4A]'}`}
-                                        style={{ width: `${pct}%` }}
-                                      />
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
-                  </TabsContent>
-
-                  {/* Claims Tab */}
-                  <TabsContent value="claims">
-                    <div className="space-y-4">
-                      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-                        <div className="relative flex-1 max-w-md">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Search claims by ID, name, status, type..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9"
-                          />
-                        </div>
-                        <div className="flex gap-2 flex-wrap">
-                          {selectedClaimIds.size > 0 && (
-                            <div className="flex gap-2 items-center">
-                              <span className="text-xs text-muted-foreground">{selectedClaimIds.size} selected</span>
-                              <Select value={bulkStatus} onValueChange={setBulkStatus}>
-                                <SelectTrigger className="w-[160px] h-8 text-xs">
-                                  <SelectValue placeholder="Bulk status..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {CLAIM_STATUSES.map(s => (
-                                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <Button variant="outline" size="sm" className="text-xs h-8" onClick={handleBulkStatusUpdate} disabled={!bulkStatus}>
-                                <RefreshCw className="w-3 h-3 mr-1" /> Apply
-                              </Button>
-                            </div>
-                          )}
-                          <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/claims?export=csv'; }}>
-                            <Download className="w-4 h-4 mr-1" /> Export CSV
-                          </Button>
-                          <Button className="bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={() => setNewClaimOpen(true)}>
-                            <Plus className="w-4 h-4 mr-1" /> New Claim
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="border rounded-lg overflow-hidden">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-                              <TableHead className="w-10">
-                                <input
-                                  type="checkbox"
-                                  checked={filteredClaims.length > 0 && selectedClaimIds.size === filteredClaims.length}
-                                  onChange={toggleAllClaims}
-                                  className="rounded border-gray-300"
-                                  aria-label="Select all claims"
-                                />
-                              </TableHead>
-                              <TableHead>Tracking ID</TableHead>
-                              <TableHead>Claimant</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead className="hidden md:table-cell">Type</TableHead>
-                              <TableHead className="hidden lg:table-cell">Last Updated</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {filteredClaims.map((claim: unknown) => {
-                              const c = claim as Record<string, unknown>;
-                              const claimant = c.claimant as Record<string, unknown> | undefined;
-                              return (
-                                <TableRow key={c.id as string} className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/30">
-                                  <TableCell>
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedClaimIds.has(c.id as string)}
-                                      onChange={() => toggleClaimSelection(c.id as string)}
-                                      className="rounded border-gray-300"
-                                      aria-label={`Select claim ${c.trackingId as string}`}
-                                    />
-                                  </TableCell>
-                                  <TableCell className="font-mono font-semibold text-[#1B2A4A] dark:text-[#C5A55A]">{c.trackingId as string}</TableCell>
-                                  <TableCell>{claimant ? `${claimant.firstName} ${claimant.lastName}` : 'N/A'}</TableCell>
-                                  <TableCell>
-                                    <Badge className={getStatusColor(c.status as string)}>{c.status as string}</Badge>
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell text-muted-foreground">{c.claimType as string || '—'}</TableCell>
-                                  <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">{fmtDate(c.lastUpdated as string)}</TableCell>
-                                  <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm" onClick={() => openClaimDetail(claim)}>
-                                      <Eye className="w-4 h-4" />
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                            {filteredClaims.length === 0 && (
-                              <TableRow>
-                                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No claims found</TableCell>
-                              </TableRow>
-                            )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  {/* Claimants Tab */}
-                  <TabsContent value="claimants">
-                    <div className="flex justify-end mb-4">
-                      <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/claimants?export=csv'; }}>
-                        <Download className="w-4 h-4 mr-1" /> Export CSV
-                      </Button>
-                    </div>
-                    <div className="border rounded-lg overflow-hidden">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead className="hidden sm:table-cell">Phone</TableHead>
-                            <TableHead>Claims</TableHead>
-                            <TableHead className="hidden md:table-cell">Joined</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {Array.isArray(claimants) && claimants.map((cl: unknown) => {
-                            const c = cl as Record<string, unknown>;
-                            const cList = c.claims as unknown[];
-                            return (
-                              <TableRow key={c.id as string}>
-                                <TableCell className="font-semibold">{c.firstName} {c.lastName}</TableCell>
-                                <TableCell className="text-muted-foreground">{c.email as string}</TableCell>
-                                <TableCell className="hidden sm:table-cell text-muted-foreground">{c.phone as string || '—'}</TableCell>
-                                <TableCell>
-                                  <Badge variant="secondary">{(cList?.length ?? 0)} claim{(cList?.length ?? 0) !== 1 ? 's' : ''}</Badge>
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell text-muted-foreground text-sm">{fmtDate(c.createdAt as string)}</TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </TabsContent>
-
-                  {/* Messages Tab */}
-                  <TabsContent value="messages">
-                    <div className="flex justify-end mb-4">
-                      <Button variant="outline" size="sm" className="text-xs" onClick={() => { const w = window.open(''); if (w) w.location.href = '/api/admin/messages?export=csv'; }}>
-                        <Download className="w-4 h-4 mr-1" /> Export CSV
-                      </Button>
-                    </div>
-                    <div className="space-y-3">
-                      {Array.isArray(messages) && messages.map((msg: unknown) => {
-                        const m = msg as Record<string, unknown>;
-                        return (
-                          <Card key={m.id as string} className={`${!(m.read as boolean) ? 'border-l-4 border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/10' : ''}`}>
-                            <CardContent className="p-4">
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-semibold">{m.name as string}</span>
-                                    <span className="text-sm text-muted-foreground">{m.email as string}</span>
-                                    {!(m.read as boolean) && <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Unread</Badge>}
-                                  </div>
-                                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{m.message as string}</p>
-                                  <p className="text-xs text-muted-foreground mt-2">{fmtDate(m.createdAt as string)}</p>
-                                </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleMarkMessage(m.id as string, !(m.read as boolean))}
-                                >
-                                  {!(m.read as boolean) ? 'Mark Read' : 'Mark Unread'}
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                      {Array.isArray(messages) && messages.length === 0 && (
-                        <p className="text-center text-muted-foreground py-8">No messages</p>
-                      )}
-                    </div>
-                  </TabsContent>
-
-                  {/* Newsletter Tab */}
-                  <TabsContent value="newsletter">
-                    <div className="border rounded-lg overflow-hidden">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-50 dark:bg-gray-800/50">
-                            <TableHead>Email</TableHead>
-                            <TableHead className="hidden sm:table-cell">Claim Type</TableHead>
-                            <TableHead className="hidden md:table-cell">Preferences</TableHead>
-                            <TableHead className="hidden lg:table-cell">Subscribed</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {Array.isArray(newsletter) && newsletter.map((sub: unknown) => {
-                            const s = sub as Record<string, unknown>;
-                            return (
-                              <TableRow key={s.id as string}>
-                                <TableCell className="font-medium">{s.email as string}</TableCell>
-                                <TableCell className="hidden sm:table-cell text-muted-foreground">{s.claimType as string || '—'}</TableCell>
-                                <TableCell className="hidden md:table-cell">
-                                  <div className="flex gap-1 flex-wrap">
-                                    {s.updates && <Badge variant="outline" className="text-xs">Updates</Badge>}
-                                    {s.deadlines && <Badge variant="outline" className="text-xs">Deadlines</Badge>}
-                                    {s.tips && <Badge variant="outline" className="text-xs">Tips</Badge>}
-                                  </div>
-                                </TableCell>
-                                <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">{fmtDate(s.createdAt as string)}</TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Claim Detail Dialog */}
-      <Dialog open={claimDetailOpen} onOpenChange={setClaimDetailOpen}>
-        <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-[#C5A55A]" />
-              Claim {(selectedClaim?.trackingId as string) || ''}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedClaim && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">Claimant</Label>
-                  <p className="font-semibold">{((selectedClaim.claimant as Record<string, unknown>)?.firstName)} {((selectedClaim.claimant as Record<string, unknown>)?.lastName)}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Email</Label>
-                  <p className="font-semibold">{((selectedClaim.claimant as Record<string, unknown>)?.email)}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Status</Label>
-                  <div className="mt-1">
-                    <Select value={selectedClaim.status as string} onValueChange={(v) => handleStatusChange(selectedClaim.id as string, v)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CLAIM_STATUSES.map((s) => (
-                          <SelectItem key={s} value={s}>{s}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Claim Type</Label>
-                  <p className="font-semibold">{(selectedClaim.claimType as string) || '—'}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Filed Date</Label>
-                  <p className="font-semibold">{fmtDate(selectedClaim.filedDate as string)}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Last Updated</Label>
-                  <p className="font-semibold">{fmtDate(selectedClaim.lastUpdated as string)}</p>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div>
-                <Label className="text-muted-foreground">Description</Label>
-                <p className="mt-1 text-sm">{(selectedClaim.description as string) || 'No description provided.'}</p>
-              </div>
-
-              <div>
-                <Label className="text-muted-foreground">Notes</Label>
-                <Textarea
-                  className="mt-1"
-                  rows={3}
-                  value={editNotes}
-                  onChange={(e) => setEditNotes(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <Label className="text-muted-foreground">Next Steps</Label>
-                <Textarea
-                  className="mt-1"
-                  rows={2}
-                  value={editNextSteps}
-                  onChange={(e) => setEditNextSteps(e.target.value)}
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <Button className="bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={handleUpdateNotes}>
-                  <RefreshCw className="w-4 h-4 mr-1" /> Save Notes
-                </Button>
-                <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
-                  <Trash2 className="w-4 h-4 mr-1" /> Delete Claim
-                </Button>
-              </div>
-
-              <Separator />
-
-              <div>
-                <Label className="font-semibold text-base">History Timeline</Label>
-                <div className="mt-2 space-y-2">
-                  {Array.isArray(selectedClaim.history) && (selectedClaim.history as unknown[]).map((h: unknown, i: number) => {
-                    const hist = h as Record<string, unknown>;
-                    return (
-                      <div key={hist.id as string} className="flex gap-3 text-sm">
-                        <div className="flex flex-col items-center">
-                          <div className={`w-3 h-3 rounded-full mt-1 ${i === 0 ? 'bg-[#C5A55A]' : 'bg-gray-300 dark:bg-gray-600'}`} />
-                          {i < (selectedClaim.history as unknown[]).length - 1 && <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />}
-                        </div>
-                        <div className="pb-3">
-                          <div className="flex items-center gap-2">
-                            <Badge className={`${getStatusColor(hist.status as string)} text-xs`}>{hist.status as string}</Badge>
-                            <span className="text-muted-foreground text-xs">{fmtDate(hist.date as string)}</span>
-                          </div>
-                          {hist.notes && <p className="text-muted-foreground text-xs mt-0.5">{hist.notes as string}</p>}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Claim?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete claim {(selectedClaim?.trackingId as string) || ''} and all associated history.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDeleteClaim}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* New Claim Dialog */}
-      <Dialog open={newClaimOpen} onOpenChange={setNewClaimOpen}>
-        <DialogContent className="w-[95vw] max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5 text-[#C5A55A]" />
-              Create New Claim
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>First Name *</Label>
-                <Input value={newClaimForm.firstName} onChange={(e) => setNewClaimForm({ ...newClaimForm, firstName: e.target.value })} />
-              </div>
-              <div>
-                <Label>Last Name *</Label>
-                <Input value={newClaimForm.lastName} onChange={(e) => setNewClaimForm({ ...newClaimForm, lastName: e.target.value })} />
-              </div>
-            </div>
-            <div>
-              <Label>Email *</Label>
-              <Input type="email" value={newClaimForm.email} onChange={(e) => setNewClaimForm({ ...newClaimForm, email: e.target.value })} />
-            </div>
-            <div>
-              <Label>Phone</Label>
-              <Input value={newClaimForm.phone} onChange={(e) => setNewClaimForm({ ...newClaimForm, phone: e.target.value })} />
-            </div>
-            <div>
-              <Label>Tracking ID *</Label>
-              <Input placeholder="CLM-2024-XXX" value={newClaimForm.trackingId} onChange={(e) => setNewClaimForm({ ...newClaimForm, trackingId: e.target.value })} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Claim Type</Label>
-                <Select value={newClaimForm.claimType} onValueChange={(v) => setNewClaimForm({ ...newClaimForm, claimType: v })}>
-                  <SelectTrigger className="w-full"><SelectValue placeholder="Select type" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Camp Lejeune">Camp Lejeune</SelectItem>
-                    <SelectItem value="Roundup">Roundup</SelectItem>
-                    <SelectItem value="Talc">Talc</SelectItem>
-                    <SelectItem value="Hernia Mesh">Hernia Mesh</SelectItem>
-                    <SelectItem value="Paraquat">Paraquat</SelectItem>
-                    <SelectItem value="AFFF">AFFF</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Initial Status</Label>
-                <Select value={newClaimForm.status} onValueChange={(v) => setNewClaimForm({ ...newClaimForm, status: v })}>
-                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CLAIM_STATUSES.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea rows={3} value={newClaimForm.description} onChange={(e) => setNewClaimForm({ ...newClaimForm, description: e.target.value })} />
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setNewClaimOpen(false)}>Cancel</Button>
-              <Button className="flex-1 bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white" onClick={handleCreateClaim}>Create Claim</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
 
 /* ═══════════════════════════════════════════════════════════════
    COMPONENT: SPLASH SCREEN
@@ -5690,6 +5335,7 @@ export default function HomePage() {
         Skip to main content
       </a>
       <SplashScreen />
+      <SpanishLanguageBanner />
       <main id="main-content" className="min-h-screen flex flex-col">
         <div className="scroll-progress-bar" id="scroll-progress-bar" role="status" aria-label="Page scroll progress" />
         <div aria-live="polite" className="sr-only" id="sr-announcer" />
@@ -5697,13 +5343,18 @@ export default function HomePage() {
         <Navbar />
         <HeroSection />
         <TrustedBySection />
+        <LiveNewsTicker />
+        <LiveClaimCounter />
         <HowItWorksSection />
         <ServicesSection />
         <WhyDifferentSection />
+        <SettlementTrackerSection />
         <SettlementCalculatorSection />
         <EligibilityQuizSection />
         <WhyChooseUsSection />
         <TestimonialsSection />
+        <VideoTestimonialsSection />
+        <ClaimSubmissionSection />
         <TrackClaimSection />
         <ResourcesSection />
         <WhatWeHandleSection />
@@ -5711,6 +5362,7 @@ export default function HomePage() {
         <FilingDeadlineTracker />
         <FAQSection />
         <CaseStudiesSection />
+        <ReviewsWidget />
         <NewsletterSection />
         <ReferralSection />
         <ClientPortalSection />

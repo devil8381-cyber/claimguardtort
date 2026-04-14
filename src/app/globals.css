@@ -3,13 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Smooth Scrolling Performance ─── */
-/* Only promote containers that actually animate — NOT every element */
-@keyframes scroll-smooth-fix {
-  from { transform: translateZ(0); }
-  to { transform: translateZ(0); }
-}
-
 /* Only animate elements that are actually animating */
 @media (hover: none) and (pointer: coarse) {
   /* On touch devices, reduce motion complexity */
@@ -79,12 +72,6 @@ body {
   main {
     padding-bottom: 4rem;
   }
-}
-
-@font-face {
-  font-family: 'Georgia Pro';
-  src: local('Georgia'), local('Times New Roman');
-  font-display: swap;
 }
 
 @theme inline {
@@ -646,11 +633,6 @@ html.dark {
   background-color: #0B1120;
 }
 
-/* ─── Dark mode overlay colors ─── */
-.dark .hero-gradient {
-  background: linear-gradient(135deg, rgba(11, 17, 32, 0.95) 0%, rgba(11, 17, 32, 0.8) 50%, rgba(197, 165, 90, 0.15) 100%);
-}
-
 /* ─── Scroll Progress Bar ─── */
 .scroll-progress-bar {
   position: fixed;
@@ -751,22 +733,51 @@ html.dark {
 @media print {
   .no-print, nav, .cookie-banner-enter, .chat-widget-enter,
   .scroll-progress-bar, .back-to-top, .social-proof-notification,
-  .exit-intent-popup, .splash-screen {
+  .exit-intent-popup, .splash-screen, .mobile-nav {
     display: none !important;
   }
   
   body {
     background: white !important;
-    color: black !important;
+    color: #111 !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #111 !important;
+    page-break-after: avoid !important;
   }
 
   section {
     break-inside: avoid;
     page-break-inside: avoid;
+    margin-bottom: 1.5rem !important;
+    padding: 1rem 0 !important;
+  }
+
+  .card, [class*="bg-gray-"] {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    background: white !important;
   }
 
   .card-gradient-border::before {
     display: none;
+  }
+
+  a[href^="#"]::after {
+    content: none !important;
+  }
+
+  a[href^="tel"], a[href^="mailto"] {
+    text-decoration: underline !important;
+    color: #333 !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
   }
 
   @page {
