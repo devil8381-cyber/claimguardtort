@@ -242,7 +242,9 @@ const CASE_TYPE_DETAILS = [
   { title: 'CPAP Machines (Philips Recall)', description: 'For individuals who used recalled Philips CPAP, BiPAP, or ventilator devices with defective sound abatement foam that degraded and released harmful particles and chemicals.', icon: Activity, color: 'bg-sky-500', deadline: 'Ongoing', statuses: ['Pending', 'Approved', 'Under Review'], detail: 'Philips recalled millions of sleep apnea devices after discovering the PE-PUR foam could break down and release black particles and volatile organic compounds into the airway. Users who developed respiratory issues, cancer, or other conditions may be eligible.' },
   { title: '3M Combat Earplugs', description: 'For military veterans who suffered hearing loss or tinnitus due to defective 3M dual-ended combat earplugs that were too short for proper insertion.', icon: Shield, color: 'bg-lime-500', deadline: 'Varies', statuses: ['Pending', 'Approved', 'Settled'], detail: '3M agreed to a multi-billion dollar settlement over defective combat earplugs issued to service members between 2003-2015. The earplugs\' design defect allowed them to loosen during use, failing to protect against loud battlefield noises.' },
   { title: 'Exactech Joint Implants', description: 'For patients who received recalled Exactech ankle, knee, or hip replacement implants with defective packaging that caused premature oxidation and failure.', icon: Target, color: 'bg-stone-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review', 'Correction Needed'], detail: 'Exactech recalled thousands of joint replacement systems after discovering that their vacuum-sealed packaging failed, allowing oxygen to degrade the polyethylene inserts. This caused premature device failure, bone loss, and the need for revision surgeries.' },
-  { title: 'Paraquat', description: "For agricultural workers and farmers who developed Parkinson's disease or related conditions after exposure to Paraquat herbicide.", icon: Zap, color: 'bg-rose-500', deadline: 'Ongoing', statuses: ['Under Review', 'Approved', 'Denied'], detail: "Paraquat is a restricted-use herbicide linked to increased Parkinson's disease risk. Licensed applicators and farmworkers with documented exposure may qualify." },
+  { title: 'Bard PowerPort', description: 'For patients who received Bard PowerPort implantable catheter devices that fractured, migrated, or caused blood clots, infections, or other serious complications.', icon: Shield, color: 'bg-red-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review', 'Approved'], detail: 'Bard PowerPort devices have been linked to catheter fractures, migration, and severe infections. The devices can break apart inside the body, sending plastic fragments through the bloodstream. Claimants who required surgical removal or experienced complications may be eligible for compensation.' },
+  { title: 'Elmiron (Pentosan Polysulfate)', description: 'For individuals who developed vision problems, macular damage, or retinal disease after long-term use of Elmiron for interstitial cystitis.', icon: Eye, color: 'bg-yellow-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review'], detail: 'Studies have linked long-term Elmiron use to a unique form of maculopathy that can cause permanent vision damage. Patients who took Elmiron for more than two years and developed retinal pigmentary changes or vision loss may qualify.' },
+  { title: 'Taxotere (Docetaxel)', description: 'For individuals who experienced permanent hair loss (alopecia) after receiving Taxotere chemotherapy treatment for breast cancer.', icon: Leaf, color: 'bg-green-500', deadline: 'Varies by state', statuses: ['Pending', 'Approved', 'Denied'], detail: 'Sanofi-Aventis failed to adequately warn patients and physicians that Taxotere could cause permanent, irreversible hair loss. While temporary hair loss is common with chemotherapy, Taxotere causes permanent alopecia at significantly higher rates than alternative treatments.' },
 ];
 
 const COMPARISON_DATA = [
@@ -648,7 +650,7 @@ function generateSocialProofPool(): Array<{ name: string; location: string; acti
 
     if (!seen.has(key)) {
       seen.add(key);
-      pool.push({ name: n, location: loc, action: act, time: times[timeIdx] });
+      pool.push({ name: n, location: loc, action: act, time: times[timeIdx], caseType: includeCase ? cases[caseIdx] : cases[caseIdx % 5] });
     }
 
     attempts++;
@@ -890,20 +892,20 @@ function announce(message: string, priority: 'polite' | 'assertive' = 'polite') 
    ═══════════════════════════════════════════════════════════════ */
 
 function useCountdown(targetDate: Date) {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
   useEffect(() => {
     const tick = () => {
       const diff = targetDate.getTime() - Date.now();
-      if (diff <= 0) return setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      if (diff <= 0) return setTimeLeft({ days: 0, hours: 0, minutes: 0 });
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
         minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((diff % (1000 * 60)) / 1000),
       });
     };
     tick();
-    const interval = setInterval(tick, 1000);
+    // Tick every 30 seconds instead of every second — saves CPU cycles
+    const interval = setInterval(tick, 30000);
     return () => clearInterval(interval);
   }, [targetDate]);
   return timeLeft;
@@ -947,51 +949,53 @@ function LazySection({ children, type = 'cards' }: { children: ReactNode; type?:
   }, []);
 
   if (!isVisible) {
+    const skeletonMap = {
+      cards: (
+        <div className="grid md:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="space-y-3 rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-2/3" />
+              <Skeleton className="h-8 w-28 mt-2 rounded-md" />
+            </div>
+          ))}
+        </div>
+      ),
+      form: (
+        <div className="space-y-4 rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-11 w-full rounded-md" />
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-11 w-full rounded-md" />
+          <Skeleton className="h-11 w-full rounded-md" />
+          <Skeleton className="h-10 w-full rounded-md mt-4" />
+        </div>
+      ),
+      text: (
+        <div className="space-y-3 rounded-xl border border-gray-100 dark:border-gray-800 p-6 max-w-2xl mx-auto">
+          <Skeleton className="h-6 w-3/4 mx-auto" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+      ),
+      stats: (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="rounded-xl border border-gray-100 dark:border-gray-800 p-5 text-center space-y-2">
+              <Skeleton className="h-8 w-16 mx-auto" />
+              <Skeleton className="h-3 w-20 mx-auto" />
+              <Skeleton className="h-2 w-full rounded-full" />
+            </div>
+          ))}
+        </div>
+      ),
+    };
     return (
-      <div ref={ref} className="py-12">
-        {type === 'cards' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="rounded-xl p-6 bg-gray-100 dark:bg-gray-800/50 space-y-3">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-full" />
-                  <Skeleton className="h-3 w-5/6" />
-                  <Skeleton className="h-3 w-2/3" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        {type === 'form' && (
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-            <Skeleton className="h-12 w-full rounded-xl" />
-            <Skeleton className="h-12 w-full rounded-xl" />
-            <Skeleton className="h-28 w-full rounded-xl" />
-            <Skeleton className="h-12 w-full rounded-xl" />
-          </div>
-        )}
-        {type === 'text' && (
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-            <Skeleton className="h-8 w-2/3 mx-auto" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6 mx-auto" />
-            <Skeleton className="h-4 w-4/5 mx-auto" />
-          </div>
-        )}
-        {type === 'stats' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="rounded-xl p-6 bg-gray-100 dark:bg-gray-800/50 text-center space-y-3">
-                  <Skeleton className="h-8 w-16 mx-auto" />
-                  <Skeleton className="h-3 w-24 mx-auto" />
-                  <Skeleton className="h-1.5 w-full" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+      <div ref={ref} aria-hidden="true">
+        {skeletonMap[type]}
       </div>
     );
   }
@@ -1125,13 +1129,35 @@ const Navbar = memo(function Navbar() {
    ═══════════════════════════════════════════════════════════════ */
 
 function CountdownBanner() {
-  const deadline = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 87);
-    return d;
-  }, []);
+  const deadlines = useMemo(() => [
+    { label: 'NEC Baby Formula', deadline: '2026-09-30T23:59:59Z', emoji: '👶' },
+    { label: 'Depo Provera', deadline: '2026-12-31T23:59:59Z', emoji: '💊' },
+    { label: 'Hair Relaxer', deadline: '2027-03-15T23:59:59Z', emoji: '✂️' },
+    { label: 'Social Media', deadline: '2027-06-30T23:59:59Z', emoji: '📱' },
+    { label: 'CPAP Recall', deadline: '2027-01-15T23:59:59Z', emoji: '🫁' },
+    { label: 'Zantac', deadline: '2027-08-31T23:59:59Z', emoji: '🏥' },
+    { label: 'Exactech Implants', deadline: '2027-04-30T23:59:59Z', emoji: '🦴' },
+    { label: 'Rideshare Safety', deadline: '2026-11-30T23:59:59Z', emoji: '🚗' },
+  ], []);
+
+  const [activeIdx, setActiveIdx] = useState(0);
   const [dismissed, setDismissed] = useState(false);
-  const { days, hours, minutes, seconds } = useCountdown(deadline);
+
+  const activeDeadline = deadlines[activeIdx];
+  const targetDate = useMemo(() => new Date(activeDeadline.deadline), [activeDeadline.deadline]);
+  const { days, hours, minutes } = useCountdown(targetDate);
+
+  // Rotate to the next upcoming deadline every 8 seconds
+  useEffect(() => {
+    if (dismissed) return;
+    const interval = setInterval(() => {
+      setActiveIdx(prev => {
+        const next = (prev + 1) % deadlines.length;
+        return next;
+      });
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [dismissed, deadlines.length]);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setDismissed(sessionStorage.getItem('claimguard-countdown-dismissed') === 'true'));
@@ -1147,12 +1173,13 @@ function CountdownBanner() {
     document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-  if (dismissed) return null;
+  if (dismissed || days <= 0 && hours <= 0 && minutes <= 0) return null;
 
   return (
     <AnimatePresence>
       {!dismissed && (
         <motion.div
+          key={activeIdx}
           initial={{ y: -60 }}
           animate={{ y: 0 }}
           exit={{ y: -60, opacity: 0 }}
@@ -1163,18 +1190,23 @@ function CountdownBanner() {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 text-sm">
             <AlertCircle className="w-4 h-4 shrink-0 hidden sm:block" aria-hidden="true" />
-            <span className="font-medium hidden sm:inline">Important: Camp Lejeune filing deadline approaching!</span>
-            <span className="font-medium sm:hidden">Camp Lejeune deadline!</span>
-            <span className="countdown-timer font-bold flex items-center gap-1" aria-label={`${days} days ${hours} hours ${minutes} minutes ${seconds} seconds remaining`}>
+            <span className="font-medium hidden sm:inline">{activeDeadline.label} filing deadline approaching!</span>
+            <span className="font-medium sm:hidden">{activeDeadline.label} deadline!</span>
+            <span className="countdown-timer font-bold flex items-center gap-1" aria-label={`${days} days ${hours} hours ${minutes} minutes remaining`}>
               <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{days}d</span>
               <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{hours}h</span>
               <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{minutes}m</span>
-              <span className="bg-navy/20 px-1.5 py-0.5 rounded text-xs">{seconds}s</span>
             </span>
-            <button onClick={scrollToContact} className="font-bold underline hover:no-underline ml-1 whitespace-nowrap">Get Help Now →</button>
+            <button onClick={scrollToContact} className="font-bold underline hover:no-underline ml-1 whitespace-nowrap">Get Help Now &rarr;</button>
             <button onClick={dismiss} className="ml-2 p-0.5 hover:bg-white/20 rounded transition-colors" aria-label="Dismiss deadline banner">
               <X className="w-4 h-4" />
             </button>
+          </div>
+          {/* Thin progress dots showing which deadline is active */}
+          <div className="flex items-center justify-center gap-1 mt-1">
+            {deadlines.map((_, i) => (
+              <div key={i} className={`h-0.5 rounded-full transition-all duration-300 ${i === activeIdx ? 'w-4 bg-white' : 'w-1.5 bg-white/40'}`} />
+            ))}
           </div>
         </motion.div>
       )}
@@ -2497,6 +2529,10 @@ function TrackClaimSection() {
             Real-Time Claim <span className="gradient-text-gold">Status Check</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Enter your tracking ID to see where your claim stands, view history, and get clear next steps.</p>
+          <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <Sparkles className="w-3 h-3 text-blue-500" />
+            <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">Demo Mode — Try IDs: CLM-2024-001, CLM-2024-002, CLM-2024-003</span>
+          </div>
         </motion.div>
 
         <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={scaleIn} className="max-w-2xl mx-auto mb-8">
@@ -2756,6 +2792,77 @@ function CTASection() {
           <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-gold" /><span>98% Success Rate</span></div>
         </div>
       </motion.div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION: FILING DEADLINE TRACKER
+   ═══════════════════════════════════════════════════════════════ */
+
+const FILING_DEADLINES = [
+  { caseType: 'NEC Baby Formula', deadline: '2026-09-30', urgency: 'high', icon: Baby, color: 'bg-cyan-500', desc: 'Families of premature infants who developed NEC after cow\'s milk-based formula in NICUs.' },
+  { caseType: 'Rideshare Assault', deadline: '2026-11-30', urgency: 'high', icon: Car, color: 'bg-indigo-500', desc: 'Victims of assault, injury, or safety failures during rideshare trips.' },
+  { caseType: 'Depo Provera', deadline: '2026-12-31', urgency: 'medium', icon: Pill, color: 'bg-orange-500', desc: 'Users who developed brain tumors (meningiomas) after using Depo Provera.' },
+  { caseType: 'CPAP Machines', deadline: '2027-01-15', urgency: 'medium', icon: Activity, color: 'bg-sky-500', desc: 'Users of recalled Philips CPAP/BiPAP devices with defective foam.' },
+  { caseType: 'Exactech Implants', deadline: '2027-04-30', urgency: 'medium', icon: Target, color: 'bg-stone-500', desc: 'Patients with recalled Exactech joint replacement implants.' },
+  { caseType: 'Hair Relaxer', deadline: '2027-03-15', urgency: 'low', icon: Sparkles, color: 'bg-fuchsia-500', desc: 'Individuals who developed uterine or ovarian cancer after chemical hair relaxer use.' },
+  { caseType: 'Social Media', deadline: '2027-06-30', urgency: 'low', icon: Users, color: 'bg-pink-500', desc: 'Families harmed by social media\'s impact on teen mental health.' },
+  { caseType: 'Zantac', deadline: '2027-08-31', urgency: 'low', icon: AlertTriangle, color: 'bg-violet-500', desc: 'Long-term Zantac users who developed cancer from NDMA contamination.' },
+];
+
+function FilingDeadlineTracker() {
+  const { ref, inView } = useInView(0.1);
+
+  const getTimeLeft = useCallback((deadline: string) => {
+    const diff = new Date(deadline).getTime() - Date.now();
+    if (diff <= 0) return { text: 'Deadline Passed', urgent: true };
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const months = Math.floor(days / 30);
+    if (months > 0) return { text: `${months} month${months > 1 ? 's' : ''} left`, urgent: months <= 3 };
+    return { text: `${days} day${days !== 1 ? 's' : ''} left`, urgent: days <= 30 };
+  }, []);
+
+  return (
+    <section className="py-14 md:py-20 bg-white dark:bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="text-center mb-10">
+          <Badge className="mb-4 px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 text-xs font-semibold uppercase tracking-wider">
+            <Timer className="w-3 h-3 mr-1" />Time-Sensitive
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy dark:text-white mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Filing <span className="gradient-text-gold">Deadline Tracker</span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Don&apos;t miss your window. These deadlines are strictly enforced — once they pass, you may permanently lose your right to file.</p>
+        </motion.div>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={staggerContainer} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {FILING_DEADLINES.map((item) => {
+            const { text, urgent } = getTimeLeft(item.deadline);
+            return (
+              <motion.div key={item.caseType} variants={fadeInUp}>
+                <Card className={`h-full border ${urgent ? 'border-red-200 dark:border-red-800 shadow-lg' : 'border-gray-100 dark:border-gray-800'} hover:shadow-xl transition-all hover:-translate-y-1 bg-white dark:bg-gray-800/50`}>
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className={`w-10 h-10 rounded-lg ${item.color} flex items-center justify-center`}>
+                        <item.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${urgent ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>
+                        {text}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-navy dark:text-white text-sm mb-1">{item.caseType}</h3>
+                    <p className="text-muted-foreground dark:text-gray-400 text-xs leading-relaxed mb-3">{item.desc}</p>
+                    <div className="text-[10px] text-muted-foreground/60 dark:text-gray-500">Deadline: {new Date(item.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+        <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={fadeInUp} className="mt-8 text-center">
+          <p className="text-xs text-muted-foreground">Deadlines vary by jurisdiction and may change. Contact us for the most current information on your specific case.</p>
+        </motion.div>
+      </div>
     </section>
   );
 }
@@ -3088,6 +3195,66 @@ const BLOG_ARTICLES = [
     icon: Users,
     color: 'bg-pink-500',
     content: 'Multi-district litigation is moving forward against Meta (Instagram/Facebook), TikTok, Snapchat, and YouTube for their roles in the teen mental health crisis. Internal company documents obtained through discovery reveal that platforms were fully aware of the harmful effects of their algorithms on young users but chose engagement and profit over safety. Eligible cases typically involve minors (under 18) who developed eating disorders, depression, anxiety, self-harm behaviors, or suicidal ideation linked to social media use. Parents report that their children spent excessive hours on these platforms and experienced worsening mental health. Compensation may cover therapy costs, psychiatric treatment, inpatient care, and pain and suffering. Key evidence includes screen time records, mental health treatment records, school counseling reports, and social media usage logs. Over 500 cases are currently pending in federal court, with bellwether trials expected in late 2025.',
+  },
+  {
+    id: 'zantac-ndma-cancer',
+    title: 'Zantac Cancer Claims: What You Need to Know About NDMA Contamination',
+    excerpt: 'The Zantac recall affects millions of users. Learn about the link between ranitidine and cancer...',
+    date: 'Mar 5, 2025',
+    dateISO: '2025-03-05',
+    readTime: '7 min read',
+    category: 'Zantac',
+    icon: AlertTriangle,
+    color: 'bg-violet-500',
+    content: 'In 2020, the FDA recalled all ranitidine products (brand name Zantac) after independent testing discovered that the medication could form NDMA (N-nitrosodimethylamine), a probable human carcinogen, when exposed to heat or stored over time. NDMA is the same compound that led to massive recalls of blood pressure medications in 2018-2019. Individuals who took Zantac regularly for three months or more and subsequently developed cancers of the stomach, liver, bladder, kidney, pancreas, or esophagus may be eligible. The litigation has consolidated into multi-district proceedings in federal court. Required documentation includes pharmacy records showing Zantac prescriptions, complete medical records with cancer diagnosis and pathology reports, and a physician\'s opinion linking the cancer to ranitidine use. Settlement amounts vary widely based on cancer type, duration of use, and individual circumstances.',
+  },
+  {
+    id: 'hair-relaxer-cancer-lawsuits',
+    title: 'Hair Relaxer Cancer Lawsuits: The Science Behind the Claims',
+    excerpt: 'NIH research confirms the link between chemical hair straighteners and increased cancer risk...',
+    date: 'Mar 15, 2025',
+    dateISO: '2025-03-15',
+    readTime: '8 min read',
+    category: 'Hair Relaxer',
+    icon: Sparkles,
+    color: 'bg-fuchsia-500',
+    content: 'A landmark study by the National Institutes of Health (NIH) found that women who frequently used chemical hair straightening products were more than twice as likely to develop uterine cancer compared to those who never used them. The risk was even higher for women who used these products more than four times per year for over five years. Endocrine-disrupting chemicals like parabens, bisphenol A, and phthalates found in hair relaxers are believed to alter hormonal balance and promote cancer cell growth. Major manufacturers including L\'Oreal, SoftSheen-Carson, and Strength of Nature face lawsuits for failing to warn consumers about these cancer risks. Eligible claimants include women who developed uterine cancer, endometrial cancer, ovarian cancer, or uterine fibroids after regular use of chemical hair straighteners. Key documentation includes purchase records, medical records with cancer diagnosis, and treatment history.',
+  },
+  {
+    id: 'cpap-recall-philips',
+    title: 'Philips CPAP Recall: Health Risks, Compensation, and Your Next Steps',
+    excerpt: 'Millions of recalled CPAP machines may have exposed users to harmful chemicals and particles...',
+    date: 'Mar 25, 2025',
+    dateISO: '2025-03-25',
+    readTime: '8 min read',
+    category: 'CPAP Machines',
+    icon: Activity,
+    color: 'bg-sky-500',
+    content: 'Philips Respironics recalled millions of CPAP, BiPAP, and mechanical ventilator devices in June 2021 after discovering that the PE-PUR sound abatement foam used in these devices could degrade over time, releasing black particles, volatile organic compounds (VOCs), and other harmful chemicals into the airway of users. Health risks associated with exposure include respiratory irritation, asthma exacerbation, sinus infections, headaches, and potentially more serious conditions including cancer. Philips has agreed to a consent decree with the FDA requiring extensive corrective actions. Claimants who used recalled devices and experienced health problems may be eligible for compensation covering medical expenses, device replacement costs, and pain and suffering. Required documentation includes device serial numbers, medical records documenting health issues after CPAP use, and proof of device purchase or prescription.',
+  },
+  {
+    id: '3m-earplugs-settlement',
+    title: '3M Earplugs Settlement: What Veterans Need to Know About Their Claims',
+    excerpt: '3M agreed to a multi-billion dollar settlement over defective combat earplugs. Here\'s how to file...',
+    date: 'Apr 1, 2025',
+    dateISO: '2025-04-01',
+    readTime: '7 min read',
+    category: '3M Earplugs',
+    icon: Shield,
+    color: 'bg-lime-500',
+    content: '3M Company agreed to pay over $6 billion to resolve claims that its dual-ended combat earplugs (CAEv2) were defectively designed, causing thousands of military service members to suffer hearing loss and tinnitus. The earplugs, issued to service members between 2003 and 2015, were too short for proper insertion into the ear canal, causing them to loosen during use and fail to protect against battlefield noise. Veterans who served during this period and experienced hearing loss, tinnitus, or both may be eligible for compensation. The claims process requires military service records showing deployment during the relevant period, audiologist evaluations confirming hearing damage, and documentation of the impact on quality of life. Settlement amounts vary significantly based on the severity of hearing damage, with some claims receiving six-figure awards.',
+  },
+  {
+    id: 'rideshare-assault-safety',
+    title: 'Rideshare Safety Lawsuits: Your Rights After an Assault or Injury',
+    excerpt: 'Uber and Lyft face mounting legal pressure over inadequate driver vetting and passenger safety...',
+    date: 'Apr 10, 2025',
+    dateISO: '2025-04-10',
+    readTime: '9 min read',
+    category: 'Rideshare Assault',
+    icon: Car,
+    color: 'bg-indigo-500',
+    content: 'Rideshare companies Uber and Lyft face increasing legal liability for inadequate driver background checks, insufficient safety measures, and failure to protect passengers from assault, sexual assault, kidnapping, and other violent crimes. Thousands of incidents have been reported, and both companies have settled numerous lawsuits. Victims may be entitled to compensation from both the individual driver and the rideshare company under theories of negligent hiring, negligent retention, and vicarious liability. If you experienced assault, injury, or a safety failure during a rideshare trip, it is critical to preserve evidence: save your trip receipt with driver details, screenshot any in-app safety reports, seek medical attention immediately, and file a police report. Compensation may cover medical expenses, therapy costs, lost wages, pain and suffering, and punitive damages. Statutes of limitations vary by state, typically ranging from one to three years from the date of the incident.',
   },
 ];
 
@@ -5035,6 +5202,7 @@ function SocialProofNotification() {
                   <span className="font-semibold">{data.name}</span> from {data.location}
                 </p>
                 <p className="text-xs text-muted-foreground dark:text-gray-400 mt-0.5">{data.action}</p>
+                <Badge className="mt-1.5 text-[10px] px-1.5 py-0 bg-gold/10 text-gold-dark dark:text-gold-light border-gold/20 font-medium">{data.caseType}</Badge>
                 <p className="text-[10px] text-muted-foreground/60 dark:text-gray-500 mt-1">{data.time}</p>
               </div>
             </div>
@@ -5275,6 +5443,44 @@ function ReferralSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   COMPONENT: MOBILE BOTTOM NAV (with active state)
+   ═══════════════════════════════════════════════════════════════ */
+
+const MOBILE_NAV_ITEMS = [
+  { icon: Home, label: 'Home', href: '#hero' },
+  { icon: Search, label: 'Track', href: '#track-claim' },
+  { icon: Target, label: 'Quiz', href: '#eligibility-quiz' },
+  { icon: DollarSign, label: 'Calc', href: '#settlement-calculator' },
+  { icon: Phone, label: 'Contact', href: '#contact' },
+];
+
+function MobileNavItems() {
+  const activeSection = useScrollSpy();
+  return (
+    <div className="flex items-center justify-around">
+      {MOBILE_NAV_ITEMS.map((item) => {
+        const isActive = activeSection === item.href;
+        return (
+          <button
+            key={item.label}
+            onClick={() => document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' })}
+            className={`flex flex-col items-center gap-0.5 py-1 px-2 transition-colors ${isActive ? 'text-gold' : 'text-gray-500 hover:text-gray-300'}`}
+            aria-label={item.label}
+            aria-current={isActive ? 'true' : undefined}
+          >
+            <div className="relative">
+              <item.icon className="w-5 h-5" />
+              {isActive && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold" />}
+            </div>
+            <span className={`text-[10px] font-medium ${isActive ? 'text-gold' : ''}`}>{item.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    MAIN PAGE COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 
@@ -5325,6 +5531,7 @@ export default function HomePage() {
         <ResourcesSection />
         <WhatWeHandleSection />
         <CTASection />
+        <FilingDeadlineTracker />
         <FAQSection />
         <CaseStudiesSection />
         <NewsletterSection />
@@ -5341,21 +5548,8 @@ export default function HomePage() {
       <ExitIntentPopup />
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 py-1.5 safe-area-inset-bottom" aria-label="Mobile navigation">
-        <div className="flex items-center justify-around">
-          {[
-            { icon: Home, label: 'Home', href: '#hero' },
-            { icon: Search, label: 'Track', href: '#track-claim' },
-            { icon: Target, label: 'Quiz', href: '#eligibility-quiz' },
-            { icon: DollarSign, label: 'Calc', href: '#settlement-calculator' },
-            { icon: Phone, label: 'Contact', href: '#contact' },
-          ].map((item) => (
-            <button key={item.label} onClick={() => document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' })} className="flex flex-col items-center gap-0.5 py-1 px-2 text-gray-400 dark:text-gray-500 hover:text-gold transition-colors" aria-label={item.label}>
-              <item.icon className="w-5 h-5" />
-              <span className="text-[10px] font-medium">{item.label}</span>
-            </button>
-          ))}
-        </div>
+      <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-gray-900/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-800 px-2 py-1.5 safe-area-inset-bottom" aria-label="Mobile navigation">
+        <MobileNavItems />
       </nav>
     </>
   );

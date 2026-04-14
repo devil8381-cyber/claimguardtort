@@ -39,7 +39,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "ClaimGuard Pro" }],
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
   },
   openGraph: {
     title: "ClaimGuard Pro — Mass Tort Claims Assistance",
