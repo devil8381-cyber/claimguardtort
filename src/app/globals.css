@@ -147,14 +147,13 @@ html {
 
 body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
-  background-color: #ffffff;
-  color: #1B2A4A;
+  background-color: #111D33;
+  color: #E5E7EB;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.dark body {
+html.dark {
   background-color: #111D33;
   color: #E5E7EB;
 }

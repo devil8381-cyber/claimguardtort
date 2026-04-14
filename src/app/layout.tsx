@@ -235,11 +235,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1B2A4A" />
-        <script dangerouslySetInnerHTML={{ __html: `try{document.querySelector('meta[name=theme-color]').content=window.matchMedia('(prefers-color-scheme:dark)').matches?'#111D33':'#1B2A4A';window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{document.querySelector('meta[name=theme-color]').content=e.matches?'#111D33':'#1B2A4A'})}catch(e){}` }} />
+        <meta name="theme-color" content="#111D33" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -260,7 +259,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
           <Toaster
             position="top-right"

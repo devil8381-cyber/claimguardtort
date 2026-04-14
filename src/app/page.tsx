@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo, type FormEvent, memo, type ReactNode } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { useTheme } from 'next-themes';
+// Dark mode only — theme toggle removed
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -84,8 +84,7 @@ import {
   Zap,
   ChevronLeft,
   Leaf,
-  Sun,
-  Moon,
+
   Trash2,
   Plus,
   LayoutDashboard,
@@ -912,10 +911,7 @@ const Navbar = memo(function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [countdownDismissed, setCountdownDismissed] = useState(false);
   const activeSection = useScrollSpy();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { const id = requestAnimationFrame(() => setMounted(true)); return () => cancelAnimationFrame(id); }, []);
   useEffect(() => {
     const id = requestAnimationFrame(() => setCountdownDismissed(sessionStorage.getItem('claimguard-countdown-dismissed') === 'true'));
     return () => cancelAnimationFrame(id);
@@ -970,38 +966,10 @@ const Navbar = memo(function Navbar() {
             <Button onClick={() => handleClick('#contact')} size="sm" className="ml-2 bg-gold hover:bg-gold-dark text-white font-semibold animate-pulse-glow">
               Get Started Now
             </Button>
-            {mounted && (
-              <motion.button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="ml-2 p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                whileTap={{ scale: 0.9 }}
-              >
-                <AnimatePresence mode="wait">
-                  {theme === 'dark' ? (
-                    <motion.div key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                      <Sun className="w-4 h-4 text-gold" />
-                    </motion.div>
-                  ) : (
-                    <motion.div key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                      <Moon className="w-4 h-4 text-navy" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            )}
+
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
-            {mounted && (
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-lg transition-colors"
-                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              >
-                {theme === 'dark' ? <Sun className="w-5 h-5 text-gold" /> : <Moon className="w-5 h-5 text-white" />}
-              </button>
-            )}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <button className={`p-2 rounded-lg transition-colors ${scrolled ? 'text-navy dark:text-white hover:bg-navy/5 dark:hover:bg-gray-800' : 'text-white hover:bg-white/10'}`} aria-label="Open navigation menu">
