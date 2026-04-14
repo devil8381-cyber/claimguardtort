@@ -18,17 +18,18 @@ export async function GET(request: NextRequest) {
   const format = searchParams.get('format') || 'csv';
 
   if (format === 'stats') {
-    const [total, claimants] = await Promise.all([
+    const [total, statusGroups, claimTypeGroups] = await Promise.all([
       prisma.claimant.count(),
-      prisma.claimant.findMany(),
+      prisma.claimant.groupBy({ by: ['status'], _count: { status: true } }),
+      prisma.claimant.groupBy({ by: ['claimType'], where: { claimType: { not: null } }, _count: { claimType: true } }),
     ]);
     const statusCounts: Record<string, number> = {};
+    for (const g of statusGroups) {
+      statusCounts[g.status] = g._count.status;
+    }
     const claimTypeCounts: Record<string, number> = {};
-    for (const c of claimants) {
-      statusCounts[c.status] = (statusCounts[c.status] || 0) + 1;
-      if (c.claimType) {
-        claimTypeCounts[c.claimType] = (claimTypeCounts[c.claimType] || 0) + 1;
-      }
+    for (const g of claimTypeGroups) {
+      if (g.claimType) claimTypeCounts[g.claimType] = g._count.claimType;
     }
     return NextResponse.json({ total, statusCounts, claimTypeCounts });
   }

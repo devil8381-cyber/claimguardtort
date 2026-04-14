@@ -5915,10 +5915,15 @@ function AdminPanel() {
   // Search debounce timer
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Single data fetch effect — runs when auth state, tab, or filters change
+  // Fetch stats once when admin panel opens
   useEffect(() => {
     if (!isAuthenticated || !isOpen) return;
     fetchStats();
+  }, [isAuthenticated, isOpen, fetchStats]);
+
+  // Fetch claimants when tab, filters, or search change
+  useEffect(() => {
+    if (!isAuthenticated || !isOpen) return;
     if (activeTab === 'claimants' || activeTab === 'dashboard') {
       // Debounced search for claimants tab
       if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
@@ -5927,7 +5932,7 @@ function AdminPanel() {
       }, searchQuery ? 300 : 0);
     }
     return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
-  }, [isAuthenticated, isOpen, activeTab, statusFilter, searchQuery, fetchClaimants, fetchStats]);
+  }, [isAuthenticated, isOpen, activeTab, statusFilter, searchQuery, fetchClaimants]);
 
   const handleUpload = useCallback(async () => {
     if (!uploadFile) return;
@@ -5961,17 +5966,19 @@ function AdminPanel() {
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
+    const targetId = deleteTarget.trackingId;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/admin/claimants/${deleteTarget.trackingId}`, {
+      const res = await fetch(`/api/admin/claimants/${targetId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${ADMIN_AUTH_TOKEN}` },
       });
       if (res.ok) {
-        toast.success('Claimant deleted', { description: `${deleteTarget.trackingId} has been removed` });
+        toast.success('Claimant deleted', { description: `${targetId} has been removed` });
         // If deleting the last item on current page, go back
         const goToPage = (claimants.length <= 1 && currentPage > 1) ? currentPage - 1 : currentPage;
         fetchClaimants(goToPage);
+        // Fire-and-forget stats refresh (doesn't block dialog close)
         fetchStats();
       } else {
         toast.error('Delete failed');
