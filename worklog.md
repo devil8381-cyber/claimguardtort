@@ -156,3 +156,31 @@ Stage Summary:
 - 4 critical bugs fixed
 - 11 improvements implemented
 - Zero ESLint errors
+
+---
+Task ID: 6
+Agent: Main Agent
+Task: Replace AI images with avatar initials + expand tort types
+
+Work Log:
+TASK 1 — Replace AI-generated images with non-AI avatars:
+- Removed `import Image from 'next/image'` (no longer used anywhere in file)
+- Replaced all 6 SUCCESS_STORIES entries' `image` field with `initials` (2-letter) and `avatarColor` (gradient class)
+- Added 6 new success stories (Maria Gonzalez/Rideshare Assault, Kevin Wright/Depo Provera, Patricia Nguyen/NEC Baby Formula, David Brown/IL Detention, Linda Chen/Social Media, Marcus Williams/Roblox) — total now 12
+- Replaced SuccessStoriesCarousel left panel: removed Image-based layout, replaced with dark gradient background + abstract geometric pattern (gold/blue blurred orbs, SVG grid) + large gradient circle avatar with initials in serif font + decorative gold line + case type label
+- Updated animation key from `story.image` to `story.name`
+
+TASK 2 — Expand tort types across all arrays:
+- Added 8 new lucide-react icon imports: Baby, Car, Gamepad2, Pill, AlertTriangle, Activity, Heart, Brain
+- Expanded CASE_TYPES from 16 to 30 entries (added Rideshare Assault, NEC Baby Formula, Depo Provera, Roblox/Gaming, IL Detention, Uber/Lyft Safety, Talcum Powder Cancer, AFFF/PFAS Exposure, 3M Earplugs, Exactech Implants, Bard PowerPort, Elmiron, Taxotere, Talc Ovarian Cancer)
+- Expanded CASE_TYPE_DETAILS from 6 to 18 entries (added Rideshare Assault, NEC Baby Formula, Depo Provera, Social Media Mental Health, IL Detention, Roblox/Gaming, Zantac, Hair Relaxer, CPAP Machines, 3M Combat Earplugs, Exactech Joint Implants, Paraquat)
+- Expanded SP_CASE_TYPES from 15 to 25 entries (added Rideshare Assault, NEC Baby Formula, Depo Provera, Roblox/Gaming, IL Detention, 3M Earplugs, Exactech Implants, Bard PowerPort, Elmiron, Taxotere)
+- Expanded CASE_COLORS from 6 to 12 entries (added Rideshare Assault, Depo Provera, NEC Baby Formula, IL Detention, Social Media, Roblox)
+- Updated Eligibility Quiz q2 options from 7 to 18 case types
+
+Stage Summary:
+- All AI-generated images completely removed from success stories carousel
+- 12 success stories with professional gradient avatar initials + abstract background design
+- 18 detailed case type entries with full descriptions, icons, deadlines, statuses
+- 30 case types in the hero typeahead, 25 in social proof, 18 in quiz
+- Zero ESLint errors confirmed

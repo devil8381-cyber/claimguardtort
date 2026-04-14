@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type FormEvent, memo, type ReactNode } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 // Dark mode only — theme toggle removed
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -84,6 +83,14 @@ import {
   Zap,
   ChevronLeft,
   Leaf,
+  Baby,
+  Car,
+  Gamepad2,
+  Pill,
+  AlertTriangle,
+  Activity,
+  Heart,
+  Brain,
 
   Trash2,
   Plus,
@@ -127,8 +134,14 @@ const HERO_HEADLINES = [
 const CASE_TYPES = [
   'Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh',
   'Paraquat', 'Firefighting Foam', 'Zantac', 'Hair Relaxer',
-  'CPAP Machines', 'Social Media Lawsuits', 'Camp Lejeune', 'Roundup',
-  'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam',
+  'CPAP Machines', 'Social Media Lawsuits', 'Rideshare Assault',
+  'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention',
+  'Uber / Lyft Safety', 'Talcum Powder Cancer', 'AFFF / PFAS Exposure',
+  '3M Earplugs', 'Exactech Implants', 'Bard PowerPort',
+  'Elmiron', 'Taxotere', 'Talc Ovarian Cancer',
+  'Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh',
+  'Paraquat', 'Firefighting Foam', 'Social Media Lawsuits', 'Rideshare Assault',
+  'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention',
 ];
 
 const TRUST_BADGES = [
@@ -218,6 +231,18 @@ const CASE_TYPE_DETAILS = [
   { title: 'Hernia Mesh', description: 'For patients who received hernia mesh implants that failed, caused infection, or required additional surgery due to device defects.', icon: Shield, color: 'bg-amber-500', deadline: 'Varies by manufacturer', statuses: ['Pending', 'Correction Needed', 'Approved'], detail: 'Defective hernia mesh devices have caused chronic pain, infection, adhesion, and organ perforation. We help document the link between device failure and subsequent medical complications.' },
   { title: 'Paraquat Herbicide', description: "For agricultural workers and farmers who developed Parkinson's disease or related conditions after exposure to Paraquat herbicide.", icon: Zap, color: 'bg-rose-500', deadline: 'Ongoing', statuses: ['Under Review', 'Approved', 'Denied'], detail: "Paraquat is a restricted-use herbicide linked to increased Parkinson's disease risk. Licensed applicators and farmworkers with documented exposure may qualify." },
   { title: 'Firefighting Foam (AFFF)', description: 'For military personnel, firefighters, and airport workers exposed to PFAS-containing firefighting foam who developed related health conditions.', icon: Target, color: 'bg-teal-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review'], detail: 'AFFF foam contains PFAS "forever chemicals" linked to several cancers and thyroid disease. Military bases, airports, and fire departments are primary exposure sites.' },
+  { title: 'Rideshare Assault & Safety', description: 'For individuals who experienced assault, injury, or safety failures during Uber, Lyft, or other rideshare trips due to driver negligence or inadequate background checks.', icon: Car, color: 'bg-indigo-500', deadline: 'Varies by state', statuses: ['Pending', 'Settled', 'Active'], detail: 'Rideshare companies face mounting liability for inadequate driver vetting and insufficient safety measures. Victims of assault or injury during rideshare trips may be entitled to compensation from both the driver and the platform company.' },
+  { title: 'NEC Baby Formula', description: "For families whose premature infants developed necrotizing enterocolitis (NEC) after being fed cow's milk-based formula in NICUs.", icon: Baby, color: 'bg-cyan-500', deadline: 'Ongoing', statuses: ['Pending', 'Settled', 'Approved'], detail: "Studies have shown that cow's milk-based formula significantly increases NEC risk in premature infants compared to human breast milk. Major manufacturers failed to adequately warn hospitals and parents about these dangers." },
+  { title: 'Depo Provera (Medroxyprogesterone)', description: 'For individuals who developed brain tumors (meningiomas) or other serious conditions after using the Depo Provera contraceptive injection.', icon: Pill, color: 'bg-orange-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review', 'Approved'], detail: 'Recent studies have linked the Depo Provera birth control shot to significantly increased risk of meningioma brain tumors. Users who developed tumors after prolonged use may be eligible for compensation.' },
+  { title: 'Social Media Mental Health', description: 'For families and individuals harmed by addictive social media algorithms that caused eating disorders, self-harm, anxiety, depression, or suicide in children and teens.', icon: Users, color: 'bg-pink-500', deadline: 'Ongoing', statuses: ['Pending', 'Active', 'Settled'], detail: 'Internal documents reveal that social media companies knew their platforms were harmful to young users but prioritized engagement over safety. Multi-district litigation is moving forward against Meta, TikTok, Snap, and others.' },
+  { title: 'Immigration Detention (IL Detention)', description: 'For individuals who suffered harm, abuse, or rights violations in immigration detention centers, including unsafe conditions, medical neglect, or wrongful detention.', icon: Lock, color: 'bg-slate-500', deadline: 'Varies', statuses: ['Pending', 'Settled', 'Active'], detail: 'Immigration detention facilities have faced numerous lawsuits over inhumane conditions, medical negligence, excessive force, and due process violations. Detainees have successfully pursued claims for damages and policy reform.' },
+  { title: 'Roblox / Gaming Microtransactions', description: 'For parents and families whose children made unauthorized in-app purchases through deceptive game design, dark patterns, or lack of age verification on platforms like Roblox.', icon: Gamepad2, color: 'bg-red-500', deadline: 'Ongoing', statuses: ['Pending', 'Active'], detail: 'Gaming platforms face increasing legal scrutiny over manipulative design patterns targeting children, including loot boxes, virtual currencies, and pressure tactics that encourage excessive spending without parental consent.' },
+  { title: 'Zantac (Ranitidine)', description: 'For individuals who developed cancer after long-term use of Zantac or generic ranitidine, which was found to contain NDMA, a probable human carcinogen.', icon: AlertTriangle, color: 'bg-violet-500', deadline: 'Varies by state', statuses: ['Pending', 'Under Review', 'Approved'], detail: 'The FDA recalled all ranitidine products in 2020 after discovering they could form NDMA, a known carcinogen. Long-term users who developed cancers of the stomach, liver, bladder, or other organs may qualify for compensation.' },
+  { title: 'Hair Relaxer / Chemical Hair Straightener', description: 'For individuals who developed uterine cancer, ovarian cancer, endometrial cancer, or fibroids after using chemical hair relaxer products.', icon: Sparkles, color: 'bg-fuchsia-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review'], detail: 'NIH research found that women who frequently used chemical hair straighteners were more than twice as likely to develop uterine cancer. Major manufacturers face lawsuits for failing to warn consumers about cancer risks linked to endocrine-disrupting chemicals.' },
+  { title: 'CPAP Machines (Philips Recall)', description: 'For individuals who used recalled Philips CPAP, BiPAP, or ventilator devices with defective sound abatement foam that degraded and released harmful particles and chemicals.', icon: Activity, color: 'bg-sky-500', deadline: 'Ongoing', statuses: ['Pending', 'Approved', 'Under Review'], detail: 'Philips recalled millions of sleep apnea devices after discovering the PE-PUR foam could break down and release black particles and volatile organic compounds into the airway. Users who developed respiratory issues, cancer, or other conditions may be eligible.' },
+  { title: '3M Combat Earplugs', description: 'For military veterans who suffered hearing loss or tinnitus due to defective 3M dual-ended combat earplugs that were too short for proper insertion.', icon: Shield, color: 'bg-lime-500', deadline: 'Varies', statuses: ['Pending', 'Approved', 'Settled'], detail: '3M agreed to a multi-billion dollar settlement over defective combat earplugs issued to service members between 2003-2015. The earplugs\' design defect allowed them to loosen during use, failing to protect against loud battlefield noises.' },
+  { title: 'Exactech Joint Implants', description: 'For patients who received recalled Exactech ankle, knee, or hip replacement implants with defective packaging that caused premature oxidation and failure.', icon: Target, color: 'bg-stone-500', deadline: 'Ongoing', statuses: ['Pending', 'Under Review', 'Correction Needed'], detail: 'Exactech recalled thousands of joint replacement systems after discovering that their vacuum-sealed packaging failed, allowing oxygen to degrade the polyethylene inserts. This caused premature device failure, bone loss, and the need for revision surgeries.' },
+  { title: 'Paraquat', description: "For agricultural workers and farmers who developed Parkinson's disease or related conditions after exposure to Paraquat herbicide.", icon: Zap, color: 'bg-rose-500', deadline: 'Ongoing', statuses: ['Under Review', 'Approved', 'Denied'], detail: "Paraquat is a restricted-use herbicide linked to increased Parkinson's disease risk. Licensed applicators and farmworkers with documented exposure may qualify." },
 ];
 
 const COMPARISON_DATA = [
@@ -533,6 +558,8 @@ const SP_ACTIONS = [
 const SP_CASE_TYPES = [
   'Camp Lejeune','Roundup','Talc / Baby Powder','Hernia Mesh','Paraquat',
   'Firefighting Foam','Zantac','Hair Relaxer','CPAP Machines','Social Media Lawsuits',
+  'Rideshare Assault','NEC Baby Formula','Depo Provera','Roblox / Gaming','IL Detention',
+  '3M Earplugs','Exactech Implants','Bard PowerPort','Elmiron','Taxotere',
   'a mass tort','a class action','a product liability','a personal injury','a toxic exposure',
 ];
 
@@ -635,7 +662,8 @@ const SUCCESS_STORIES = [
     name: 'Angela Torres',
     location: 'Jacksonville, NC',
     caseType: 'Camp Lejeune',
-    image: '/images/success-story-1.jpg',
+    initials: 'AT',
+    avatarColor: 'from-blue-500 to-blue-700',
     quote: 'When I received the denial letter, I felt completely defeated. After 22 years of military service, dealing with kidney disease felt like a second battle I wasn\'t prepared for. ClaimGuard Pro stepped in and fought alongside me when I had nothing left to give.',
     beforeStatus: 'Denied',
     afterStatus: 'Approved',
@@ -646,7 +674,8 @@ const SUCCESS_STORIES = [
     name: 'George Patterson',
     location: 'Des Moines, IA',
     caseType: 'Roundup',
-    image: '/images/success-story-2.jpg',
+    initials: 'GP',
+    avatarColor: 'from-emerald-500 to-emerald-700',
     quote: 'Three years of going in circles with paperwork and phone calls. I almost gave up entirely. Their team took over and had everything sorted within months. I only wish I had found them sooner.',
     beforeStatus: 'Correction Needed',
     afterStatus: 'Approved',
@@ -657,7 +686,8 @@ const SUCCESS_STORIES = [
     name: 'Susan Lewis',
     location: 'Scottsdale, AZ',
     caseType: 'Talcum Powder',
-    image: '/images/success-story-3.jpg',
+    initials: 'SL',
+    avatarColor: 'from-purple-500 to-purple-700',
     quote: 'The document specialist caught a critical error in my pathology report submission that I never would have found on my own. That single correction saved my entire claim from being dismissed.',
     beforeStatus: 'Pending (14 months)',
     afterStatus: 'Approved',
@@ -668,7 +698,8 @@ const SUCCESS_STORIES = [
     name: 'Robert Martinez',
     location: 'Charlotte, NC',
     caseType: 'Hernia Mesh',
-    image: '/images/success-story-4.jpg',
+    initials: 'RM',
+    avatarColor: 'from-amber-500 to-amber-700',
     quote: 'After my hernia mesh failed and caused a second surgery, I didn\'t know where to turn. ClaimGuard Pro connected me with the right attorney and helped build a strong case for additional compensation.',
     beforeStatus: 'Not Yet Filed',
     afterStatus: 'Approved',
@@ -679,7 +710,8 @@ const SUCCESS_STORIES = [
     name: 'Dorothy Kim',
     location: 'Fresno, CA',
     caseType: 'Paraquat',
-    image: '/images/success-story-5.jpg',
+    initials: 'DK',
+    avatarColor: 'from-rose-500 to-rose-700',
     quote: 'Watching my husband struggle with Parkinson\'s after decades of farming was heartbreaking. ClaimGuard Pro helped us understand our options and navigate the claims process with compassion and expertise.',
     beforeStatus: 'Under Review',
     afterStatus: 'Approved',
@@ -690,12 +722,85 @@ const SUCCESS_STORIES = [
     name: 'James Caldwell',
     location: 'Norfolk, VA',
     caseType: 'Firefighting Foam',
-    image: '/images/success-story-6.jpg',
+    initials: 'JC',
+    avatarColor: 'from-teal-500 to-teal-700',
     quote: 'As a firefighter for 18 years, I was exposed to AFFF regularly. When I was diagnosed with thyroid cancer, ClaimGuard Pro helped me file and track my claim through every stage of the process.',
     beforeStatus: 'Pending',
     afterStatus: 'Approved',
     timeline: '9 months',
     highlight: 'Comprehensive settlement including ongoing medical monitoring',
+  },
+  {
+    name: 'Maria Gonzalez',
+    location: 'Chicago, IL',
+    caseType: 'Rideshare Assault',
+    initials: 'MG',
+    avatarColor: 'from-indigo-500 to-indigo-700',
+    quote: 'After what happened to me during a rideshare trip, I felt scared and alone. ClaimGuard Pro connected me with support resources and helped me understand my legal rights. They treated me with dignity throughout.',
+    beforeStatus: 'Not Yet Filed',
+    afterStatus: 'Settled',
+    timeline: '11 months',
+    highlight: 'Confidential settlement with comprehensive support services',
+  },
+  {
+    name: 'Kevin Wright',
+    location: 'Springfield, MO',
+    caseType: 'Depo Provera',
+    initials: 'KW',
+    avatarColor: 'from-orange-500 to-orange-700',
+    quote: 'I trusted my doctor when they prescribed Depo Provera. When I was diagnosed with a brain tumor, I had no idea the shot could be the cause. ClaimGuard Pro helped me connect the dots and file my claim.',
+    beforeStatus: 'Under Review',
+    afterStatus: 'Approved',
+    timeline: '8 months',
+    highlight: 'Medical expenses and ongoing treatment costs covered',
+  },
+  {
+    name: 'Patricia Nguyen',
+    location: 'Houston, TX',
+    caseType: 'NEC Baby Formula',
+    initials: 'PN',
+    avatarColor: 'from-cyan-500 to-cyan-700',
+    quote: 'Our premature baby developed NEC after being given cow\'s milk-based formula in the NICU. It was the most terrifying experience of our lives. ClaimGuard Pro helped us seek accountability.',
+    beforeStatus: 'Pending',
+    afterStatus: 'Settled',
+    timeline: '14 months',
+    highlight: 'Settlement covering medical costs and long-term care needs',
+  },
+  {
+    name: 'David Brown',
+    location: 'Miami, FL',
+    caseType: 'IL Detention',
+    initials: 'DB',
+    avatarColor: 'from-slate-500 to-slate-700',
+    quote: 'I was wrongfully detained and the conditions were inhumane. ClaimGuard Pro helped me document everything and connected me with attorneys who specialize in civil rights and immigration cases.',
+    beforeStatus: 'Not Yet Filed',
+    afterStatus: 'Settled',
+    timeline: '12 months',
+    highlight: 'Confidential settlement with policy reform commitments',
+  },
+  {
+    name: 'Linda Chen',
+    location: 'San Jose, CA',
+    caseType: 'Social Media',
+    initials: 'LC',
+    avatarColor: 'from-pink-500 to-pink-700',
+    quote: 'My daughter suffered severe mental health issues from social media addiction. The platforms knew their algorithms were harmful to children. ClaimGuard Pro helped us join the fight for accountability.',
+    beforeStatus: 'Pending',
+    afterStatus: 'Active',
+    timeline: 'Ongoing',
+    highlight: 'Part of multi-district litigation with significant momentum',
+  },
+  {
+    name: 'Marcus Williams',
+    location: 'Atlanta, GA',
+    caseType: 'Roblox',
+    initials: 'MW',
+    avatarColor: 'from-red-500 to-red-700',
+    quote: 'My son spent thousands on Roblox without my knowledge through their deceptive microtransaction design. ClaimGuard Pro helped us understand our rights and join other affected families.',
+    beforeStatus: 'Not Yet Filed',
+    afterStatus: 'Active',
+    timeline: 'Ongoing',
+    highlight: 'Joining class action seeking refund and policy changes',
   },
 ];
 
@@ -1574,7 +1679,7 @@ function EligibilityQuizSection() {
 
   const quizQuestions = useMemo(() => [
     { question: 'Have you filed a mass tort claim?', type: 'radio' as const, options: ['Yes', 'No'], key: 'q1' as keyof QuizAnswers },
-    { question: 'What type of claim are you interested in?', type: 'select' as const, options: ['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Other'], key: 'q2' as keyof QuizAnswers },
+    { question: 'What type of claim are you interested in?', type: 'select' as const, options: ['Camp Lejeune', 'Roundup', 'Talc / Baby Powder', 'Hernia Mesh', 'Paraquat', 'Firefighting Foam', 'Zantac', 'Hair Relaxer', 'CPAP Machines', 'Social Media Lawsuits', 'Rideshare Assault', 'NEC Baby Formula', 'Depo Provera', 'Roblox / Gaming', 'IL Detention', '3M Earplugs', 'Exactech Implants', 'Other'], key: 'q2' as keyof QuizAnswers },
     { question: 'What is your current claim status?', type: 'select' as const, options: ['Pending', 'Under Review', 'Approved', 'Denied', 'Correction Needed', 'Not Yet Filed'], key: 'q3' as keyof QuizAnswers },
     { question: 'Have you received any correspondence about your claim?', type: 'radio' as const, options: ['Yes', 'No'], key: 'q4' as keyof QuizAnswers },
     { question: 'What is your primary concern?', type: 'select' as const, options: ['Missing documents', 'Denied claim', 'No updates on status', 'Incomplete forms', 'Need help filing', 'Other'], key: 'q5' as keyof QuizAnswers },
@@ -1823,6 +1928,12 @@ const CASE_COLORS: Record<string, { bg: string; text: string; border: string }> 
   'Hernia Mesh': { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
   'Paraquat': { bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-700 dark:text-rose-300', border: 'border-rose-200 dark:border-rose-800' },
   'Firefighting Foam': { bg: 'bg-teal-50 dark:bg-teal-900/20', text: 'text-teal-700 dark:text-teal-300', border: 'border-teal-200 dark:border-teal-800' },
+  'Rideshare Assault': { bg: 'bg-indigo-50 dark:bg-indigo-900/20', text: 'text-indigo-700 dark:text-indigo-300', border: 'border-indigo-200 dark:border-indigo-800' },
+  'Depo Provera': { bg: 'bg-orange-50 dark:bg-orange-900/20', text: 'text-orange-700 dark:text-orange-300', border: 'border-orange-200 dark:border-orange-800' },
+  'NEC Baby Formula': { bg: 'bg-cyan-50 dark:bg-cyan-900/20', text: 'text-cyan-700 dark:text-cyan-300', border: 'border-cyan-200 dark:border-cyan-800' },
+  'IL Detention': { bg: 'bg-slate-50 dark:bg-slate-900/20', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-800' },
+  'Social Media': { bg: 'bg-pink-50 dark:bg-pink-900/20', text: 'text-pink-700 dark:text-pink-300', border: 'border-pink-200 dark:border-pink-800' },
+  'Roblox': { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
 };
 
 function SuccessStoriesCarousel() {
@@ -1884,32 +1995,53 @@ function SuccessStoriesCarousel() {
       <div className="max-w-5xl mx-auto">
         <Card className="overflow-hidden border-0 shadow-xl bg-white dark:bg-gray-800/50">
           <div className="grid md:grid-cols-2 gap-0">
-            {/* Left: Image */}
-            <div className="relative h-72 md:h-auto md:min-h-[480px] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+            {/* Left: Avatar + Abstract Background */}
+            <div className="relative h-72 md:h-auto md:min-h-[480px] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 overflow-hidden flex items-center justify-center">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
-                  key={story.image}
+                  key={story.name}
                   custom={direction}
                   variants={slideVariants}
                   initial="enter"
                   animate="center"
                   exit="exit"
                   transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="absolute inset-0"
+                  className="absolute inset-0 flex flex-col items-center justify-center p-8"
                 >
-                  <Image
-                    src={story.image}
-                    alt={`Photo of ${story.name}`}
-                    fill
-                    className="object-cover object-top"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority={activeIndex === 0}
-                  />
-                  {/* Gradient overlay for text readability on mobile */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-transparent" />
+                  {/* Abstract geometric pattern */}
+                  <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10">
+                      <div className="absolute top-[10%] left-[10%] w-32 h-32 rounded-full bg-gold/30 blur-2xl" />
+                      <div className="absolute bottom-[15%] right-[15%] w-40 h-40 rounded-full bg-blue-500/20 blur-3xl" />
+                      <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-gold/10 blur-3xl" />
+                    </div>
+                    {/* Grid pattern */}
+                    <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-gold" />
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#grid)" />
+                    </svg>
+                  </div>
+
+                  {/* Large Initials Avatar */}
+                  <div className={`relative w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br ${story.avatarColor} flex items-center justify-center shadow-2xl ring-4 ring-white/10`}>
+                    <span className="text-4xl md:text-5xl font-bold text-white tracking-wider" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                      {story.initials}
+                    </span>
+                  </div>
+
+                  {/* Decorative line */}
+                  <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mt-6" />
+
+                  {/* Case type label */}
+                  <p className="text-white/50 text-xs uppercase tracking-[0.2em] mt-3 font-medium">{story.caseType}</p>
                 </motion.div>
               </AnimatePresence>
-              {/* Case type badge on image */}
+
+              {/* Case type badge */}
               <div className="absolute top-4 left-4 z-10">
                 <Badge className={`${colors.bg} ${colors.text} ${colors.border} border text-xs font-semibold backdrop-blur-sm`}>
                   {story.caseType}
