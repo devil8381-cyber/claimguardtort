@@ -3,6 +3,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Mobile bottom nav safe area */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Add bottom padding on mobile for the fixed nav */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 768px) {
+  main {
+    padding-bottom: 4rem;
+  }
+}
+
 @font-face {
   font-family: 'Georgia Pro';
   src: local('Georgia'), local('Times New Roman');

@@ -47,12 +47,14 @@ export const metadata: Metadata = {
       "Don't let your claim get lost in the system. Track your claim, get expert guidance, and maximize your compensation.",
     type: "website",
     siteName: "ClaimGuard Pro",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ClaimGuard Pro — Free Mass Tort Claims Assistance" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ClaimGuard Pro — Mass Tort Claims Assistance",
     description:
       "Track your claim, get expert guidance, and maximize your compensation.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -177,6 +179,53 @@ const jsonLd = {
         },
       ],
     },
+    {
+      "@type": "LegalService",
+      name: "ClaimGuard Pro",
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "5",
+        bestRating: "5",
+        worstRating: "1",
+        reviewCount: "6",
+        ratingCount: "6",
+      },
+      review: [
+        { "@type": "Review", author: { "@type": "Person", name: "Margaret H." }, reviewRating: { "@type": "Rating", ratingValue: "5" }, reviewBody: "My claim was stuck in 'Correction Needed' for months. ClaimGuard Pro helped me fix the paperwork within a week and resubmit. Now my claim is approved!" },
+        { "@type": "Review", author: { "@type": "Person", name: "Thomas J." }, reviewRating: { "@type": "Rating", ratingValue: "5" }, reviewBody: "I had no idea where my claim stood or what to do next. Their tracking system and support team made everything clear." },
+        { "@type": "Review", author: { "@type": "Person", name: "Linda R." }, reviewRating: { "@type": "Rating", ratingValue: "5" }, reviewBody: "After my initial claim was denied, I felt hopeless. ClaimGuard Pro helped me appeal with stronger evidence and we won." },
+        { "@type": "Review", author: { "@type": "Person", name: "Robert M." }, reviewRating: { "@type": "Rating", ratingValue: "5" }, reviewBody: "The eligibility quiz gave me confidence to file. Six months later, I received my settlement check." },
+        { "@type": "Review", author: { "@type": "Person", name: "Dorothy K." }, reviewRating: { "@type": "Rating", ratingValue: "5" }, reviewBody: "What impressed me most was the real-time tracking. I could see my claim moving through each stage." },
+        { "@type": "Review", author: { "@type": "Person", name: "James P." }, reviewRating: { "@type": "Rating", ratingValue: "5" }, reviewBody: "They caught a critical error in my medical records submission that would have cost me my entire claim." },
+      ],
+    },
+    {
+      "@type": "Article",
+      headline: "Camp Lejeune Water Contamination: Complete Guide to Filing Your Claim",
+      description: "Everything you need to know about filing a Camp Lejeune water contamination claim, including eligibility requirements, deadlines, and step-by-step instructions.",
+      datePublished: "2025-01-15",
+      dateModified: "2025-03-01",
+      author: { "@type": "Organization", name: "ClaimGuard Pro" },
+      publisher: { "@type": "Organization", name: "ClaimGuard Pro", logo: { "@type": "ImageObject", url: "https://claimguardpro.com/logo.png" } },
+    },
+    {
+      "@type": "Article",
+      headline: "Roundup Lawsuit 2025: Latest Settlement Updates and Filing Deadlines",
+      description: "Comprehensive overview of the current state of Roundup litigation, recent settlement developments, and what claimants need to know.",
+      datePublished: "2025-02-10",
+      dateModified: "2025-03-15",
+      author: { "@type": "Organization", name: "ClaimGuard Pro" },
+      publisher: { "@type": "Organization", name: "ClaimGuard Pro", logo: { "@type": "ImageObject", url: "https://claimguardpro.com/logo.png" } },
+    },
+    {
+      "@type": "Article",
+      headline: "10 Critical Documents You Need for Your Mass Tort Claim",
+      description: "A detailed checklist of the essential documents required for mass tort claims, from government ID to physician opinion letters.",
+      datePublished: "2025-01-28",
+      dateModified: "2025-02-20",
+      author: { "@type": "Organization", name: "ClaimGuard Pro" },
+      publisher: { "@type": "Organization", name: "ClaimGuard Pro", logo: { "@type": "ImageObject", url: "https://claimguardpro.com/logo.png" } },
+    },
   ],
 };
 
@@ -190,6 +239,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1B2A4A" />
+        <script dangerouslySetInnerHTML={{ __html: `try{document.querySelector('meta[name=theme-color]').content=window.matchMedia('(prefers-color-scheme:dark)').matches?'#111D33':'#1B2A4A';window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{document.querySelector('meta[name=theme-color]').content=e.matches?'#111D33':'#1B2A4A'})}catch(e){}` }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

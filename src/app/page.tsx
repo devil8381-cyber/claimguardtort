@@ -59,6 +59,7 @@ import {
   HeadphonesIcon,
   Scale,
   Award,
+  Home,
   Lock,
   Menu,
   ArrowRight,
@@ -773,6 +774,16 @@ function useScrollSpy() {
   }, []);
   return activeSection;
 }
+
+/* Screen reader announcement utility */
+function announce(message: string, priority: 'polite' | 'assertive' = 'polite') {
+  const el = document.getElementById('sr-announcer');
+  if (el) { el.textContent = ''; setTimeout(() => { el.textContent = message; }, 50); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOOKS
+   ═══════════════════════════════════════════════════════════════ */
 
 function useCountdown(targetDate: Date) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -1603,7 +1614,7 @@ function EligibilityQuizSection() {
 
   const handleNext = useCallback(() => {
     if (step < quizQuestions.length - 1) setStep(s => s + 1);
-    else setShowResult(true);
+    else { setShowResult(true); announce('Quiz complete. Your assessment results are shown below.', 'assertive'); }
   }, [step, quizQuestions.length]);
 
   const handleBack = useCallback(() => setStep(s => Math.max(0, s - 1)), []);
@@ -2759,7 +2770,7 @@ function ClientPortalSection() {
               </div>
             ))}
           </div>
-          <Button size="lg" onClick={() => handleClick('#contact')} className="bg-gold hover:bg-gold-dark text-white font-bold px-8 py-3 text-base">
+          <Button size="lg" onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-gold hover:bg-gold-dark text-white font-bold px-8 py-3 text-base">
             <ArrowRight className="w-4 h-4 mr-2" />Coming Soon — Join the Waitlist
           </Button>
         </motion.div>
@@ -2875,6 +2886,7 @@ const BLOG_ARTICLES = [
     title: 'The Complete Guide to Camp Lejeune Water Contamination Claims',
     excerpt: 'Everything you need to know about filing a claim under the Camp Lejeune Justice Act...',
     date: 'Jan 15, 2025',
+    dateISO: '2025-01-15',
     readTime: '8 min read',
     category: 'Camp Lejeune',
     icon: Building2,
@@ -2886,6 +2898,7 @@ const BLOG_ARTICLES = [
     title: 'Roundup Lawsuit 2025: Latest Settlement Updates and Deadlines',
     excerpt: 'Stay informed about the latest developments in the Roundup (glyphosate) litigation...',
     date: 'Jan 10, 2025',
+    dateISO: '2025-01-10',
     readTime: '6 min read',
     category: 'Roundup',
     icon: Leaf,
@@ -2897,6 +2910,7 @@ const BLOG_ARTICLES = [
     title: '10 Critical Documents You Need for Your Mass Tort Claim',
     excerpt: 'Missing documents is the #1 reason claims get delayed or denied...',
     date: 'Jan 5, 2025',
+    dateISO: '2025-01-05',
     readTime: '10 min read',
     category: 'Tips & Guides',
     icon: ClipboardCheck,
@@ -2929,7 +2943,7 @@ function ResourcesSection() {
                   <div className="relative">
                     <article.icon className="w-8 h-8 mb-3 opacity-90" />
                     <Badge className="bg-white/20 text-white border-white/30 text-xs font-medium mb-2">{article.category}</Badge>
-                    <p className="text-white/60 text-xs">{article.readTime}</p>
+                    <time dateTime={article.dateISO} className="text-white/60 text-xs">{article.readTime}</time>
                   </div>
                 </div>
                 <CardContent className="pt-5 pb-6 flex flex-col flex-1">
@@ -3087,6 +3101,8 @@ function ContactSection() {
   const [loading, setLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [prefs, setPrefs] = useState({ emailUpdates: true, smsAlerts: false, newsletter: false });
+  const [lastSubmit, setLastSubmit] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
@@ -3123,27 +3139,40 @@ function ContactSection() {
   const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    // Form throttling: prevent rapid re-submissions
+    if (Date.now() - lastSubmit < 3000) { toast.error('Please wait a moment before submitting again.'); return; }
     setLoading(true);
+    setLastSubmit(Date.now());
     try {
-      const fileName = uploadedFiles.map(f => f.file.name).join(', ') || undefined;
-      const fileSize = uploadedFiles.length > 0 ? `${uploadedFiles.length} file(s), ${uploadedFiles.reduce((sum, f) => sum + f.file.size, 0)}` : undefined;
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('email', form.email);
+      formData.append('phone', form.phone);
+      formData.append('claimId', form.claimId);
+      formData.append('message', form.message);
+      formData.append('contactMethod', form.contactMethod);
+      formData.append('emailUpdates', String(prefs.emailUpdates));
+      formData.append('smsAlerts', String(prefs.smsAlerts));
+      formData.append('newsletter', String(prefs.newsletter));
+      uploadedFiles.forEach(f => formData.append('files', f.file));
       const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, fileName, fileSize }),
+        body: formData,
       });
       const data = await res.json();
       if (res.ok) {
         toast.success(data.message || 'We will get back to you shortly.');
+        announce('Message sent successfully. Our team will respond within 24 hours.');
         setForm({ name: '', email: '', phone: '', claimId: '', message: '', contactMethod: 'email' });
         setUploadedFiles([]);
+        setPrefs({ emailUpdates: true, smsAlerts: false, newsletter: false });
       } else {
         toast.error(data.error || 'Please try again.');
       }
     } catch {
       toast.error('Please try again.');
     } finally { setLoading(false); }
-  }, [form, validate, uploadedFiles]);
+  }, [form, validate, uploadedFiles, prefs, lastSubmit]);
 
   const formatSize = useCallback((bytes: number) => {
     if (bytes < 1024) return `${bytes}B`;
@@ -3170,13 +3199,13 @@ function ContactSection() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="contact-name" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Full Name *</Label>
-                      <Input id="contact-name" value={form.name} onChange={(e) => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })); }} placeholder="John Doe" className={errors.name ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
-                      {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                      <Input id="contact-name" value={form.name} onChange={(e) => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })); }} placeholder="John Doe" aria-describedby={errors.name ? 'contact-name-error' : undefined} aria-invalid={!!errors.name} className={errors.name ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
+                      {errors.name && <p id="contact-name-error" className="text-xs text-red-500 mt-1" role="alert">{errors.name}</p>}
                     </div>
                     <div>
                       <Label htmlFor="contact-email" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Email *</Label>
-                      <Input id="contact-email" type="email" value={form.email} onChange={(e) => { setForm(f => ({ ...f, email: e.target.value })); setErrors(er => ({ ...er, email: '' })); }} placeholder="john@example.com" className={errors.email ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
-                      {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                      <Input id="contact-email" type="email" value={form.email} onChange={(e) => { setForm(f => ({ ...f, email: e.target.value })); setErrors(er => ({ ...er, email: '' })); }} placeholder="john@example.com" aria-describedby={errors.email ? 'contact-email-error' : undefined} aria-invalid={!!errors.email} className={errors.email ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
+                      {errors.email && <p id="contact-email-error" className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}
                     </div>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -3207,8 +3236,8 @@ function ContactSection() {
 
                   <div>
                     <Label htmlFor="contact-message" className="text-sm font-semibold text-navy dark:text-gray-200 mb-1 block">Message *</Label>
-                    <Textarea id="contact-message" value={form.message} onChange={(e) => { setForm(f => ({ ...f, message: e.target.value })); setErrors(er => ({ ...er, message: '' })); }} placeholder="Tell us about your situation..." rows={4} className={errors.message ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
-                    {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
+                    <Textarea id="contact-message" value={form.message} onChange={(e) => { setForm(f => ({ ...f, message: e.target.value })); setErrors(er => ({ ...er, message: '' })); }} placeholder="Tell us about your situation..." rows={4} aria-describedby={errors.message ? 'contact-message-error' : undefined} aria-invalid={!!errors.message} className={errors.message ? 'border-red-400 dark:bg-gray-700 dark:border-red-500 dark:text-white' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-white'} />
+                    {errors.message && <p id="contact-message-error" className="text-xs text-red-500 mt-1" role="alert">{errors.message}</p>}
                   </div>
 
                   <div>
@@ -3250,12 +3279,12 @@ function ContactSection() {
                     <p className="text-sm font-semibold text-navy dark:text-gray-200">How would you like to receive updates?</p>
                     <div className="space-y-2">
                       {[
-                        { id: 'email', label: 'Email updates on claim status changes', defaultChecked: true },
-                        { id: 'sms', label: 'SMS alerts for important deadlines', defaultChecked: false },
-                        { id: 'newsletter', label: 'Newsletter with mass tort news', defaultChecked: false },
+                        { id: 'emailUpdates', label: 'Email updates on claim status changes', key: 'emailUpdates' as const },
+                        { id: 'smsAlerts', label: 'SMS alerts for important deadlines', key: 'smsAlerts' as const },
+                        { id: 'newsletter', label: 'Newsletter with mass tort news', key: 'newsletter' as const },
                       ].map((pref) => (
                         <label key={pref.id} className="flex items-center gap-2.5 cursor-pointer">
-                          <input type="checkbox" defaultChecked={pref.defaultChecked} className="w-4 h-4 rounded border-gray-300 text-gold focus:ring-gold" />
+                          <input type="checkbox" checked={prefs[pref.key]} onChange={(e) => setPrefs(p => ({ ...p, [pref.key]: e.target.checked }))} className="w-4 h-4 rounded border-gray-300 text-gold focus:ring-gold" />
                           <span className="text-sm text-muted-foreground">{pref.label}</span>
                         </label>
                       ))}
@@ -3567,7 +3596,7 @@ function LiveChatWidget() {
     }
   }, [messages]);
 
-  const quickReplies = useMemo(() => ['Track My Claim', 'Check Eligibility', 'Contact Us', 'FAQ'], []);
+  const quickReplies = useMemo(() => ['How do I track my claim?', 'What if my claim is denied?', 'What documents do I need?', 'Is this really free?'], []);
   const maxChars = 500;
 
   return (
@@ -5078,6 +5107,28 @@ function ReferralSection() {
    ═══════════════════════════════════════════════════════════════ */
 
 export default function HomePage() {
+  // BUG 3 FIX: Drive scroll progress bar
+  useEffect(() => {
+    const bar = document.getElementById('scroll-progress-bar');
+    if (!bar) return;
+    let ticking = false;
+    const handler = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+          bar.style.width = `${progress}%`;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handler, { passive: true });
+    handler();
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
+
   return (
     <>
       <a href="#hero" className="skip-to-content">
@@ -5094,6 +5145,7 @@ export default function HomePage() {
         <HowItWorksSection />
         <ServicesSection />
         <WhyDifferentSection />
+        <SettlementCalculatorSection />
         <EligibilityQuizSection />
         <WhyChooseUsSection />
         <TestimonialsSection />
@@ -5115,6 +5167,24 @@ export default function HomePage() {
       <CookieConsentBanner />
       <SocialProofNotification />
       <ExitIntentPopup />
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 py-1.5 safe-area-inset-bottom" aria-label="Mobile navigation">
+        <div className="flex items-center justify-around">
+          {[
+            { icon: Home, label: 'Home', href: '#hero' },
+            { icon: Search, label: 'Track', href: '#track-claim' },
+            { icon: Target, label: 'Quiz', href: '#eligibility-quiz' },
+            { icon: DollarSign, label: 'Calc', href: '#settlement-calculator' },
+            { icon: Phone, label: 'Contact', href: '#contact' },
+          ].map((item) => (
+            <button key={item.label} onClick={() => document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' })} className="flex flex-col items-center gap-0.5 py-1 px-2 text-gray-400 dark:text-gray-500 hover:text-gold transition-colors" aria-label={item.label}>
+              <item.icon className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
     </>
   );
 }

@@ -14,8 +14,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    const { name, email, phone, claimId, message, fileName, fileSize } = body;
+    const formData = await request.formData();
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const phone = formData.get('phone') as string;
+    const claimId = formData.get('claimId') as string;
+    const message = formData.get('message') as string;
+    const contactMethod = formData.get('contactMethod') as string;
+    const emailUpdates = formData.get('emailUpdates') === 'true';
+    const smsAlerts = formData.get('smsAlerts') === 'true';
+    const newsletter = formData.get('newsletter') === 'true';
+    const files = formData.getAll('files') as File[];
 
     // Validation
     const errors: string[] = [];
@@ -31,7 +40,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (phone && typeof phone === 'string' && phone.trim() !== '') {
-      // Basic phone format validation
       if (!/^[\d\s\-\(\)\+]+$/.test(phone)) {
         errors.push('Please provide a valid phone number');
       }
@@ -60,6 +68,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Build file summary from uploaded files
+    const fileNames = files.filter(f => f instanceof File).map(f => f.name).join(', ') || null;
+    const totalSize = files.filter(f => f instanceof File).reduce((sum, f) => sum + f.size, 0);
+    const fileSizeStr = files.length > 0 ? `${files.length} file(s), ${totalSize} bytes` : null;
+
     // Save message
     const contactMessage = await db.contactMessage.create({
       data: {
@@ -68,8 +81,8 @@ export async function POST(request: NextRequest) {
         phone: phone ? phone.trim() : null,
         claimId: claimId ? claimId.trim() : null,
         message: message.trim(),
-        fileName: fileName && typeof fileName === 'string' ? fileName.trim() : null,
-        fileSize: fileSize && typeof fileSize === 'string' ? fileSize.trim() : null,
+        fileName: fileNames,
+        fileSize: fileSizeStr,
         claimantId,
       },
     });
@@ -79,6 +92,8 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Your message has been received. Our team will get back to you within 24 hours.',
         id: contactMessage.id,
+        preferences: { emailUpdates, smsAlerts, newsletter },
+        filesReceived: files.length,
       },
       { status: 201 }
     );
