@@ -182,14 +182,23 @@ const SERVICES_DATA = [
   { icon: DollarSign, title: 'Settlement Maximization', description: 'We help ensure you receive the maximum compensation available under each settlement program.', detail: 'Our settlement analysis team reviews each offer against historical data and comparable cases to ensure you receive fair compensation. We identify opportunities for additional claims and help you optimize your overall recovery.' },
 ];
 
-const STATS_DATA = [
-  { icon: Users, value: 1250, suffix: '+', label: 'Claims Assisted', progress: 92 },
-  { icon: Award, value: 98, suffix: '%', label: 'Success Rate', progress: 98 },
-  { icon: DollarSign, value: 47, suffix: 'M+', label: 'Recovered', prefix: '$', progress: 85 },
-  { icon: CalendarDays, value: 15, suffix: '+', label: 'Years Experience', progress: 88 },
-  { icon: HeadphonesIcon, value: 24, suffix: '/7', label: 'Dedicated Support', progress: 100 },
-  { icon: Lock, value: 100, suffix: '%', label: 'Secure & Confidential', progress: 100 },
-];
+const STATS_DATA = (() => {
+  const today = new Date();
+  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
+  const seed = dayOfYear + today.getFullYear() * 366;
+  const rand = (offset: number) => {
+    const x = Math.sin(seed + offset * 7.3) * 10000;
+    return x - Math.floor(x);
+  };
+  return [
+    { icon: Users, value: Math.floor(1200 + rand(10) * 350), suffix: '+', label: 'Claims Assisted', progress: 92 },
+    { icon: Award, value: Math.floor(96 + rand(11) * 3), suffix: '%', label: 'Success Rate', progress: 98 },
+    { icon: DollarSign, value: Math.floor(45 + rand(12) * 8), suffix: 'M+', label: 'Recovered', prefix: '$', progress: 85 },
+    { icon: CalendarDays, value: 15, suffix: '+', label: 'Years Experience', progress: 88 },
+    { icon: HeadphonesIcon, value: 24, suffix: '/7', label: 'Dedicated Support', progress: 100 },
+    { icon: Lock, value: 100, suffix: '%', label: 'Secure & Confidential', progress: 100 },
+  ];
+})();
 
 const TESTIMONIALS_DATA = [
   { name: 'Margaret H.', location: 'Austin, TX', text: "My claim was stuck in 'Correction Needed' for months. ClaimGuard Pro helped me fix the paperwork within a week and resubmit. Now my claim is approved!", rating: 5, caseType: 'Camp Lejeune', color: 'bg-blue-500' },
@@ -2056,12 +2065,12 @@ function WhyChooseUsSection() {
     t('stats.tooltip0'), t('stats.tooltip1'), t('stats.tooltip2'), t('stats.tooltip3'), t('stats.tooltip4'), t('stats.tooltip5'),
   ], [locale, t]);
   const statsData = useMemo(() => [
-    { icon: Users, value: 1250, suffix: '+', label: t('stats.label0'), progress: 92 },
-    { icon: Award, value: 98, suffix: '%', label: t('stats.label1'), progress: 98 },
-    { icon: DollarSign, value: 47, suffix: 'M+', label: t('stats.label2'), progress: 85, prefix: '$' },
-    { icon: CalendarDays, value: 15, suffix: '+', label: t('stats.label3'), progress: 88 },
-    { icon: HeadphonesIcon, value: 24, suffix: '/7', label: t('stats.label4'), progress: 100 },
-    { icon: Lock, value: 100, suffix: '%', label: t('stats.label5'), progress: 100 },
+    { icon: Users, value: STATS_DATA[0].value, suffix: STATS_DATA[0].suffix, label: t('stats.label0'), progress: 92 },
+    { icon: Award, value: STATS_DATA[1].value, suffix: STATS_DATA[1].suffix, label: t('stats.label1'), progress: 98 },
+    { icon: DollarSign, value: STATS_DATA[2].value, suffix: STATS_DATA[2].suffix, label: t('stats.label2'), progress: 85, prefix: '$' },
+    { icon: CalendarDays, value: STATS_DATA[3].value, suffix: STATS_DATA[3].suffix, label: t('stats.label3'), progress: 88 },
+    { icon: HeadphonesIcon, value: STATS_DATA[4].value, suffix: STATS_DATA[4].suffix, label: t('stats.label4'), progress: 100 },
+    { icon: Lock, value: STATS_DATA[5].value, suffix: STATS_DATA[5].suffix, label: t('stats.label5'), progress: 100 },
   ], [locale, t]);
 
   return (
@@ -3693,15 +3702,34 @@ function useAnimatedCounter(target: number, duration: number = 2000) {
 function LiveClaimCounter() {
   const { ref, inView } = useInView(0.2);
   const { t } = useLanguage();
-  const claimsMonth = useAnimatedCounter(inView ? 1247 : 0, 2000);
-  const activeCases = useAnimatedCounter(inView ? 8432 : 0, 2200);
-  const approvedToday = useAnimatedCounter(inView ? 34 : 0, 1500);
+
+  // Daily-varying stats — different every day, deterministic based on date
+  const dailyStats = useMemo(() => {
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
+    const seed = dayOfYear + today.getFullYear() * 366;
+    // Simple seeded pseudo-random
+    const rand = (offset: number) => {
+      const x = Math.sin(seed + offset) * 10000;
+      return x - Math.floor(x);
+    };
+    return {
+      claimsMonth: Math.floor(900 + rand(1) * 600),         // 900–1,500
+      activeCases: Math.floor(7000 + rand(2) * 2500),        // 7,000–9,500
+      approvedToday: Math.floor(20 + rand(3) * 45),          // 20–65
+      processingTime: (3.0 + rand(4) * 3.5).toFixed(1),     // 3.0–6.5
+    };
+  }, []);
+
+  const claimsMonth = useAnimatedCounter(inView ? dailyStats.claimsMonth : 0, 2000);
+  const activeCases = useAnimatedCounter(inView ? dailyStats.activeCases : 0, 2200);
+  const approvedToday = useAnimatedCounter(inView ? dailyStats.approvedToday : 0, 1500);
 
   const stats = [
     { label: t('liveCounter.claimsMonth'), value: claimsMonth.toLocaleString(), icon: FileText },
     { label: t('liveCounter.activeCases'), value: activeCases.toLocaleString(), icon: Gavel },
     { label: t('liveCounter.approvedToday'), value: approvedToday.toLocaleString(), icon: CheckCircle2 },
-    { label: t('liveCounter.processingTime'), value: "4.2 Days", icon: Clock },
+    { label: t('liveCounter.processingTime'), value: `${dailyStats.processingTime} Days`, icon: Clock },
   ];
 
   return (
