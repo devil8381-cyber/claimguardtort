@@ -5,30 +5,13 @@
    Works on ALL cloud platforms (HTTPS port 443 only).
    Railway blocks SMTP ports (25/465/587) but HTTPS always works.
    
-   - donotreply@    → OTP, system alerts, password reset
-   - documentation@ → Document follow-ups, missing records
-   - updates@       → Case status changes, progress notifications
-   - support@       → Help replies, general inquiries
-   - admin@         → Personal welcome, escalations, referrals
+   ALL emails send from: donotreply@claimguardtort.com
    ═══════════════════════════════════════════════════════════════ */
-
-export type EmailSender = 'donotreply' | 'documentation' | 'updates' | 'support' | 'admin';
 
 const DOMAIN = process.env.EMAIL_DOMAIN || 'claimguardtort.com';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 
-const SENDER_CONFIG: Record<EmailSender, { email: string; name: string }> = {
-  donotreply:    { email: `donotreply@${DOMAIN}`,    name: 'ClaimGuard Tort' },
-  documentation: { email: `documentation@${DOMAIN}`, name: 'ClaimGuard Documentation' },
-  updates:       { email: `updates@${DOMAIN}`,       name: 'ClaimGuard Updates' },
-  support:       { email: `support@${DOMAIN}`,       name: 'ClaimGuard Support' },
-  admin:         { email: `admin@${DOMAIN}`,         name: 'Maria Quissaque' },
-};
-
-function getFromField(sender: EmailSender): string {
-  const s = SENDER_CONFIG[sender];
-  return `"${s.name}" <${s.email}>`;
-}
+const FROM_EMAIL = `"ClaimGuard Tort" <donotreply@${DOMAIN}>`;
 
 interface SendEmailOptions {
   to: string | string[];
@@ -38,25 +21,19 @@ interface SendEmailOptions {
   replyTo?: string;
 }
 
-export function getSmtpDiagnostics(): Record<EmailSender, { configured: boolean; email: string; user: string; passSet: boolean; host: string; port: number }> {
-  const result = {} as any;
+export function getSmtpDiagnostics() {
   const keySet = RESEND_API_KEY.length > 0;
-  for (const sender of Object.keys(SENDER_CONFIG) as EmailSender[]) {
-    const config = SENDER_CONFIG[sender];
-    result[sender] = {
-      configured: keySet,
-      email: config.email,
-      user: 'Resend API',
-      passSet: keySet,
-      host: 'api.resend.com',
-      port: 443,
-    };
-  }
-  return result;
+  return {
+    configured: keySet,
+    email: `donotreply@${DOMAIN}`,
+    user: 'Resend API',
+    passSet: keySet,
+    host: 'api.resend.com',
+    port: 443,
+  };
 }
 
-export async function verifySmtp(sender: EmailSender): Promise<{ ok: boolean; error?: string; details: string }> {
-  const config = SENDER_CONFIG[sender];
+export async function verifySmtp() {
   if (!RESEND_API_KEY) {
     return { ok: false, error: 'RESEND_API_KEY_NOT_SET', details: 'RESEND_API_KEY env var is missing. Add it in Railway Variables.' };
   }
@@ -69,18 +46,16 @@ export async function verifySmtp(sender: EmailSender): Promise<{ ok: boolean; er
       return { ok: false, error: 'RESEND_API_ERROR', details: `Resend API error: ${data.message || res.status}` };
     }
     const count = data?.data?.length || 0;
-    return { ok: true, details: `Resend API working for ${config.email} — ${count} domain(s) registered` };
+    return { ok: true, details: `Resend API working for donotreply@${DOMAIN} — ${count} domain(s) registered` };
   } catch (err: any) {
     return { ok: false, error: err.code || err.message || String(err), details: 'Failed to reach Resend API' };
   }
 }
 
-export async function sendEmail(sender: EmailSender, options: SendEmailOptions) {
-  const config = SENDER_CONFIG[sender];
-  const fromField = getFromField(sender);
+export async function sendEmail(options: SendEmailOptions) {
   const toList = Array.isArray(options.to) ? options.to : [options.to];
 
-  console.log(`[EMAIL] Sending from ${config.email} to ${options.to}`);
+  console.log(`[EMAIL] Sending from donotreply@${DOMAIN} to ${options.to}`);
   console.log(`[EMAIL] Provider: Resend API, Key set: ${RESEND_API_KEY ? 'YES' : 'NO'}`);
 
   if (!RESEND_API_KEY) {
@@ -93,12 +68,12 @@ export async function sendEmail(sender: EmailSender, options: SendEmailOptions) 
       method: 'POST',
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: fromField,
+        from: FROM_EMAIL,
         to: toList,
         subject: options.subject,
         html: options.html,
         text: options.text || stripHtml(options.html),
-        reply_to: options.replyTo || config.email,
+        reply_to: options.replyTo || `donotreply@${DOMAIN}`,
       }),
     });
 
@@ -109,7 +84,7 @@ export async function sendEmail(sender: EmailSender, options: SendEmailOptions) 
       return { success: false, error: `${data.name || 'RESEND_ERROR'}: ${data.message}` };
     }
 
-    console.log(`[EMAIL SENT] ✅ From: ${config.email}, To: ${options.to}, ID: ${data.id}`);
+    console.log(`[EMAIL SENT] ✅ From: donotreply@${DOMAIN}, To: ${options.to}, ID: ${data.id}`);
     return { success: true, messageId: data.id, response: `Resend: ${data.id}` };
   } catch (error: any) {
     console.error(`[EMAIL FAILED] ${error.message || String(error)}`);
@@ -170,7 +145,7 @@ function emailWrapper(html: string, title: string): string {
     </div>
     <div class="footer">
       <p>ClaimGuard Tort | 1429 Walnut St, 14th Floor, Philadelphia, PA 19102</p>
-      <p style="margin-top: 5px;">Phone: (484) 968-1529 | <a href="mailto:support@claimguardtort.com">support@claimguardtort.com</a></p>
+      <p style="margin-top: 5px;">Phone: (484) 968-1529 | <a href="mailto:donotreply@claimguardtort.com">donotreply@claimguardtort.com</a></p>
       <p style="margin-top: 10px; font-size: 11px;">This email was sent by ClaimGuard Tort. If you did not request this, please ignore it.</p>
     </div>
   </div>
@@ -178,7 +153,7 @@ function emailWrapper(html: string, title: string): string {
 </html>`;
 }
 
-/* ─── 1. OTP EMAIL (from: donotreply@) ─── */
+/* ─── 1. OTP EMAIL ─── */
 export async function sendOtpEmail(to: string, otp: string, purpose: string = 'verification') {
   const html = `
     <h2>Verification Code</h2>
@@ -188,7 +163,7 @@ export async function sendOtpEmail(to: string, otp: string, purpose: string = 'v
       <strong>This code expires in 10 minutes.</strong> Do not share this code with anyone. If you did not request this, please ignore this email.
     </div>
   `;
-  return sendEmail('donotreply', {
+  return sendEmail({
     to,
     subject: `Your ClaimGuard Tort OTP: ${otp}`,
     html: emailWrapper(html, 'Verification Code'),
@@ -196,14 +171,14 @@ export async function sendOtpEmail(to: string, otp: string, purpose: string = 'v
   });
 }
 
-/* ─── 2. WELCOME EMAIL (from: admin@) ─── */
+/* ─── 2. WELCOME EMAIL ─── */
 export async function sendWelcomeEmail(to: string, firstName: string, claimantTrackingId?: string, claimTrackingId?: string) {
   const trackingInfo = claimTrackingId
     ? `<div class="highlight"><strong>Your Claim Tracking ID:</strong> ${claimTrackingId}<br>${claimantTrackingId ? `<strong>Your Client ID:</strong> ${claimantTrackingId}` : ''}</div>`
     : '';
   const html = `
     <h2>Welcome to ClaimGuard Tort, ${firstName}!</h2>
-    <p>I personally want to thank you for choosing ClaimGuard Tort. My team and I are dedicated to helping you navigate the mass tort claims process with confidence and clarity.</p>
+    <p>Thank you for choosing ClaimGuard Tort. Our team is dedicated to helping you navigate the mass tort claims process with confidence and clarity.</p>
     ${trackingInfo}
     <div class="highlight">
       <strong>What happens next?</strong>
@@ -215,20 +190,19 @@ export async function sendWelcomeEmail(to: string, firstName: string, claimantTr
       </ul>
     </div>
     <p>You can track your claim status anytime by visiting our website and entering your tracking ID in the "Track My Claim" section.</p>
-    <p>Feel free to reply directly to this email if you have any questions at all. We're here to help every step of the way.</p>
-    <p>Best regards,<br><strong>Maria Quissaque</strong><br>Founder, ClaimGuard Tort</p>
+    <p>Feel free to contact us if you have any questions at all. We're here to help every step of the way.</p>
+    <p>Best regards,<br><strong>The ClaimGuard Tort Team</strong></p>
   `;
-  return sendEmail('admin', {
+  return sendEmail({
     to,
     subject: claimTrackingId
       ? `Welcome to ClaimGuard Tort — Your Claim ${claimTrackingId} Has Been Received!`
       : 'Welcome to ClaimGuard Tort — Let\'s Get Started!',
     html: emailWrapper(html, 'Welcome'),
-    replyTo: `admin@${DOMAIN}`,
   });
 }
 
-/* ─── 3. DOCUMENT FOLLOW-UP (from: documentation@) ─── */
+/* ─── 3. DOCUMENT FOLLOW-UP ─── */
 export async function sendDocumentFollowUp(to: string, claimId: string, missingDocs: string[], deadline?: string) {
   const docsList = missingDocs.map(d => `<li><strong>${d}</strong></li>`).join('');
   const html = `
@@ -239,17 +213,16 @@ export async function sendDocumentFollowUp(to: string, claimId: string, missingD
       <ul>${docsList}</ul>
     </div>
     ${deadline ? `<div class="warning"><strong>Deadline: ${deadline}</strong> — Please submit these documents as soon as possible to avoid delays.</div>` : ''}
-    <p>Visit our website or reply to this email with any questions. Our document specialists are ready to help you gather everything needed.</p>
+    <p>Visit our website or contact us with any questions. Our document specialists are ready to help you gather everything needed.</p>
   `;
-  return sendEmail('documentation', {
+  return sendEmail({
     to,
     subject: `Action Required: Missing Documents for Claim ${claimId}`,
     html: emailWrapper(html, 'Missing Documents'),
-    replyTo: `documentation@${DOMAIN}`,
   });
 }
 
-/* ─── 4. CLAIM STATUS UPDATE (from: updates@) ─── */
+/* ─── 4. CLAIM STATUS UPDATE ─── */
 export async function sendClaimUpdate(to: string, claimId: string, newStatus: string, notes?: string, nextSteps?: string) {
   const statusColors: Record<string, string> = {
     'Under Review': BRAND_COLORS.primary,
@@ -269,14 +242,14 @@ export async function sendClaimUpdate(to: string, claimId: string, newStatus: st
     ${nextSteps ? `<div class="highlight"><strong>Next Steps:</strong><br>${nextSteps}</div>` : ''}
     <p>Track your claim anytime at <a href="https://claimguardtort.com/#track-claim" style="color: ${BRAND_COLORS.primary};">claimguardtort.com</a></p>
   `;
-  return sendEmail('updates', {
+  return sendEmail({
     to,
     subject: `Claim ${claimId} — Status Updated: ${newStatus}`,
     html: emailWrapper(html, 'Claim Update'),
   });
 }
 
-/* ─── 5. CONTACT FORM AUTO-REPLY (from: support@) ─── */
+/* ─── 5. CONTACT FORM AUTO-REPLY ─── */
 export async function sendContactAutoReply(to: string, firstName: string, messageId?: string) {
   const html = `
     <h2>Thank You for Reaching Out!</h2>
@@ -288,15 +261,14 @@ export async function sendContactAutoReply(to: string, firstName: string, messag
     <p>While you wait, check out our <a href="https://claimguardtort.com/#faq" style="color: ${BRAND_COLORS.primary};">FAQ section</a> for answers to common questions.</p>
     <p>Best regards,<br>The ClaimGuard Tort Support Team</p>
   `;
-  return sendEmail('support', {
+  return sendEmail({
     to,
     subject: 'We Received Your Message — ClaimGuard Tort',
     html: emailWrapper(html, 'Message Received'),
-    replyTo: `support@${DOMAIN}`,
   });
 }
 
-/* ─── 6. ADMIN NOTIFICATION — NEW CONTACT (to: admin@) ─── */
+/* ─── 6. ADMIN NOTIFICATION — NEW CONTACT ─── */
 export async function sendAdminNewContact(data: { name: string; email: string; phone?: string; message: string; claimId?: string }) {
   const html = `
     <h2>New Contact Form Submission</h2>
@@ -311,14 +283,14 @@ export async function sendAdminNewContact(data: { name: string; email: string; p
       ${data.message}
     </div>
   `;
-  return sendEmail('support', {
+  return sendEmail({
     to: `admin@${DOMAIN}`,
     subject: `New Contact: ${data.name}`,
     html: emailWrapper(html, 'New Contact'),
   });
 }
 
-/* ─── 7. NEWSLETTER SUBSCRIPTION CONFIRMATION (from: updates@) ─── */
+/* ─── 7. NEWSLETTER SUBSCRIPTION CONFIRMATION ─── */
 export async function sendNewsletterConfirmation(to: string, claimType?: string) {
   const html = `
     <h2>You're Subscribed!</h2>
@@ -334,14 +306,14 @@ export async function sendNewsletterConfirmation(to: string, claimType?: string)
     </div>
     <p>You can unsubscribe at any time by clicking the link at the bottom of any email.</p>
   `;
-  return sendEmail('updates', {
+  return sendEmail({
     to,
     subject: 'Subscribed to ClaimGuard Tort Updates',
     html: emailWrapper(html, 'Newsletter Subscription'),
   });
 }
 
-/* ─── 8. REFERRAL CONFIRMATION (from: admin@) ─── */
+/* ─── 8. REFERRAL CONFIRMATION ─── */
 export async function sendReferralConfirmation(to: string, referralName: string, payoutAmount: string) {
   const html = `
     <h2>Referral Submitted Successfully!</h2>
@@ -352,14 +324,14 @@ export async function sendReferralConfirmation(to: string, referralName: string,
     </div>
     <p>We'll keep you updated on the referral status. Thank you for helping others access the justice they deserve!</p>
   `;
-  return sendEmail('admin', {
+  return sendEmail({
     to,
     subject: `Referral Confirmed: ${referralName}`,
     html: emailWrapper(html, 'Referral Submitted'),
   });
 }
 
-/* ─── 9. PASSWORD RESET (from: donotreply@) ─── */
+/* ─── 9. PASSWORD RESET ─── */
 export async function sendPasswordReset(to: string, resetLink: string) {
   const html = `
     <h2>Password Reset Request</h2>
@@ -371,7 +343,7 @@ export async function sendPasswordReset(to: string, resetLink: string) {
       <strong>This link expires in 1 hour.</strong> If you did not request this, you can safely ignore this email. Your password will remain unchanged.
     </div>
   `;
-  return sendEmail('donotreply', {
+  return sendEmail({
     to,
     subject: 'Reset Your ClaimGuard Tort Password',
     html: emailWrapper(html, 'Password Reset'),
@@ -379,7 +351,7 @@ export async function sendPasswordReset(to: string, resetLink: string) {
   });
 }
 
-/* ─── 10. DEADLINE REMINDER (from: updates@) ─── */
+/* ─── 10. DEADLINE REMINDER ─── */
 export async function sendDeadlineReminder(to: string, claimId: string, caseType: string, deadline: string, missingItems: string[]) {
   const itemsList = missingItems.map(d => `<li>${d}</li>`).join('');
   const html = `
@@ -394,7 +366,7 @@ export async function sendDeadlineReminder(to: string, claimId: string, caseType
     <p><strong>Don't miss your chance!</strong> Once a filing window closes, you may permanently lose your right to submit a claim.</p>
     <a href="https://claimguardtort.com/#contact" class="btn">Contact Us Now</a>
   `;
-  return sendEmail('updates', {
+  return sendEmail({
     to,
     subject: `URGENT: Deadline Reminder for ${caseType} — ${deadline}`,
     html: emailWrapper(html, 'Deadline Reminder'),

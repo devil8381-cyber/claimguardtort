@@ -64,6 +64,7 @@ model ContactMessage {
   fileSize   String?
   claimantId String?
   claimant   Claimant? @relation(fields: [claimantId], references: [id])
+  read       Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
 
