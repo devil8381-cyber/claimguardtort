@@ -4,11 +4,13 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-const ADMIN_TOKEN = 'claimguard-admin-2025';
+const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN || 'claimguard-admin-2025';
 
 function auth(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
-  return authHeader === `Bearer ${ADMIN_TOKEN}`;
+  if (authHeader === `Bearer ${ADMIN_TOKEN}`) return true;
+  const xAdmin = request.headers.get('x-admin-token');
+  return xAdmin === ADMIN_TOKEN;
 }
 
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'media');

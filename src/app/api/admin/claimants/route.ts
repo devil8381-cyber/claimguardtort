@@ -3,8 +3,8 @@ import { prisma } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = Math.min(parseInt(searchParams.get('limit') || '100') || 100, 500);
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
+  const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '100') || 100), 500);
   const search = searchParams.get('search') || '';
   const status = searchParams.get('status') || '';
 

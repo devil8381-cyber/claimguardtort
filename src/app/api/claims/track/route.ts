@@ -67,10 +67,12 @@ export async function POST(request: NextRequest) {
         notes: claim.notes,
         nextSteps: claim.nextSteps,
         progress: statusProgress[claim.status] || 0,
-        claimant: {
-          firstName: claim.claimant.firstName.charAt(0) + '***',
-          lastName: claim.claimant.lastName,
-        },
+        claimant: claim.claimant
+          ? {
+              firstName: (claim.claimant.firstName?.charAt(0) || '?') + '***',
+              lastName: claim.claimant.lastName || 'Unknown',
+            }
+          : { firstName: '?***', lastName: 'Unknown' },
         history: claim.history.map((h) => ({
           status: h.status,
           notes: h.notes,

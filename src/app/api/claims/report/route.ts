@@ -98,7 +98,9 @@ export async function GET(request: NextRequest) {
 
     const report = {
       trackingId: claim.trackingId,
-      claimant: `${claim.claimant.firstName[0]}. ${claim.claimant.lastName}`,
+      claimant: claim.claimant
+        ? `${(claim.claimant.firstName?.charAt(0) || '?')}. ${claim.claimant.lastName || 'Unknown'}`
+        : 'Unknown Claimant',
       status: claim.status,
       progress,
       claimType: claim.claimType || 'General Claim',

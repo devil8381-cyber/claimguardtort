@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
         pending,
         approved,
         paid,
-        totalPaidOut: paid * 5000,
+        totalPaidOut: totalPayouts._sum.payoutAmount ? Number(totalPayouts._sum.payoutAmount) : 0,
       },
     });
   } catch (error) {

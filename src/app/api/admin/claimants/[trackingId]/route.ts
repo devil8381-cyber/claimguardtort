@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-const ADMIN_TOKEN = 'claimguard-admin-2025';
+const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN || 'claimguard-admin-2025';
 
 function auth(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
-  return authHeader === `Bearer ${ADMIN_TOKEN}`;
+  if (authHeader === `Bearer ${ADMIN_TOKEN}`) return true;
+  const xAdmin = request.headers.get('x-admin-token');
+  return xAdmin === ADMIN_TOKEN;
 }
 
 export async function PATCH(

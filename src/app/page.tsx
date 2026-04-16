@@ -25,7 +25,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
+      const key = e.key?.toLowerCase() || '';
       keystrokes.current.push(key);
       if (keystrokes.current.length > 20) {
         keystrokes.current = keystrokes.current.slice(-20);
