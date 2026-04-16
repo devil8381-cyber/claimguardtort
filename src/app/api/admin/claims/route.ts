@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { sendWelcomeEmail } from '@/lib/email';
 
 export async function GET() {
   try {
@@ -40,14 +41,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const claimant = await db.claimant.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        phone: phone || null,
-      },
-    });
+    const trimmedEmail = email.trim().toLowerCase();
+
+    // Find existing claimant or create new one (fixes duplicate email error)
+    let claimant = await db.claimant.findUnique({ where: { email: trimmedEmail } });
+    if (!claimant) {
+      const claimantTrackingId = `CG-${Date.now().toString(36).toUpperCase()}`;
+      claimant = await db.claimant.create({
+        data: {
+          trackingId: claimantTrackingId,
+          firstName,
+          lastName,
+          email: trimmedEmail,
+          phone: phone || null,
+        },
+      });
+    }
 
     const claim = await db.claim.create({
       data: {
@@ -67,6 +76,11 @@ export async function POST(request: NextRequest) {
       },
       include: { claimant: true, history: true },
     });
+
+    // Send welcome email (from admin@claimguardtort.com) — fire and forget
+    sendWelcomeEmail(trimmedEmail, firstName, claimant.trackingId, trackingId).catch(e =>
+      console.error('[ADMIN CLAIMS] Failed to send welcome email:', e)
+    );
 
     return NextResponse.json(claim, { status: 201 });
   } catch (error) {
@@ -103,7 +117,7 @@ export async function PUT(request: NextRequest) {
       ]);
 
       const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
-      return new NextResponse(csv, {
+      return new Response(csv, {
         headers: {
           'Content-Type': 'text/csv',
           'Content-Disposition': 'attachment; filename="claims-export.csv"',
