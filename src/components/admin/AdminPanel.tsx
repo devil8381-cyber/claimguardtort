@@ -161,7 +161,10 @@ export default function AdminPanel() {
     const t = token || password;
     try {
       const res = await fetch('/api/admin/messages', { headers: { 'x-admin-token': t } });
-      if (res.ok) setMessages(Array.isArray(await res.json()) ? await res.clone().json() : []);
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(Array.isArray(data) ? data : []);
+      }
     } catch { /* ignore */ }
   };
 

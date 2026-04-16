@@ -25,22 +25,31 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const key = e.key?.toLowerCase() || '';
-      keystrokes.current.push(key);
-      if (keystrokes.current.length > 20) {
-        keystrokes.current = keystrokes.current.slice(-20);
-      }
-      const recent = keystrokes.current.join('');
-      // Check if "admin" was typed 3 times
-      const adminCount = (recent.match(/admin/g) || []).length;
-      if (adminCount >= 3) {
-        keystrokes.current = [];
-        window.dispatchEvent(new CustomEvent('open-admin'));
+      try {
+        if (!e || typeof e.key !== 'string') return;
+        const key = String(e.key).toLowerCase();
+        if (!key || key.length !== 1) return;
+        keystrokes.current.push(key);
+        if (keystrokes.current.length > 20) {
+          keystrokes.current = keystrokes.current.slice(-20);
+        }
+        const recent = keystrokes.current.join('');
+        const adminCount = (recent.match(/admin/g) || []).length;
+        if (adminCount >= 3) {
+          keystrokes.current = [];
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('open-admin'));
+          }
+        }
+      } catch {
+        // Silently ignore keyboard errors
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
   }, []);
 
   return (

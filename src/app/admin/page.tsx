@@ -4,9 +4,10 @@ import { useEffect } from 'react';
 
 export default function AdminPage() {
   useEffect(() => {
-    // Dispatch event to open admin panel, then redirect to home
-    window.dispatchEvent(new CustomEvent('open-admin'));
-    window.location.replace('/');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-admin'));
+      window.location.replace('/');
+    }
   }, []);
 
   return (
