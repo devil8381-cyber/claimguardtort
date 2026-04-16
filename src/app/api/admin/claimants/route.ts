@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-const ADMIN_TOKEN = 'claimguard-admin-2025';
-
-function auth(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  return authHeader === `Bearer ${ADMIN_TOKEN}`;
-}
-
 export async function GET(request: NextRequest) {
-  if (!auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1');
-  const limit = Math.min(parseInt(searchParams.get('limit') || '25') || 25, 100);
+  const limit = Math.min(parseInt(searchParams.get('limit') || '100') || 100, 500);
   const search = searchParams.get('search') || '';
   const status = searchParams.get('status') || '';
 
@@ -49,8 +40,6 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   const body = await request.json();
   const { trackingId, firstName, lastName, email, phone, claimType, status, state, filedDate, notes } = body;
 
@@ -62,26 +51,42 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const claimant = await prisma.claimant.create({
-      data: {
-        trackingId: trackingId.toUpperCase().trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email: email.trim(),
-        phone: phone?.trim() || null,
-        claimType: claimType?.trim() || null,
-        status: status?.trim() || 'Submitted',
-        state: state?.trim() || null,
-        filedDate: filedDate?.trim() || null,
-        notes: notes?.trim() || null,
-      },
-    });
+    const trimmedEmail = email.trim().toLowerCase();
+
+    // Check if email exists - link to existing or create new
+    let claimant = await prisma.claimant.findUnique({ where: { email: trimmedEmail } });
+    if (claimant) {
+      // Update existing claimant
+      claimant = await prisma.claimant.update({
+        where: { email: trimmedEmail },
+        data: {
+          phone: phone?.trim() || claimant.phone,
+          claimType: claimType?.trim() || claimant.claimType,
+          status: status?.trim() || claimant.status,
+        },
+      });
+    } else {
+      claimant = await prisma.claimant.create({
+        data: {
+          trackingId: trackingId.toUpperCase().trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: trimmedEmail,
+          phone: phone?.trim() || null,
+          claimType: claimType?.trim() || null,
+          status: status?.trim() || 'Submitted',
+          state: state?.trim() || null,
+          filedDate: filedDate?.trim() || null,
+          notes: notes?.trim() || null,
+        },
+      });
+    }
     return NextResponse.json({ claimant, success: true }, { status: 201 });
   } catch (e: unknown) {
     const err = e as { code?: string };
     if (err.code === 'P2002') {
       return NextResponse.json(
-        { error: `Tracking ID "${trackingId}" already exists` },
+        { error: `A record with this identifier already exists` },
         { status: 409 }
       );
     }

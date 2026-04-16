@@ -95,6 +95,14 @@ model Referral {
   updatedAt     DateTime @updatedAt
 }
 
+model OTP {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model MediaItem {
   id        String   @id @default(uuid())
   key       String   @unique

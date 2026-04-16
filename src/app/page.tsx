@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/landing/HeroSection';
@@ -16,9 +19,30 @@ import MemberPortal from '@/components/portal/MemberPortal';
 import AdminPanel from '@/components/admin/AdminPanel';
 import LiveChat from '@/components/chat/LiveChat';
 
-export const dynamic = 'force-dynamic';
-
 export default function HomePage() {
+  // Secret admin trigger: type "admin" 3 times quickly to open admin panel
+  const keystrokes = useRef<string[]>([]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      keystrokes.current.push(key);
+      if (keystrokes.current.length > 20) {
+        keystrokes.current = keystrokes.current.slice(-20);
+      }
+      const recent = keystrokes.current.join('');
+      // Check if "admin" was typed 3 times
+      const adminCount = (recent.match(/admin/g) || []).length;
+      if (adminCount >= 3) {
+        keystrokes.current = [];
+        window.dispatchEvent(new CustomEvent('open-admin'));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <>
       <a href="#hero" className="skip-to-content">Skip to main content</a>

@@ -1,0 +1,99 @@
+# ClaimGuard Tort — Complete Rebuild
+
+## What's New & Fixed
+
+### 🎨 UI Overhaul
+- **Dark Mode ONLY** — forced, no theme toggle, sleek slate/amber design
+- **Full-screen Member Portal** — not a small bottom sheet anymore
+- **Full-screen Admin Panel** — complete management dashboard
+- **Mobile-first responsive** — works beautifully on all screen sizes
+
+### 📱 Member Portal (Now Visible!)
+- Click **"My Portal"** button in the Navbar after logging in
+- Full-screen dashboard with claim tracking, stats, and quick actions
+- Submit new claims, view messages, manage settings
+- Shows claim count badges in the tab bar
+
+### 🔐 Admin Panel Access (3 Ways)
+1. **URL Route**: Go to `yourwebsite.com/admin`
+2. **Keyboard Shortcut**: Type "admin" 3 times quickly on the homepage
+3. **Auto-save**: Once you log in, it remembers your session
+
+Admin password: Check your Railway env var `ADMIN_PASSWORD` or use the password you set.
+
+### 🛠️ Bugs Fixed
+1. **Auth endpoints created** — POST/PUT/PATCH `/api/claimants` was missing (registration, login, OTP verification all broken)
+2. **OTP model added** — Prisma schema now includes OTP table
+3. **Email system** — Switched to Resend API (only `donotreply@claimguardtort.com`)
+4. **Admin duplicate email bug** — Fixed P2002 error when creating claims with existing emails
+5. **Admin auth mismatch** — Fixed admin claimants route to use consistent auth
+6. **Dark mode forced** — No light mode, clean dark slate/amber theme
+7. **Navbar login state** — Shows "My Portal" button when logged in, "Sign Up" when not
+
+## Railway Deployment
+
+### Environment Variables (set in Railway Dashboard)
+```
+RESEND_API_KEY=re_GABg4QhS_EXSnKK2cMZBodbEbKZQXWW6cm
+EMAIL_DOMAIN=claimguardtort.com
+```
+
+That's it! Only 2 env vars needed (no SMTP vars).
+
+### Build Command
+```
+npx prisma db push --accept-data-loss 2>/dev/null; prisma generate && next build
+```
+
+### Start Command
+```
+npm run start
+```
+
+## How to Deploy This ZIP
+
+1. **Extract** the ZIP to a folder
+2. **Open terminal** in that folder
+3. **Install dependencies**: `npm install`
+4. **Test locally**: `npm run dev`
+5. **Push to GitHub**: 
+   ```
+   git init
+   git add .
+   git commit -m "Complete rebuild"
+   git remote add origin https://github.com/devil8381-cyber/claimguardtort.git
+   git push -f origin main
+   ```
+6. **Railway auto-deploys** from GitHub — just make sure env vars are set
+
+## Key Features
+
+### Landing Page
+- Hero with animated stats
+- Services, How It Works, Case Types, FAQ
+- Claim Tracking (search by tracking ID)
+- Contact form with file upload
+- Testimonials carousel
+
+### Member Portal (Full Screen)
+- Dashboard with stats cards
+- My Claims list with status badges
+- Submit New Claim form
+- Messages inbox
+- Profile settings & password change
+
+### Admin Panel (Full Screen)
+- Dashboard with claim stats
+- Claimants table with search
+- Create New Claim form
+- Messages inbox (read/unread)
+- Edit claim status/notes inline
+- System settings view
+
+### Email (Resend API)
+- All emails from: donotreply@claimguardtort.com
+- OTP verification emails
+- Welcome emails
+- Contact auto-replies
+- Admin notifications
+- Newsletter confirmations

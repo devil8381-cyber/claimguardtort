@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useSyncExternalStore } from 'react';
-import { useTheme } from 'next-themes';
-import { Menu, X, Shield, Phone, Sun, Moon, LogIn } from 'lucide-react';
+import { Menu, X, Shield, Phone, LogIn, LayoutDashboard, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 
@@ -25,7 +24,8 @@ function useHasMounted() {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
   const mounted = useHasMounted();
 
   useEffect(() => {
@@ -33,6 +33,33 @@ export default function Navbar() {
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Check login status on mount and on auth-change events
+  useEffect(() => {
+    const checkLogin = () => {
+      const token = localStorage.getItem('cg_token');
+      const userData = localStorage.getItem('cg_user');
+      if (token && userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          setIsLoggedIn(true);
+          setUserName(parsed.firstName || 'User');
+        } catch {
+          setIsLoggedIn(false);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLogin();
+    window.addEventListener('auth-change', checkLogin);
+    window.addEventListener('storage', checkLogin);
+    return () => {
+      window.removeEventListener('auth-change', checkLogin);
+      window.removeEventListener('storage', checkLogin);
+    };
   }, []);
 
   const handleNavClick = (href: string) => {
@@ -43,12 +70,27 @@ export default function Navbar() {
     }
   };
 
+  const openPortal = () => {
+    window.dispatchEvent(new CustomEvent('open-portal'));
+    setMobileOpen(false);
+  };
+
+  const openAdmin = () => {
+    window.dispatchEvent(new CustomEvent('open-admin'));
+    setMobileOpen(false);
+  };
+
+  const openAuth = (tab: 'login' | 'register') => {
+    window.dispatchEvent(new CustomEvent('open-auth', { detail: { tab } }));
+    setMobileOpen(false);
+  };
+
   return (
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg border-b border-gray-200/50 dark:border-slate-700/50'
+            ? 'bg-slate-900/95 backdrop-blur-lg shadow-lg border-b border-slate-700/50'
             : 'bg-transparent'
         }`}
       >
@@ -59,14 +101,14 @@ export default function Navbar() {
               onClick={() => handleNavClick('#hero')}
               className="flex items-center gap-2 group"
             >
-              <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
                 <Shield className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                <span className="text-lg md:text-xl font-bold text-white leading-tight">
                   ClaimGuard
                 </span>
-                <span className="text-[10px] md:text-xs text-amber-600 dark:text-amber-400 font-semibold tracking-widest uppercase -mt-0.5">
+                <span className="text-[10px] md:text-xs text-amber-400 font-semibold tracking-widest uppercase -mt-0.5">
                   TORT
                 </span>
               </div>
@@ -78,7 +120,7 @@ export default function Navbar() {
                 <button
                   key={link.href}
                   onClick={() => handleNavClick(link.href)}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-amber-400 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800/50 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-amber-400 rounded-lg hover:bg-slate-800/50 transition-colors"
                 >
                   {link.label}
                 </button>
@@ -86,121 +128,150 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Right */}
-            <div className="hidden lg:flex items-center gap-3">
-              {mounted && (
-                <button
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                </button>
-              )}
+            <div className="hidden lg:flex items-center gap-2">
               <a
                 href="tel:4849681529"
-                className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800/50 transition-colors"
                 aria-label="Call us"
               >
                 <Phone className="w-5 h-5" />
               </a>
-              <Button
-                onClick={() => handleNavClick('#track-claim')}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all"
-                size="sm"
-              >
-                Track My Claim
-              </Button>
-              <Button
-                onClick={() => {
-                  const event = new CustomEvent('open-auth', { detail: { tab: 'register' } });
-                  window.dispatchEvent(event);
-                }}
-                variant="outline"
-                size="sm"
-                className="border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20"
-              >
-                <LogIn className="w-4 h-4 mr-1.5" />
-                Sign Up
-              </Button>
+
+              {isLoggedIn ? (
+                <>
+                  <Button
+                    onClick={openPortal}
+                    size="sm"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold shadow-md"
+                  >
+                    <LayoutDashboard className="w-4 h-4 mr-1.5" />
+                    My Portal
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={() => handleNavClick('#track-claim')}
+                    size="sm"
+                    className="bg-slate-800 hover:bg-slate-700 text-white border border-slate-600"
+                  >
+                    Track Claim
+                  </Button>
+                  <Button
+                    onClick={() => openAuth('register')}
+                    variant="outline"
+                    size="sm"
+                    className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300"
+                  >
+                    <LogIn className="w-4 h-4 mr-1.5" />
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Mobile Right */}
             <div className="flex lg:hidden items-center gap-2">
-              {mounted && (
+              {isLoggedIn && (
                 <button
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400"
-                  aria-label="Toggle theme"
+                  onClick={openPortal}
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-amber-400 bg-amber-500/10"
+                  aria-label="Open portal"
                 >
-                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  <LayoutDashboard className="w-5 h-5" />
                 </button>
               )}
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
                   <button
-                    className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-300"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-300"
                     aria-label="Open menu"
                   >
                     <Menu className="w-6 h-6" />
                   </button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-80 p-0">
+                <SheetContent side="right" className="w-80 p-0 bg-slate-900 border-slate-700">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                  <div className="flex flex-col h-full bg-white dark:bg-slate-900">
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700">
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center justify-between p-4 border-b border-slate-700">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center">
                           <Shield className="w-4 h-4 text-white" />
                         </div>
-                        <span className="font-bold text-slate-900 dark:text-white">ClaimGuard Tort</span>
+                        <span className="font-bold text-white">ClaimGuard Tort</span>
                       </div>
                     </div>
+
+                    {/* User info card */}
+                    {isLoggedIn && (
+                      <div className="px-4 py-3 bg-slate-800/50 border-b border-slate-700">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                            <User className="w-4 h-4 text-amber-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white">{userName}</p>
+                            <p className="text-xs text-slate-400">Member</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex-1 overflow-y-auto p-4 space-y-1">
                       {NAV_LINKS.map((link) => (
                         <button
                           key={link.href}
                           onClick={() => handleNavClick(link.href)}
-                          className="w-full text-left px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-200 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors"
+                          className="w-full text-left px-4 py-3 text-base font-medium text-slate-300 rounded-lg hover:bg-slate-800 transition-colors"
                         >
                           {link.label}
                         </button>
                       ))}
-                      <div className="border-t border-gray-200 dark:border-slate-700 my-3" />
+                      <div className="border-t border-slate-700 my-3" />
                       <button
-                        onClick={() => {
-                          setMobileOpen(false);
-                          const event = new CustomEvent('open-auth', { detail: { tab: 'register' } });
-                          window.dispatchEvent(event);
-                        }}
-                        className="w-full text-left px-4 py-3 text-base font-medium text-amber-600 dark:text-amber-400 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                        onClick={() => handleNavClick('#track-claim')}
+                        className="w-full text-left px-4 py-3 text-base font-medium text-slate-300 rounded-lg hover:bg-slate-800 transition-colors"
                       >
-                        Sign Up Free
+                        Track My Claim
                       </button>
-                      <button
-                        onClick={() => {
-                          setMobileOpen(false);
-                          const event = new CustomEvent('open-auth', { detail: { tab: 'login' } });
-                          window.dispatchEvent(event);
-                        }}
-                        className="w-full text-left px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-200 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
-                      >
-                        Log In
-                      </button>
+                      {isLoggedIn ? (
+                        <button
+                          onClick={openPortal}
+                          className="w-full text-left px-4 py-3 text-base font-medium text-amber-400 rounded-lg hover:bg-amber-500/10 transition-colors"
+                        >
+                          Member Portal
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => openAuth('register')}
+                            className="w-full text-left px-4 py-3 text-base font-medium text-amber-400 rounded-lg hover:bg-amber-500/10 transition-colors"
+                          >
+                            Sign Up Free
+                          </button>
+                          <button
+                            onClick={() => openAuth('login')}
+                            className="w-full text-left px-4 py-3 text-base font-medium text-slate-300 rounded-lg hover:bg-slate-800 transition-colors"
+                          >
+                            Log In
+                          </button>
+                        </>
+                      )}
                     </div>
-                    <div className="p-4 border-t border-gray-200 dark:border-slate-700 space-y-3">
+                    <div className="p-4 border-t border-slate-700 space-y-3">
                       <Button
                         onClick={() => {
                           setMobileOpen(false);
-                          handleNavClick('#track-claim');
+                          handleNavClick('#contact');
                         }}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white"
+                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-900 font-semibold"
                         size="lg"
                       >
-                        Track My Claim
+                        Free Assessment
                       </Button>
                       <a
                         href="tel:4849681529"
-                        className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                        className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors"
                       >
                         <Phone className="w-4 h-4" />
                         (484) 968-1529
