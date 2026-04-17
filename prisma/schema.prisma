@@ -1,6 +1,6 @@
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -12,7 +12,7 @@ model Claimant {
   trackingId      String           @unique
   firstName       String
   lastName        String
-  email           String
+  email           String           @unique
   phone           String?
   claimType       String?
   status          String           @default("Submitted")
@@ -23,6 +23,13 @@ model Claimant {
   updatedAt       DateTime         @updatedAt
   claims          Claim[]
   contactMessages ContactMessage[]
+
+  // Auth fields
+  password        String?
+  otpCode         String?
+  otpExpiry       DateTime?
+  emailVerified   Boolean          @default(false)
+  sessionToken    String?
 
   @@index([email])
   @@index([status])
